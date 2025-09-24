@@ -5,24 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gloria's Cookhouse</title>
 <style>
-  body { margin:0; font-family: Arial, sans-serif; background:#fff; color:#333; }
-  header { text-align:center; padding:40px 20px; background:#fff; }
-  header h1 { color:#B95E30; margin:0; }
-  nav { text-align:center; margin:20px 0; }
-  nav a { margin:0 15px; color:#B95E30; text-decoration:none; font-weight:bold; }
-  .button { background:#B95E30; color:#fff; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; margin:10px; font-weight:bold; }
-  .home-buttons { text-align:center; margin:20px; }
-  .menu-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; padding:20px; }
-  .menu-item img { width:100%; border-radius:10px; cursor:pointer; }
-  .item-name { font-weight:bold; margin:5px 0; text-align:center; }
-  .item-note { font-style:italic; font-size:0.85rem; color:#555; text-align:center; margin:0 0 10px 0; }
-  .contact-info { text-align:center; background:#f9f9f9; padding:20px; border-radius:8px; margin:20px; }
-  .contact-info a { color:#B95E30; font-weight:bold; text-decoration:none; }
-  .lightbox { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:1000; }
-  .lightbox img { max-width:90%; max-height:90%; border-radius:10px; }
-  .lightbox span { position:absolute; top:20px; right:40px; font-size:50px; color:#fff; cursor:pointer; }
-  /* Responsive adjustments */
-  @media(max-width:600px){ .menu-grid { grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); } }
+body { margin:0; font-family: Arial, sans-serif; background:#fff; color:#333; }
+header { text-align:center; padding:40px 20px; background:#fff; position:relative; }
+header h1 { color:#B95E30; margin:0; }
+nav { text-align:center; margin:20px 0; }
+nav a { margin:0 15px; color:#B95E30; text-decoration:none; font-weight:bold; }
+.button { background:#B95E30; color:#fff; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; margin:10px; font-weight:bold; }
+.home-buttons { text-align:center; margin:20px; }
+.menu-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; padding:20px; }
+.menu-item img { width:100%; border-radius:10px; cursor:pointer; }
+.item-name { font-weight:bold; margin:5px 0; text-align:center; }
+.item-note { font-style:italic; font-size:0.85rem; color:#555; text-align:center; margin:0 0 10px 0; }
+.contact-info { text-align:center; background:#f9f9f9; padding:20px; border-radius:8px; margin:20px; }
+.contact-info a { color:#B95E30; font-weight:bold; text-decoration:none; }
+.lightbox { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:1000; }
+.lightbox img { max-width:90%; max-height:90%; border-radius:10px; }
+.lightbox span { position:absolute; top:20px; right:40px; font-size:50px; color:#fff; cursor:pointer; }
+/* Responsive adjustments */
+@media(max-width:600px){ .menu-grid { grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); } }
 </style>
 </head>
 <body>
@@ -67,6 +67,7 @@
   </p>
 
   <div class="menu-grid">
+    <!-- Food Items -->
     <div class="menu-item">
       <img src="images/food1.jpg" alt="Mashed Potatoes with Salmon and Asparagus" onclick="openLightbox(this)">
       <p class="item-name">Mashed Potatoes with Salmon and Asparagus</p>
@@ -131,3 +132,69 @@
       <img src="images/food16.jpg" alt="Stir Fry Pasta with Chicken" onclick="openLightbox(this)">
       <p class="item-name">Stir Fry Pasta with Chicken</p>
     </div>
+    <div class="menu-item">
+      <img src="images/food17.jpg" alt="Crispy Fish Filet" onclick="openLightbox(this)">
+      <p class="item-name">Crispy Fish Filet</p>
+    </div>
+    <div class="menu-item">
+      <img src="images/food18.jpg" alt="Veggie Stir Fry Sauce with Shredded Beef" onclick="openLightbox(this)">
+      <p class="item-name">Veggie Stir Fry Sauce with Shredded Beef</p>
+    </div>
+    <div class="menu-item">
+      <img src="images/food19.jpg" alt="Banana Bread Flavour 1" onclick="openLightbox(this)">
+      <p class="item-name">Banana Bread (Flavour 1)</p>
+      <p class="item-note" style="font-style:italic;">Only on weekends</p>
+    </div>
+    <div class="menu-item">
+      <img src="images/food20.jpg" alt="Banana Bread Flavour 2" onclick="openLightbox(this)">
+      <p class="item-name">Banana Bread (Flavour 2)</p>
+      <p class="item-note" style="font-style:italic;">Only on weekends</p>
+    </div>
+    <div class="menu-item">
+      <img src="images/food21.jpg" alt="Green Bell Pepper Veggie Sauce" onclick="openLightbox(this)">
+      <p class="item-name">Green Bell Pepper Veggie Sauce</p>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Page -->
+<div id="contact" style="display:none; padding:20px;">
+  <nav>
+    <a href="#" onclick="goToPage('home')">Home</a>
+    <a href="#" onclick="goToPage('menu')">Menu</a>
+  </nav>
+
+  <h1 style="text-align:center; color:#B95E30;">Contact Us</h1>
+  <div class="contact-info">
+    <p>Name: Gloria Thompson Duruibe</p>
+    <p>Email: <a href="mailto:g7thomson@yahoo.com">g7thomson@yahoo.com</a></p>
+    <p>Phone: <a href="tel:+4591673068">+45 91 67 30 68</a></p>
+    <p>We accept bulk orders only for 100 DKK or more. Custom menus & catering available.</p>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <span onclick="closeLightbox()">&times;</span>
+  <img id="lightbox-img" src="">
+</div>
+
+<script>
+function goToPage(pageId){
+  const pages=['landing','home','menu','contact','login','signup'];
+  pages.forEach(id=>{
+    document.getElementById(id).style.display=(id===pageId)?'block':'none';
+  });
+}
+function openLightbox(img){
+  const lightbox=document.getElementById('lightbox');
+  const lightboxImg=document.getElementById('lightbox-img');
+  lightboxImg.src=img.src;
+  lightbox.style.display='flex';
+}
+function closeLightbox(){
+  document.getElementById('lightbox').style.display='none';
+}
+</script>
+</body>
+</html>
