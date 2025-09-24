@@ -21,18 +21,56 @@
   .modal input{width:90%;padding:8px;margin:10px 0;}
   .modal button{background:#BE9E42;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;}
   .modal a{display:block;margin:5px;color:#B95E30;text-decoration:none;}
+  button.back-btn{margin:20px;padding:10px 20px;background:#B95E30;color:#fff;border:none;border-radius:8px;cursor:pointer;}
 </style>
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-  const firebaseConfig = {
-    apiKey:"YOUR_API_KEY",
-    authDomain:"YOUR_PROJECT.firebaseapp.com",
-    projectId:"YOUR_PROJECT",
-    storageBucket:"YOUR_PROJECT.appspot.com",
-    messagingSenderId:"YOUR_SENDER_ID",
-    appId:"YOUR_APP_ID"
-  };
-  const app = initializeApp(firebaseConfig);
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey:"YOUR_API_KEY",
+  authDomain:"YOUR_PROJECT.firebaseapp.com",
+  projectId:"YOUR_PROJECT",
+  storageBucket:"YOUR_PROJECT.appspot.com",
+  messagingSenderId:"YOUR_SENDER_ID",
+  appId:"YOUR_APP_ID"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+function showPage(pageId){
+  const pages = ['frontpage','menupage','contactpage','loginpage','signuppage'];
+  pages.forEach(p => document.getElementById(p).style.display='none');
+  document.getElementById(pageId).style.display='block';
+}
+
+// Login
+function loginUser(){
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  signInWithEmailAndPassword(auth,email,password)
+    .then(() => { alert('Login successful'); showPage('frontpage'); })
+    .catch(e => alert(e.message));
+}
+
+// Signup
+function signupUser(){
+  const email = document.getElementById('signup-email').value;
+  const password = document.getElementById('signup-password').value;
+  createUserWithEmailAndPassword(auth,email,password)
+    .then(() => { alert('Signup successful'); showPage('frontpage'); })
+    .catch(e => alert(e.message));
+}
+
+// Navigation button listeners
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.nav-btn').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.preventDefault();
+      showPage(btn.getAttribute('data-target'));
+    });
+  });
+});
 </script>
 </head>
 <body>
@@ -41,7 +79,7 @@
 <div id="frontpage">
   <header>
     <div></div>
-    <a href="#contactpage">Contact Us</a>
+    <a href="#" class="nav-btn" data-target="contactpage">Contact Us</a>
   </header>
   <main>
     <img id="africa" src="africa.png" alt="Africa outline">
@@ -49,10 +87,11 @@
     <div class="buttons">
       <a href="https://www.wolt.com/en/dk" target="_blank">Order on Wolt</a>
       <a href="https://www.just-eat.dk" target="_blank">Order on Just-Eat</a>
-      <a href="#menupage">See Menu</a>
+      <a href="#" class="nav-btn" data-target="menupage">See Menu</a>
     </div>
     <div class="auth">
-      <a href="#loginpage">Login</a> | <a href="#signuppage">Sign Up</a>
+      <a href="#" class="nav-btn" data-target="loginpage">Login</a> | 
+      <a href="#" class="nav-btn" data-target="signuppage">Sign Up</a>
     </div>
   </main>
 </div>
@@ -84,7 +123,7 @@
     <div><img src="images/food20.jpg" alt=""><p>Banana bread (different flavor, weekends only)</p></div>
     <div><img src="images/food21.jpg" alt=""><p>Green bell pepper veggie sauce</p></div>
   </div>
-  <button onclick="showFront()">Back</button>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
 <!-- Contact Page -->
@@ -93,20 +132,20 @@
   <p><strong>Name:</strong> Gloria Thompson Duruibe</p>
   <p><strong>Phone:</strong> +45 91 67 30 68</p>
   <p><strong>Email:</strong> g7thomson@yahoo.com</p>
-  <button onclick="showFront()">Back</button>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
 <!-- Login Page -->
 <div id="loginpage" style="display:none;">
   <div class="modal">
     <h2>Login</h2>
-    <input type="email" placeholder="Email">
-    <input type="password" placeholder="Password">
-    <button>Login</button>
-    <a href="#signuppage">Sign Up</a>
+    <input id="login-email" type="email" placeholder="Email">
+    <input id="login-password" type="password" placeholder="Password">
+    <button id="login-btn" onclick="loginUser()">Login</button>
+    <a href="#" class="nav-btn" data-target="signuppage">Sign Up</a>
     <a href="#">Forgot Password?</a>
   </div>
-  <button onclick="showFront()">Back</button>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
 <!-- Sign Up Page -->
@@ -115,38 +154,13 @@
     <h2>Sign Up</h2>
     <input type="text" placeholder="Full Name">
     <input type="date" placeholder="DOB">
-    <input type="email" placeholder="Email">
-    <input type="password" placeholder="Password">
-    <button>Sign Up</button>
-    <a href="#loginpage">Already have an account?</a>
+    <input id="signup-email" type="email" placeholder="Email">
+    <input id="signup-password" type="password" placeholder="Password">
+    <button id="signup-btn" onclick="signupUser()">Sign Up</button>
+    <a href="#" class="nav-btn" data-target="loginpage">Already have an account?</a>
   </div>
-  <button onclick="showFront()">Back</button>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
-
-<script>
-function showFront() {
-  document.getElementById('frontpage').style.display = 'block';
-  document.getElementById('menupage').style.display = 'none';
-  document.getElementById('contactpage').style.display = 'none';
-  document.getElementById('loginpage').style.display = 'none';
-  document.getElementById('signuppage').style.display = 'none';
-}
-
-// Navigation by hash
-window.addEventListener('hashchange', function() {
-  const hash = location.hash;
-  document.getElementById('frontpage').style.display = 'none';
-  document.getElementById('menupage').style.display = 'none';
-  document.getElementById('contactpage').style.display = 'none';
-  document.getElementById('loginpage').style.display = 'none';
-  document.getElementById('signuppage').style.display = 'none';
-  if(hash === '#menupage') document.getElementById('menupage').style.display = 'block';
-  else if(hash === '#contactpage') document.getElementById('contactpage').style.display = 'block';
-  else if(hash === '#loginpage') document.getElementById('loginpage').style.display = 'block';
-  else if(hash === '#signuppage') document.getElementById('signuppage').style.display = 'block';
-  else showFront();
-});
-</script>
 
 </body>
 </html>
