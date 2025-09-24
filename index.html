@@ -1,205 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gloria's Cookhouse</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #FFFFFF;
-      color: #333;
-    }
-    header {
-      text-align: center;
-      padding: 40px 20px;
-    }
-    header img {
-      width: 180px;
-      max-width: 70%;
-      margin-bottom: 20px;
-    }
-    header h1 {
-      color: #B95E30;
-      font-size: 2.5rem;
-      margin: 0 0 20px;
-    }
-    .btn-container {
-      margin-top: 20px;
-    }
-    .btn {
-      display: inline-block;
-      padding: 12px 24px;
-      margin: 8px;
-      background: #B95E30;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    .btn:hover {
-      opacity: 0.9;
-    }
-    .note {
-      text-align: center;
-      margin: 40px 10px 20px;
-      font-style: italic;
-      color: #444;
-    }
-    .food-gallery {
-      padding: 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-      max-width: 1200px;
-      margin: auto;
-    }
-    .food-item {
-      text-align: center;
-    }
-    .food-item img {
-      width: 100%;
-      height: auto;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .food-name {
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    footer {
-      text-align: center;
-      padding: 20px;
-      background: #B95E30;
-      color: #fff;
-      margin-top: 40px;
-    }
-    /* Modal styles */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 10;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-    }
-    .modal-content {
-      background: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%; max-width: 400px;
-      text-align: center;
-    }
-    .modal input {
-      width: 90%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-    .modal button {
-      padding: 10px 20px;
-      margin-top: 10px;
-      background: #BE9E42;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      cursor: pointer;
-    }
-    .close {
-      float: right;
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Gloria's Cookhouse</title>
+<style>
+  :root{
+    --brand:#B95E30;
+    --accent:#BE9E42;
+    --bg:#FFFFFF;
+    --text:#222;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter, system-ui, Arial, sans-serif;background:var(--bg);color:var(--text)}
+  /* Top right contact / auth area */
+  .topbar{
+    position:fixed; right:18px; top:14px; z-index:1200;
+    display:flex; gap:12px; align-items:center;
+    font-weight:600;
+  }
+  .topbar a, .topbar button{color:var(--brand); text-decoration:none; background:none; border:none; cursor:pointer; font-weight:700}
+  .topbar #welcome { color:#333; font-weight:700; margin-right:8px; }
+  .topbar button.logout { background:none; color:var(--brand); border:1px solid var(--brand); padding:6px 10px; border-radius:6px; }
+
+  /* Landing hero */
+  .hero {
+    min-height:72vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:60px 20px 40px;
+    text-align:center;
+  }
+  .hero img.logo {
+    width:260px; max-width:46vw; height:auto; display:block; margin:0 auto 18px;
+  }
+  .hero h1 { margin:0; color:var(--brand); font-size:2.6rem; letter-spacing:0.5px; }
+  .hero .lead { margin-top:12px; color:#444; font-weight:600; }
+
+  .hero .btn-row { margin-top:30px; display:flex; gap:14px; flex-wrap:wrap; justify-content:center; align-items:center; }
+  .btn {
+    background:var(--brand); color:#fff; padding:12px 18px; border-radius:10px; border:none; cursor:pointer; font-weight:800;
+    box-shadow: 0 6px 18px rgba(185,94,48,0.12);
+  }
+  .btn.secondary { background:transparent; color:var(--brand); border:2px solid var(--brand); font-weight:700; }
+  .btn.order { min-width:170px; }
+
+  /* Page containers */
+  .page { display:none; padding:24px 18px 80px; max-width:1200px; margin:0 auto; }
+  .page.show { display:block; }
+
+  /* Note */
+  .note { text-align:center; font-style:italic; margin:20px 12px; color:#444; font-weight:700; }
+
+  /* Food grid */
+  .food-grid { display:grid; gap:18px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    padding: 12px;
+  }
+  .food-card { background:#fff; border-radius:12px; overflow:hidden; text-align:center; box-shadow:0 6px 18px rgba(0,0,0,0.06); }
+  .food-card img { width:100%; height:180px; object-fit:cover; cursor:pointer; display:block; }
+  .food-title { padding:10px 12px 18px; font-weight:700; color:#222; font-size:0.98rem; }
+
+  /* Lightbox */
+  .lightbox {
+    display:none; position:fixed; inset:0; z-index:1300; background:rgba(0,0,0,0.88);
+    align-items:center; justify-content:center; padding:20px;
+  }
+  .lightbox.show { display:flex; }
+  .lightbox .frame { max-width:1000px; width:100%; text-align:center; }
+  .lightbox img { max-width:100%; max-height:80vh; border-radius:8px; }
+  .lightbox .caption { color:#fff; margin-top:12px; font-weight:700; }
+  .lightbox .close { position:fixed; top:18px; right:20px; color:#fff; font-size:34px; cursor:pointer; }
+
+  /* forms / auth pages */
+  .auth-card { max-width:420px; margin:36px auto; background:#fff; padding:22px; border-radius:12px; box-shadow:0 12px 32px rgba(0,0,0,0.08); }
+  .auth-card h2 { margin:0 0 8px; color:var(--brand); text-align:center; }
+  .auth-card label{display:block; font-size:0.9rem; margin-top:10px; color:#333}
+  .auth-card input{width:100%; padding:10px 12px; margin-top:6px; border-radius:8px; border:1px solid #ddd; font-size:1rem}
+  .auth-card .submit{background:var(--accent); color:#fff; border:none; padding:12px; width:100%; margin-top:16px; border-radius:8px; font-weight:800; cursor:pointer}
+  .auth-card .linkrow{margin-top:12px; text-align:center}
+  .auth-card .linkrow a{color:var(--brand); font-weight:700; cursor:pointer; text-decoration:none}
+
+  /* contact */
+  .contact-card{max-width:680px;margin:20px auto;padding:18px;border-radius:10px;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+  .contact-card p{margin:8px 0; font-weight:600}
+
+  footer{padding:22px;text-align:center;background:#fafafa;color:#666;margin-top:30px}
+
+  /* small screens */
+  @media(max-width:520px){
+    .hero h1{font-size:1.9rem}
+    .food-card img{height:150px}
+    .topbar{right:8px;top:8px}
+  }
+</style>
 </head>
 <body>
-  <header>
-    <img src="africa.png" alt="Africa Outline">
-    <h1>Gloria's Cookhouse</h1>
-    <div class="btn-container">
-      <a onclick="openModal('signupModal')" class="btn">Sign Up</a>
-      <a onclick="openModal('loginModal')" class="btn">Already have an account?</a>
-      <a href="#menu" class="btn">See Menu</a>
-      <a href="https://just-eat.dk" target="_blank" class="btn">ORDER ON JUST-EAT</a>
-      <a href="#" target="_blank" class="btn">ORDER ON WOLT</a>
+
+  <!-- topbar: contact and auth -->
+  <div class="topbar" aria-hidden="false">
+    <span id="welcome" style="display:none"></span>
+    <a id="contactLink" onclick="goTo('contact')">Contact Us</a>
+    <button id="logoutBtn" class="logout" style="display:none" onclick="logout()">Logout</button>
+  </div>
+
+  <!-- LANDING PAGE (initial) -->
+  <main id="landing" class="page show">
+    <section class="hero" role="banner" aria-label="Landing">
+      <img class="logo" src="images/africa.png" alt="Africa outline" />
+      <h1>Gloria's Cookhouse</h1>
+      <div class="lead">Authentic home-cooked flavours — order or see the menu below</div>
+
+      <div class="btn-row" style="margin-top:40px;">
+        <button class="btn order" onclick="openExternal('https://placeholder-wolt.com/your-restaurant')">ORDER ON WOLT</button>
+        <button class="btn order" onclick="openExternal('https://placeholder-justeat.com/your-restaurant')">ORDER ON JUST-EAT</button>
+      </div>
+
+      <div class="btn-row" style="margin-top:18px;">
+        <button class="btn secondary" onclick="goTo('menu')">See Menu</button>
+        <button class="btn" onclick="goTo('signup')">Sign Up</button>
+        <button class="btn secondary" onclick="goTo('login')">Login</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- MENU PAGE -->
+  <section id="menu" class="page" aria-label="Menu page">
+    <p class="note">All food is Halal. Minimum order 100 DKK. Contact us for bulk orders and catering.</p>
+
+    <div class="food-grid" id="foodGrid">
+      <!-- 21 items: images in images/food1.jpg .. images/food21.jpg -->
+      <div class="food-card"><img src="images/food1.jpg" alt="Mashed potatoes with salmon and asparagus" data-name="Mashed potatoes with salmon and asparagus" onclick="openLightbox(this)"><div class="food-title">Mashed potatoes with salmon and asparagus</div></div>
+
+      <div class="food-card"><img src="images/food2.jpg" alt="Fried plantains and yams with egg gravy sauce" data-name="Fried plantains and yams with egg gravy sauce" onclick="openLightbox(this)"><div class="food-title">Fried plantains and yams with egg gravy sauce</div></div>
+
+      <div class="food-card"><img src="images/food3.jpg" alt="Crispy chicken wings" data-name="Crispy chicken wings" onclick="openLightbox(this)"><div class="food-title">Crispy chicken wings</div></div>
+
+      <div class="food-card"><img src="images/food4.jpg" alt="Ciabatta sandwich" data-name="Ciabatta sandwich" onclick="openLightbox(this)"><div class="food-title">Ciabatta sandwich</div></div>
+
+      <div class="food-card"><img src="images/food5.jpg" alt="Avocado salad" data-name="Avocado salad" onclick="openLightbox(this)"><div class="food-title">Avocado salad</div></div>
+
+      <div class="food-card"><img src="images/food6.jpg" alt="Meatpies" data-name="Meatpies" onclick="openLightbox(this)"><div class="food-title">Meatpies</div></div>
+
+      <div class="food-card"><img src="images/food7.jpg" alt="Fried rice and chicken" data-name="Fried rice and chicken" onclick="openLightbox(this)"><div class="food-title">Fried rice and chicken</div></div>
+
+      <div class="food-card"><img src="images/food8.jpg" alt="Fruit salad" data-name="Fruit salad" onclick="openLightbox(this)"><div class="food-title">Fruit salad</div></div>
+
+      <div class="food-card"><img src="images/food9.jpg" alt="Jollof rice with beef kebabs and plantains" data-name="Jollof rice with beef kebabs and plantains" onclick="openLightbox(this)"><div class="food-title">Jollof rice with beef kebabs and plantains</div></div>
+
+      <div class="food-card"><img src="images/food10.jpg" alt="Grilled potatoes with grilled chicken" data-name="Grilled potatoes with grilled chicken" onclick="openLightbox(this)"><div class="food-title">Grilled potatoes with grilled chicken</div></div>
+
+      <div class="food-card"><img src="images/food11.jpg" alt="Crepes with filling" data-name="Crepes with filling" onclick="openLightbox(this)"><div class="food-title">Crepes with filling</div></div>
+
+      <div class="food-card"><img src="images/food12.jpg" alt="Basmati rice with veggie sauce and chicken kebabs" data-name="Basmati rice with veggie sauce and chicken kebabs" onclick="openLightbox(this)"><div class="food-title">Basmati rice with veggie sauce and chicken kebabs</div></div>
+
+      <div class="food-card"><img src="images/food13.jpg" alt="Spaghetti alfredo with chicken chunks" data-name="Spaghetti alfredo with chicken chunks" onclick="openLightbox(this)"><div class="food-title">Spaghetti alfredo with chicken chunks</div></div>
+
+      <div class="food-card"><img src="images/food14.jpg" alt="Spaghetti and meatballs" data-name="Spaghetti and meatballs" onclick="openLightbox(this)"><div class="food-title">Spaghetti and meatballs</div></div>
+
+      <div class="food-card"><img src="images/food15.jpg" alt="Black-eyed beans stew with fried plantains" data-name="Black-eyed beans stew with fried plantains" onclick="openLightbox(this)"><div class="food-title">Black-eyed beans stew with fried plantains</div></div>
+
+      <div class="food-card"><img src="images/food16.jpg" alt="Stir fry pasta with chicken" data-name="Stir fry pasta with chicken" onclick="openLightbox(this)"><div class="food-title">Stir fry pasta with chicken</div></div>
+
+      <div class="food-card"><img src="images/food17.jpg" alt="Crispy fish filet" data-name="Crispy fish filet" onclick="openLightbox(this)"><div class="food-title">Crispy fish filet</div></div>
+
+      <div class="food-card"><img src="images/food18.jpg" alt="Veggie stir fry sauce with shredded beef" data-name="Veggie stir fry sauce with shredded beef" onclick="openLightbox(this)"><div class="food-title">Veggie stir fry sauce with shredded beef</div></div>
+
+      <div class="food-card"><img src="images/food19.jpg" alt="Banana bread (flavour 1)" data-name="Banana bread (weekends only)" onclick="openLightbox(this)"><div class="food-title">Banana bread (weekends only)</div></div>
+
+      <div class="food-card"><img src="images/food20.jpg" alt="Banana bread (flavour 2)" data-name="Banana bread (weekends only)" onclick="openLightbox(this)"><div class="food-title">Banana bread (weekends only)</div></div>
+
+      <div class="food-card"><img src="images/food21.jpg" alt="Green bell pepper veggie sauce" data-name="Green bell pepper veggie sauce" onclick="openLightbox(this)"><div class="food-title">Green bell pepper veggie sauce</div></div>
     </div>
-  </header>
-
-  <p class="note">* All food is halal. Minimum order 100 DKK. Banana bread is available only on weekends. For bulk orders or catering, please <a href="#contact">contact us</a>. *</p>
-
-  <section id="menu" class="food-gallery">
-    <div class="food-item"><img src="food1.jpg"><div class="food-name">Mashed potatoes with salmon and asparagus</div></div>
-    <div class="food-item"><img src="food2.jpg"><div class="food-name">Fried plantains and yams with egg gravy sauce</div></div>
-    <div class="food-item"><img src="food3.jpg"><div class="food-name">Crispy chicken wings</div></div>
-    <div class="food-item"><img src="food4.jpg"><div class="food-name">Ciabatta sandwich</div></div>
-    <div class="food-item"><img src="food5.jpg"><div class="food-name">Avocado salad</div></div>
-    <div class="food-item"><img src="food6.jpg"><div class="food-name">Meatpies</div></div>
-    <div class="food-item"><img src="food7.jpg"><div class="food-name">Fried rice and chicken</div></div>
-    <div class="food-item"><img src="food8.jpg"><div class="food-name">Fruit salad</div></div>
-    <div class="food-item"><img src="food9.jpg"><div class="food-name">Jollof rice with beef kebabs and plantains</div></div>
-    <div class="food-item"><img src="food10.jpg"><div class="food-name">Grilled potatoes with grilled chicken</div></div>
-    <div class="food-item"><img src="food11.jpg"><div class="food-name">Crepes with filling</div></div>
-    <div class="food-item"><img src="food12.jpg"><div class="food-name">Basmati rice with veggie sauce and chicken kebabs</div></div>
-    <div class="food-item"><img src="food13.jpg"><div class="food-name">Spaghetti Alfredo with chicken chunks</div></div>
-    <div class="food-item"><img src="food14.jpg"><div class="food-name">Spaghetti and meatballs</div></div>
-    <div class="food-item"><img src="food15.jpg"><div class="food-name">Black-eyed beans stew with fried plantains</div></div>
-    <div class="food-item"><img src="food16.jpg"><div class="food-name">Stir fry pasta with chicken</div></div>
-    <div class="food-item"><img src="food17.jpg"><div class="food-name">Crispy fish filet</div></div>
-    <div class="food-item"><img src="food18.jpg"><div class="food-name">Veggie stir fry sauce with shredded beef</div></div>
-    <div class="food-item"><img src="food19.jpg"><div class="food-name">Banana bread (weekends only)</div></div>
-    <div class="food-item"><img src="food20.jpg"><div class="food-name">Banana bread (flavor 2, weekends only)</div></div>
-    <div class="food-item"><img src="food21.jpg"><div class="food-name">Green bell pepper veggie sauce</div></div>
   </section>
 
-  <footer id="contact">
-    <p>Contact Us: Gloria Thompson Duruibe</p>
-    <p>Phone: +45 91 67 30 68 | Email: g7thomson@yahoo.com</p>
+  <!-- CONTACT PAGE -->
+  <section id="contact" class="page" aria-label="Contact">
+    <div class="contact-card">
+      <h2>Contact Gloria</h2>
+      <p>Name: Gloria Thompson Duruibe</p>
+      <p>Phone: <a href="tel:+4591673068">+45 91 67 30 68</a></p>
+      <p>Email: <a href="mailto:g7thomson@yahoo.com">g7thomson@yahoo.com</a></p>
+      <p>We do catering & custom menus. Minimum order 100 DKK. For bulk orders please contact us directly.</p>
+    </div>
+  </section>
+
+  <!-- SIGNUP PAGE -->
+  <section id="signup" class="page" aria-label="Sign up">
+    <div class="auth-card">
+      <h2>Create account</h2>
+      <label>Full name<input id="signupName" type="text" placeholder="Full name"></label>
+      <label>Date of birth<input id="signupDOB" type="date"></label>
+      <label>Email<input id="signupEmail" type="email" placeholder="you@example.com"></label>
+      <label>Password<input id="signupPassword" type="password" placeholder="Password"></label>
+      <button class="submit" onclick="signup()">Sign up</button>
+      <div class="linkrow">Already got an account? <a onclick="goTo('login')">Login</a></div>
+    </div>
+  </section>
+
+  <!-- LOGIN PAGE -->
+  <section id="login" class="page" aria-label="Login">
+    <div class="auth-card">
+      <h2>Login</h2>
+      <label>Email<input id="loginEmail" type="email" placeholder="you@example.com"></label>
+      <label>Password<input id="loginPassword" type="password" placeholder="Password"></label>
+      <button class="submit" onclick="login()">Login</button>
+      <div class="linkrow"><a onclick="goTo('signup')">Sign up</a> • <a onclick="goTo('forgot')">Forgot password?</a></div>
+    </div>
+  </section>
+
+  <!-- FORGOT PAGE -->
+  <section id="forgot" class="page" aria-label="Forgot password">
+    <div class="auth-card">
+      <h2>Reset password</h2>
+      <label>Email<input id="forgotEmail" type="email" placeholder="Enter your email"></label>
+      <button class="submit" onclick="forgotPassword()">Send reset email</button>
+      <div class="linkrow"><a onclick="goTo('login')">Back to login</a></div>
+    </div>
+  </section>
+
+  <!-- Lightbox overlay -->
+  <div id="lightbox" class="lightbox" onclick="closeLightbox(event)" role="dialog" aria-hidden="true">
+    <div class="frame">
+      <span class="close" onclick="closeLightbox(event)">&times;</span>
+      <img id="lbImg" alt="">
+      <div id="lbCaption" class="caption"></div>
+    </div>
+  </div>
+
+  <footer>
+    <small>© Gloria's Cookhouse</small>
   </footer>
 
-  <!-- Signup Modal -->
-  <div id="signupModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('signupModal')">&times;</span>
-      <h2>Sign Up</h2>
-      <input type="text" id="signupName" placeholder="Full Name">
-      <input type="date" id="signupDOB">
-      <input type="email" id="signupEmail" placeholder="Email">
-      <input type="password" id="signupPassword" placeholder="Password">
-      <button onclick="signup()">Sign Up</button>
-    </div>
-  </div>
-
-  <!-- Login Modal -->
-  <div id="loginModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('loginModal')">&times;</span>
-      <h2>Login</h2>
-      <input type="email" id="loginEmail" placeholder="Email">
-      <input type="password" id="loginPassword" placeholder="Password">
-      <button onclick="login()">Login</button>
-      <p><a href="#" onclick="openModal('resetModal')">Forgot Password?</a></p>
-    </div>
-  </div>
-
-  <!-- Reset Password Modal -->
-  <div id="resetModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('resetModal')">&times;</span>
-      <h2>Reset Password</h2>
-      <input type="email" id="resetEmail" placeholder="Enter your email">
-      <button onclick="resetPassword()">Send Reset Link</button>
-    </div>
-  </div>
-
-  <!-- Firebase & Auth -->
+  <!-- Firebase + app script -->
   <script type="module">
+    // Firebase (module import)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      sendPasswordResetEmail,
+      updateProfile,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCVeu4VrXiqDnyM5EZjQfc3y94ZVBhSt-Y",
@@ -209,40 +256,142 @@
       messagingSenderId: "242537183123",
       appId: "1:242537183123:web:4cdbc739f2f62b2b789a66"
     };
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Signup
-    window.signup = function() {
-      const email = document.getElementById('signupEmail').value;
-      const password = document.getElementById('signupPassword').value;
-      createUserWithEmailAndPassword(auth, email, password)
-        .then(() => { alert("Signed up successfully!"); closeModal('signupModal'); })
-        .catch(e => alert(e.message));
-    }
+    // Navigation helper
+    window.goTo = function(pageId){
+      // hide all pages
+      const pages = ['landing','menu','contact','signup','login','forgot'];
+      pages.forEach(id => {
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.classList.remove('show');
+        el.style.display = 'none';
+      });
+      // show target (landing remains 'landing' id)
+      const target = document.getElementById(pageId);
+      if(target){
+        target.classList.add('show');
+        target.style.display = 'block';
+        // scroll top for better UX
+        window.scrollTo({top:0,behavior:'smooth'});
+      }
+    };
 
-    // Login
-    window.login = function() {
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => { alert("Logged in!"); closeModal('loginModal'); })
-        .catch(e => alert(e.message));
-    }
+    // initial: show landing
+    goTo('landing');
 
-    // Reset
-    window.resetPassword = function() {
-      const email = document.getElementById('resetEmail').value;
-      sendPasswordResetEmail(auth, email)
-        .then(() => alert("Password reset email sent!"))
-        .catch(e => alert(e.message));
-    }
+    // open external link
+    window.openExternal = (url) => { window.open(url, '_blank'); };
 
-    // Modal controls
-    window.openModal = id => document.getElementById(id).style.display = "block";
-    window.closeModal = id => document.getElementById(id).style.display = "none";
-    window.onclick = e => { if(e.target.classList.contains('modal')) e.target.style.display="none"; }
+    // Lightbox
+    window.openLightbox = function(img){
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lbImg');
+      const cap = document.getElementById('lbCaption');
+      lbImg.src = img.src;
+      lbImg.alt = img.alt || '';
+      cap.textContent = img.datasetName || img.getAttribute('data-name') || img.alt || '';
+      lb.classList.add('show');
+      lb.setAttribute('aria-hidden','false');
+    };
+    // helper used in inline onclick: set dataset properly then open
+    window.openLightbox = function(el){
+      const img = (el.tagName==='IMG')?el:el.querySelector('img');
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lbImg');
+      const cap = document.getElementById('lbCaption');
+      lbImg.src = img.src;
+      lbImg.alt = img.alt || '';
+      cap.textContent = img.getAttribute('data-name') || img.alt || '';
+      lb.classList.add('show');
+      lb.setAttribute('aria-hidden','false');
+    };
+    window.closeLightbox = function(e){
+      if(e && e.target && e.target.id==='lightbox'){ /* clicked background */ }
+      document.getElementById('lightbox').classList.remove('show');
+      document.getElementById('lightbox').setAttribute('aria-hidden','true');
+    };
+
+    // Auth UI behavior
+    const welcomeEl = document.getElementById('welcome');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    onAuthStateChanged(auth, user => {
+      if(user){
+        const name = user.displayName || user.email || "User";
+        welcomeEl.style.display='inline-block';
+        welcomeEl.textContent = `Welcome, ${name}`;
+        logoutBtn.style.display='inline-block';
+        // show welcome on landing top
+      } else {
+        welcomeEl.style.display='none';
+        logoutBtn.style.display='none';
+      }
+    });
+
+    window.logout = async function(){
+      try{
+        await signOut(auth);
+        alert('Logged out');
+        goTo('landing');
+      }catch(e){ alert(e.message) }
+    };
+
+    // SIGNUP
+    window.signup = async function(){
+      const name = document.getElementById('signupName').value.trim();
+      const dob = document.getElementById('signupDOB').value;
+      const email = document.getElementById('signupEmail').value.trim();
+      const pw = document.getElementById('signupPassword').value;
+      if(!name||!email||!pw){ alert('Please fill name, email and password'); return; }
+      try{
+        const userCred = await createUserWithEmailAndPassword(auth,email,pw);
+        // store display name (dob not stored in this version)
+        await updateProfile(userCred.user,{ displayName: name });
+        alert('Signup successful — Welcome ' + name);
+        goTo('landing');
+      }catch(e){ alert(e.message) }
+    };
+
+    // LOGIN
+    window.login = async function(){
+      const email = document.getElementById('loginEmail').value.trim();
+      const pw = document.getElementById('loginPassword').value;
+      if(!email||!pw){ alert('Please fill email and password'); return; }
+      try{
+        await signInWithEmailAndPassword(auth,email,pw);
+        alert('Login successful');
+        goTo('landing');
+      }catch(e){ alert(e.message) }
+    };
+
+    // FORGOT
+    window.forgotPassword = async function(){
+      const email = document.getElementById('forgotEmail').value.trim();
+      if(!email){ alert('Please enter your email'); return; }
+      try{
+        await sendPasswordResetEmail(auth,email);
+        alert('Password reset email sent. Check your inbox.');
+        goTo('login');
+      }catch(e){ alert(e.message) }
+    };
+
+    // make images clickable (attach dataset names if missing)
+    (function prepareImages(){
+      const imgs = document.querySelectorAll('.food-card img');
+      imgs.forEach(img => {
+        if(!img.datasetName){
+          const nm = img.alt || img.getAttribute('data-name') || '';
+          img.setAttribute('data-name', nm);
+        }
+        img.addEventListener('click', ()=> openLightbox(img));
+      });
+    })();
+
+    // tidy anchor fallbacks (if user clicks See Menu anchor from landing -> goTo)
+    document.querySelectorAll('a[href="#menu"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); goTo('menu'); }));
   </script>
 </body>
 </html>
