@@ -43,12 +43,20 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+let lastPage = 'frontpage';
+
 function showPage(pageId){
   const pages=['frontpage','menupage','contactpage','loginpage','signuppage'];
   pages.forEach(p=>{
     if(document.getElementById(p)) document.getElementById(p).style.display='none';
   });
   document.getElementById(pageId).style.display='block';
+  if(pageId !== 'frontpage') lastPage = pageId;
+}
+
+function goBack(){
+  if(lastPage === 'menupage') showPage('frontpage');
+  else showPage('frontpage');
 }
 
 function loginUser(){
@@ -74,6 +82,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       showPage(btn.getAttribute('data-target'));
     });
   });
+
   const lightbox=document.getElementById('lightbox');
   const lightboxImg=document.getElementById('lightbox-img');
   const lightboxDesc=document.getElementById('lightbox-desc');
@@ -116,27 +125,27 @@ document.addEventListener('DOMContentLoaded',()=>{
   <h1>Our Menu</h1>
   <p class="note">* All food is halal. Minimum order 100 DKK. Banana bread only on weekends. Contact us for bulk orders and catering. *</p>
   <div class="gallery">
-    <div><img src="images/food1.jpg" alt=""><p>Mashed potatoes with salmon and asparagus</p></div>
-    <div><img src="images/food2.jpg" alt=""><p>Fried plantains and yams with egg gravy sauce</p></div>
-    <div><img src="images/food3.jpg" alt=""><p>Crispy chicken wings</p></div>
-    <div><img src="images/food4.jpg" alt=""><p>Ciabatta sandwich</p></div>
-    <div><img src="images/food5.jpg" alt=""><p>Avocado salad</p></div>
-    <div><img src="images/food6.jpg" alt=""><p>Meatpies</p></div>
-    <div><img src="images/food7.jpg" alt=""><p>Fried rice and chicken</p></div>
-    <div><img src="images/food8.jpg" alt=""><p>Fruit salad</p></div>
-    <div><img src="images/food9.jpg" alt=""><p>Jollof rice with beef kebabs and plantains</p></div>
-    <div><img src="images/food10.jpg" alt=""><p>Grilled potatoes with grilled chicken</p></div>
-    <div><img src="images/food11.jpg" alt=""><p>Crepes with filling</p></div>
-    <div><img src="images/food12.jpg" alt=""><p>Basmati rice with veggie sauce and chicken kebabs</p></div>
-    <div><img src="images/food13.jpg" alt=""><p>Spaghetti alfredo with chicken chunks</p></div>
-    <div><img src="images/food14.jpg" alt=""><p>Spaghetti and meatballs</p></div>
-    <div><img src="images/food15.jpg" alt=""><p>Black eyed stewed beans with fried plantains</p></div>
-    <div><img src="images/food16.jpg" alt=""><p>Stir fry pasta with chicken</p></div>
-    <div><img src="images/food17.jpg" alt=""><p>Crispy fish filet</p></div>
-    <div><img src="images/food18.jpg" alt=""><p>Veggie stir fry sauce with shredded beef</p></div>
-    <div><img src="images/food19.jpg" alt=""><p>Banana bread (weekends only)</p></div>
-    <div><img src="images/food20.jpg" alt=""><p>Banana bread (different flavor, weekends only)</p></div>
-    <div><img src="images/food21.jpg" alt=""><p>Green bell pepper veggie sauce</p></div>
+    <div><img src="images/food1.jpg"><p>Mashed potatoes with salmon and asparagus</p></div>
+    <div><img src="images/food2.jpg"><p>Fried plantains and yams with egg gravy sauce</p></div>
+    <div><img src="images/food3.jpg"><p>Crispy chicken wings</p></div>
+    <div><img src="images/food4.jpg"><p>Ciabatta sandwich</p></div>
+    <div><img src="images/food5.jpg"><p>Avocado salad</p></div>
+    <div><img src="images/food6.jpg"><p>Meatpies</p></div>
+    <div><img src="images/food7.jpg"><p>Fried rice and chicken</p></div>
+    <div><img src="images/food8.jpg"><p>Fruit salad</p></div>
+    <div><img src="images/food9.jpg"><p>Jollof rice with beef kebabs and plantains</p></div>
+    <div><img src="images/food10.jpg"><p>Grilled potatoes with grilled chicken</p></div>
+    <div><img src="images/food11.jpg"><p>Crepes with filling</p></div>
+    <div><img src="images/food12.jpg"><p>Basmati rice with veggie sauce and chicken kebabs</p></div>
+    <div><img src="images/food13.jpg"><p>Spaghetti alfredo with chicken chunks</p></div>
+    <div><img src="images/food14.jpg"><p>Spaghetti and meatballs</p></div>
+    <div><img src="images/food15.jpg"><p>Black eyed stewed beans with fried plantains</p></div>
+    <div><img src="images/food16.jpg"><p>Stir fry pasta with chicken</p></div>
+    <div><img src="images/food17.jpg"><p>Crispy fish filet</p></div>
+    <div><img src="images/food18.jpg"><p>Veggie stir fry sauce with shredded beef</p></div>
+    <div><img src="images/food19.jpg"><p>Banana bread (weekends only)</p></div>
+    <div><img src="images/food20.jpg"><p>Banana bread (different flavor, weekends only)</p></div>
+    <div><img src="images/food21.jpg"><p>Green bell pepper veggie sauce</p></div>
   </div>
   <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
@@ -160,29 +169,4 @@ document.addEventListener('DOMContentLoaded',()=>{
     <a href="#" class="nav-btn" data-target="signuppage">Sign Up</a>
     <a href="#">Forgot Password?</a>
   </div>
-  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
-</div>
-
-<!-- Sign Up Page -->
-<div id="signuppage" style="display:none;">
-  <div class="modal">
-    <h2>Sign Up</h2>
-    <input type="text" placeholder="Full Name">
-    <input type="date" placeholder="DOB">
-    <input id="signup-email" type="email" placeholder="Email">
-    <input id="signup-password" type="password" placeholder="Password">
-    <button onclick="signupUser()">Sign Up</button>
-    <a href="#" class="nav-btn" data-target="loginpage">Already have an account?</a>
-  </div>
-  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
-</div>
-
-<!-- Lightbox -->
-<div id="lightbox">
-  <span id="close-lightbox">&times;</span>
-  <img id="lightbox-img" src="">
-  <p id="lightbox-desc"></p>
-</div>
-
-</body>
-</html>
+  <button class="back-btn" onclick="showPage(lastPage
