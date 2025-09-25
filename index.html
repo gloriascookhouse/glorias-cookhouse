@@ -6,10 +6,10 @@
 <title>Gloria's Cookhouse</title>
 <style>
 body {margin:0;font-family:Arial,sans-serif;background:#fff;color:#333;text-align:center;}
-header{display:flex;justify-content:space-between;align-items:center;padding:20px;}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:#fff;}
 header a{text-decoration:none;color:#B95E30;font-weight:bold;}
 main{margin-top:50px;}
-img#africa{max-width:200px;margin-bottom:20px;}
+img#africa{max-width:250px;margin-bottom:20px;}
 h1{color:#B95E30;margin-bottom:30px;}
 .buttons a{display:block;margin:10px auto;padding:12px 20px;background:#B95E30;color:#fff;text-decoration:none;border-radius:8px;width:200px;}
 .auth a{margin:5px;text-decoration:none;color:#B95E30;}
@@ -22,7 +22,8 @@ h1{color:#B95E30;margin-bottom:30px;}
 .modal button{background:#BE9E42;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;}
 .modal a{display:block;margin:5px;color:#B95E30;text-decoration:none;}
 button.back-btn{margin:20px;padding:10px 20px;background:#B95E30;color:#fff;border:none;border-radius:8px;cursor:pointer;}
-#lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:1000;flex-direction:column;}
+/* Lightbox */
+#lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:1000;}
 #lightbox img{max-width:90%;max-height:80%;border-radius:10px;}
 #lightbox p{color:#fff;margin-top:10px;}
 #lightbox span{position:absolute;top:20px;right:30px;color:#fff;font-size:30px;cursor:pointer;}
@@ -42,17 +43,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-let lastPage = 'frontpage';
-
 function showPage(pageId){
   const pages=['frontpage','menupage','contactpage','loginpage','signuppage'];
-  pages.forEach(p=>document.getElementById(p).style.display='none');
+  pages.forEach(p=>{
+    if(document.getElementById(p)) document.getElementById(p).style.display='none';
+  });
   document.getElementById(pageId).style.display='block';
-  lastPage = pageId !== 'frontpage' ? lastPage : 'frontpage';
-}
-
-function goBack(){
-  showPage(lastPage);
 }
 
 function loginUser(){
@@ -75,7 +71,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.nav-btn').forEach(btn=>{
     btn.addEventListener('click',e=>{
       e.preventDefault();
-      lastPage = document.querySelector('[style*="display:block"]').id;
       showPage(btn.getAttribute('data-target'));
     });
   });
@@ -83,7 +78,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const lightboxImg=document.getElementById('lightbox-img');
   const lightboxDesc=document.getElementById('lightbox-desc');
   document.querySelectorAll('.gallery div').forEach(item=>{
-    item.addEventListener('click',()=> {
+    item.addEventListener('click',()=>{
       lightbox.style.display='flex';
       lightboxImg.src=item.querySelector('img').src;
       lightboxDesc.textContent=item.querySelector('p').textContent;
@@ -96,7 +91,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <body>
 
 <!-- Front Page -->
-<div id="frontpage" style="display:block;">
+<div id="frontpage">
   <header>
     <div></div>
     <a href="#" class="nav-btn" data-target="contactpage">Contact Us</a>
@@ -121,29 +116,29 @@ document.addEventListener('DOMContentLoaded',()=>{
   <h1>Our Menu</h1>
   <p class="note">* All food is halal. Minimum order 100 DKK. Banana bread only on weekends. Contact us for bulk orders and catering. *</p>
   <div class="gallery">
-    <div><img src="images/food1.jpg"><p>Mashed potatoes with salmon and asparagus</p></div>
-    <div><img src="images/food2.jpg"><p>Fried plantains and yams with egg gravy sauce</p></div>
-    <div><img src="images/food3.jpg"><p>Crispy chicken wings</p></div>
-    <div><img src="images/food4.jpg"><p>Ciabatta sandwich</p></div>
-    <div><img src="images/food5.jpg"><p>Avocado salad</p></div>
-    <div><img src="images/food6.jpg"><p>Meatpies</p></div>
-    <div><img src="images/food7.jpg"><p>Fried rice and chicken</p></div>
-    <div><img src="images/food8.jpg"><p>Fruit salad</p></div>
-    <div><img src="images/food9.jpg"><p>Jollof rice with beef kebabs and plantains</p></div>
-    <div><img src="images/food10.jpg"><p>Grilled potatoes with grilled chicken</p></div>
-    <div><img src="images/food11.jpg"><p>Crepes with filling</p></div>
-    <div><img src="images/food12.jpg"><p>Basmati rice with veggie sauce and chicken kebabs</p></div>
-    <div><img src="images/food13.jpg"><p>Spaghetti alfredo with chicken chunks</p></div>
-    <div><img src="images/food14.jpg"><p>Spaghetti and meatballs</p></div>
-    <div><img src="images/food15.jpg"><p>Black eyed stewed beans with fried plantains</p></div>
-    <div><img src="images/food16.jpg"><p>Stir fry pasta with chicken</p></div>
-    <div><img src="images/food17.jpg"><p>Crispy fish filet</p></div>
-    <div><img src="images/food18.jpg"><p>Veggie stir fry sauce with shredded beef</p></div>
-    <div><img src="images/food19.jpg"><p>Banana bread (weekends only)</p></div>
-    <div><img src="images/food20.jpg"><p>Banana bread (different flavor, weekends only)</p></div>
-    <div><img src="images/food21.jpg"><p>Green bell pepper veggie sauce</p></div>
+    <div><img src="images/food1.jpg" alt=""><p>Mashed potatoes with salmon and asparagus</p></div>
+    <div><img src="images/food2.jpg" alt=""><p>Fried plantains and yams with egg gravy sauce</p></div>
+    <div><img src="images/food3.jpg" alt=""><p>Crispy chicken wings</p></div>
+    <div><img src="images/food4.jpg" alt=""><p>Ciabatta sandwich</p></div>
+    <div><img src="images/food5.jpg" alt=""><p>Avocado salad</p></div>
+    <div><img src="images/food6.jpg" alt=""><p>Meatpies</p></div>
+    <div><img src="images/food7.jpg" alt=""><p>Fried rice and chicken</p></div>
+    <div><img src="images/food8.jpg" alt=""><p>Fruit salad</p></div>
+    <div><img src="images/food9.jpg" alt=""><p>Jollof rice with beef kebabs and plantains</p></div>
+    <div><img src="images/food10.jpg" alt=""><p>Grilled potatoes with grilled chicken</p></div>
+    <div><img src="images/food11.jpg" alt=""><p>Crepes with filling</p></div>
+    <div><img src="images/food12.jpg" alt=""><p>Basmati rice with veggie sauce and chicken kebabs</p></div>
+    <div><img src="images/food13.jpg" alt=""><p>Spaghetti alfredo with chicken chunks</p></div>
+    <div><img src="images/food14.jpg" alt=""><p>Spaghetti and meatballs</p></div>
+    <div><img src="images/food15.jpg" alt=""><p>Black eyed stewed beans with fried plantains</p></div>
+    <div><img src="images/food16.jpg" alt=""><p>Stir fry pasta with chicken</p></div>
+    <div><img src="images/food17.jpg" alt=""><p>Crispy fish filet</p></div>
+    <div><img src="images/food18.jpg" alt=""><p>Veggie stir fry sauce with shredded beef</p></div>
+    <div><img src="images/food19.jpg" alt=""><p>Banana bread (weekends only)</p></div>
+    <div><img src="images/food20.jpg" alt=""><p>Banana bread (different flavor, weekends only)</p></div>
+    <div><img src="images/food21.jpg" alt=""><p>Green bell pepper veggie sauce</p></div>
   </div>
-  <button class="back-btn" onclick="goBack()">Back</button>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
 <!-- Contact Page -->
@@ -152,7 +147,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   <p><strong>Name:</strong> Gloria Thompson Duruibe</p>
   <p><strong>Phone:</strong> +45 91 67 30 68</p>
   <p><strong>Email:</strong> g7thomson@yahoo.com</p>
-  <button class="back-btn" onclick="goBack()">Back</button>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
 <!-- Login Page -->
@@ -165,7 +160,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     <a href="#" class="nav-btn" data-target="signuppage">Sign Up</a>
     <a href="#">Forgot Password?</a>
   </div>
-  <button class="back-btn" onclick="goBack()">Back</button>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
 <!-- Sign Up Page -->
@@ -179,13 +174,13 @@ document.addEventListener('DOMContentLoaded',()=>{
     <button onclick="signupUser()">Sign Up</button>
     <a href="#" class="nav-btn" data-target="loginpage">Already have an account?</a>
   </div>
-  <button class="back-btn" onclick="goBack()">Back</button>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
 <!-- Lightbox -->
 <div id="lightbox">
   <span id="close-lightbox">&times;</span>
-  <img id="lightbox-img">
+  <img id="lightbox-img" src="">
   <p id="lightbox-desc"></p>
 </div>
 
