@@ -17,7 +17,7 @@ h1{color:#B95E30;margin-bottom:30px;}
 .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;padding:20px;}
 .gallery div{text-align:center;cursor:pointer;}
 .gallery img{width:100%;border-radius:8px;}
-.modal{background:#fff;color:#B95E30;padding:30px;margin:20px auto;border-radius:10px;width:300px;}
+.modal{background:#fff;color:#B95E42;padding:30px;margin:20px auto;border-radius:10px;width:300px;}
 .modal input{width:90%;padding:8px;margin:10px 0;}
 .modal button{background:#BE9E42;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;}
 .modal a{display:block;margin:5px;color:#B95E30;text-decoration:none;}
@@ -44,21 +44,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-let pageHistory = [];
-
 function showPage(pageId){
   const pages=['frontpage','menupage','contactpage','loginpage','signuppage'];
   pages.forEach(p=>document.getElementById(p).style.display='none');
   document.getElementById(pageId).style.display='block';
-}
-
-function goBack(){
-  if(pageHistory.length > 0){
-    const prevPage = pageHistory.pop();
-    showPage(prevPage);
-  } else {
-    showPage('frontpage');
-  }
 }
 
 function loginUser(){
@@ -81,11 +70,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.nav-btn').forEach(btn=>{
     btn.addEventListener('click', e=>{
       e.preventDefault();
-      const currentVisible = ['frontpage','menupage','contactpage','loginpage','signuppage']
-        .find(p => document.getElementById(p).style.display !== 'none');
-      if(currentVisible && currentVisible !== btn.getAttribute('data-target')){
-        pageHistory.push(currentVisible);
-      }
       showPage(btn.getAttribute('data-target'));
     });
   });
@@ -152,23 +136,23 @@ document.addEventListener('DOMContentLoaded',()=>{
     <div><img src="food17.jpg" alt=""><p>Fish fillet - 99 DKK/750g</p></div>
     <div><img src="food18.jpg" alt=""><p>Stir fry sauce - 99 DKK/750g</p></div>
     <div><img src="food19.jpg" alt=""><p>Green bell pepper sauce - 99 DKK/750g</p></div>
-    <div><img src="food20.jpg" alt=""><p>Banana bread minis - 99 DKK / Big 85 DKK (2 for 149 DKK)</p></div>
-    <div><img src="food21.jpg" alt=""><p>Egusi soup - 249 DKK + fufu 49 DKK/750g</p></div>
-    <div><img src="food22.jpg" alt=""><p>Bean cakes with minced meat - 49 DKK per serving, min 4</p></div>
+    <div><img src="food20.jpg" alt=""><p>Banana bread - 99 DKK minis, 85 DKK big, 2 for 149 DKK</p></div>
+    <div><img src="food21.jpg" alt=""><p>Egusi soup - 249 DKK/750g</p></div>
+    <div><img src="food22.jpg" alt=""><p>Bean cakes with minced meat - 49 DKK each, min 4</p></div>
     <div><img src="food23.jpg" alt=""><p>Full roasted chicken - 199 DKK</p></div>
-    <div><img src="food24.jpg" alt=""><p>Okro soup - 249 DKK + fufu 49 DKK/750g</p></div>
-    <div><img src="food25.jpg" alt=""><p>Efo riro soup - 249 DKK + fufu 49 DKK/750g</p></div>
+    <div><img src="food24.jpg" alt=""><p>Okro soup - 249 DKK/750g</p></div>
+    <div><img src="food25.jpg" alt=""><p>Efo riro soup - 249 DKK/750g</p></div>
   </div>
-  <button class="back-btn" onclick="goBack()">Back</button>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
 <!-- Contact Page -->
 <div id="contactpage" style="display:none;">
   <h1>Contact Us</h1>
-  <p>Name: Gloria Thompson Duruibe</p>
-  <p>Phone: +45 91 67 30 68</p>
-  <p>Email: g7thomson@yahoo.com</p>
-  <button class="back-btn" onclick="goBack()">Back</button>
+  <p><strong>Name:</strong> Gloria Thompson Duruibe</p>
+  <p><strong>Phone:</strong> +45 91 67 30 68</p>
+  <p><strong>Email:</strong> g7thomson@yahoo.com</p>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
 <!-- Login Page -->
@@ -181,7 +165,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     <a href="#" class="nav-btn" data-target="signuppage">Sign Up</a>
     <a href="#">Forgot Password?</a>
   </div>
-  <button class="back-btn" onclick="goBack()">Back</button>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
 <!-- Sign Up Page -->
@@ -195,13 +179,13 @@ document.addEventListener('DOMContentLoaded',()=>{
     <button onclick="signupUser()">Sign Up</button>
     <a href="#" class="nav-btn" data-target="loginpage">Already have an account?</a>
   </div>
-  <button class="back-btn" onclick="goBack()">Back</button>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
 <!-- Lightbox -->
 <div id="lightbox">
   <span id="close-lightbox">&times;</span>
-  <img id="lightbox-img" src="" alt="">
+  <img id="lightbox-img" src="">
   <p id="lightbox-desc"></p>
 </div>
 
