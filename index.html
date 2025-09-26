@@ -17,7 +17,7 @@ h1{color:#B95E30;margin-bottom:30px;}
 .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;padding:20px;}
 .gallery div{text-align:center;cursor:pointer;}
 .gallery img{width:100%;border-radius:8px;}
-.modal{background:#fff;color:#B95E42;padding:30px;margin:20px auto;border-radius:10px;width:300px;}
+.modal{background:#fff;color:#B95E30;padding:30px;margin:20px auto;border-radius:10px;width:300px;}
 .modal input{width:90%;padding:8px;margin:10px 0;}
 .modal button{background:#BE9E42;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;}
 .modal a{display:block;margin:5px;color:#B95E30;text-decoration:none;}
@@ -32,7 +32,6 @@ button.back-btn{margin:20px;padding:10px 20px;background:#B95E30;color:#fff;bord
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCVeu4VrXiqDnyM5EZjQfc3y94ZVBhSt-Y",
   authDomain: "gloria-s-cookhouse.firebaseapp.com",
@@ -41,6 +40,7 @@ const firebaseConfig = {
   messagingSenderId: "242537183123",
   appId: "1:242537183123:web:4cdbc739f2f62b2b789a66"
 };
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
@@ -48,6 +48,10 @@ function showPage(pageId){
   const pages=['frontpage','menupage','contactpage','loginpage','signuppage'];
   pages.forEach(p=>document.getElementById(p).style.display='none');
   document.getElementById(pageId).style.display='block';
+}
+
+function goBack(){
+  showPage('frontpage');
 }
 
 function loginUser(){
@@ -66,20 +70,13 @@ function signupUser(){
     .catch(e=>alert(e.message));
 }
 
+// Lightbox
 document.addEventListener('DOMContentLoaded',()=>{
-  document.querySelectorAll('.nav-btn').forEach(btn=>{
-    btn.addEventListener('click', e=>{
-      e.preventDefault();
-      showPage(btn.getAttribute('data-target'));
-    });
-  });
-
-  // Lightbox
   const lightbox=document.getElementById('lightbox');
   const lightboxImg=document.getElementById('lightbox-img');
   const lightboxDesc=document.getElementById('lightbox-desc');
   document.querySelectorAll('.gallery div').forEach(item=>{
-    item.addEventListener('click',()=> {
+    item.addEventListener('click',()=>{
       lightbox.style.display='flex';
       lightboxImg.src=item.querySelector('img').src;
       lightboxDesc.textContent=item.querySelector('p').textContent;
@@ -95,19 +92,19 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="frontpage">
   <header>
     <div></div>
-    <a href="#" class="nav-btn" data-target="contactpage">Contact Us</a>
+    <a href="#" onclick="showPage('contactpage')">Contact Us</a>
   </header>
   <main>
     <img id="africa" src="africa.png" alt="Africa outline">
     <h1>Gloria's Cookhouse</h1>
     <div class="buttons">
-      <a href="https://wolt.com/" target="_blank">Order on Wolt</a>
-      <a href="https://www.just-eat.com/" target="_blank">Order on Just-Eat</a>
-      <a href="#" class="nav-btn" data-target="menupage">See Menu</a>
+      <a href="YOUR_WOLT_LINK_HERE" target="_blank">Order on Wolt</a>
+      <a href="YOUR_JUSTEAT_LINK_HERE" target="_blank">Order on Just-Eat</a>
+      <a href="#" onclick="showPage('menupage')">See Menu</a>
     </div>
     <div class="auth">
-      <a href="#" class="nav-btn" data-target="loginpage">Login</a> | 
-      <a href="#" class="nav-btn" data-target="signuppage">Sign Up</a>
+      <a href="#" onclick="showPage('loginpage')">Login</a> | 
+      <a href="#" onclick="showPage('signuppage')">Sign Up</a>
     </div>
   </main>
 </div>
@@ -115,21 +112,21 @@ document.addEventListener('DOMContentLoaded',()=>{
 <!-- Menu Page -->
 <div id="menupage" style="display:none;">
   <h1>Our Menu</h1>
-  <p class="note">* All food is halal. Minimum order 300 DKK. Banana bread Saturday pickup only. Contact us for bulk orders and catering. *</p>
+  <p class="note">* All food is halal. Minimum order 750g per serving, 300DKK minimum order. Banana bread is Saturday pickup only. Contact us for bulk orders and catering. *</p>
   <div class="gallery">
     <div><img src="food1.jpg" alt=""><p>Mashed potatoes with salmon and asparagus - 149 DKK/750g</p></div>
     <div><img src="food2.jpg" alt=""><p>Fried plantains with yams and egg sauce - 149 DKK/750g</p></div>
-    <div><img src="food3.jpg" alt=""><p>Spicy crispy chicken - 99 DKK/min 3 drumsticks</p></div>
-    <div><img src="food4.jpg" alt=""><p>Beef suya kebabs - 149 DKK/min 2 servings</p></div>
+    <div><img src="food3.jpg" alt=""><p>Spicy crispy chicken - 99 DKK/3 drumsticks min</p></div>
+    <div><img src="food4.jpg" alt=""><p>Beef suya kebabs - 149 DKK, min 2 servings</p></div>
     <div><img src="food5.jpg" alt=""><p>Avocado salad - 99 DKK/750g</p></div>
-    <div><img src="food6.jpg" alt=""><p>Meatpies - 149 DKK for 2, 299 DKK for 4</p></div>
+    <div><img src="food6.jpg" alt=""><p>Meatpies - 149 DKK/2, 299 DKK/4 (min 4)</p></div>
     <div><img src="food7.jpg" alt=""><p>Fried rice - 149 DKK/750g</p></div>
     <div><img src="food8.jpg" alt=""><p>Fruit salad - 99 DKK/750g</p></div>
     <div><img src="food9.jpg" alt=""><p>Jollof rice with beef kebabs and plantains - 149 DKK/750g</p></div>
-    <div><img src="food10.jpg" alt=""><p>Roasted potatoes and grilled chicken - 149 DKK/750g</p></div>
-    <div><img src="food11.jpg" alt=""><p>Crepes with filling - 149 DKK/750g</p></div>
+    <div><img src="food10.jpg" alt=""><p>Roasted potatoes with grilled chicken - 149 DKK/750g</p></div>
+    <div><img src="food11.jpg" alt=""><p>Crepes with filling - 99 DKK/750g</p></div>
     <div><img src="food12.jpg" alt=""><p>Basmati rice with veggies and chicken kebabs - 149 DKK/750g</p></div>
-    <div><img src="food13.jpg" alt=""><p>Pasta Alfredo with chicken chunks - 149 DKK/750g</p></div>
+    <div><img src="food13.jpg" alt=""><p>Pasta alfredo with chicken chunks - 149 DKK/750g</p></div>
     <div><img src="food14.jpg" alt=""><p>Spaghetti and meatballs - 149 DKK/750g</p></div>
     <div><img src="food15.jpg" alt=""><p>Beans pottage with fried plantains - 149 DKK/750g</p></div>
     <div><img src="food16.jpg" alt=""><p>Stir fry pasta - 149 DKK/750g</p></div>
@@ -143,7 +140,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     <div><img src="food24.jpg" alt=""><p>Okro soup - 249 DKK/750g</p></div>
     <div><img src="food25.jpg" alt=""><p>Efo riro soup - 249 DKK/750g</p></div>
   </div>
-  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
+  <button class="back-btn" onclick="goBack()">Back</button>
 </div>
 
 <!-- Contact Page -->
@@ -152,7 +149,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   <p><strong>Name:</strong> Gloria Thompson Duruibe</p>
   <p><strong>Phone:</strong> +45 91 67 30 68</p>
   <p><strong>Email:</strong> g7thomson@yahoo.com</p>
-  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
+  <button class="back-btn" onclick="goBack()">Back</button>
 </div>
 
 <!-- Login Page -->
@@ -162,10 +159,10 @@ document.addEventListener('DOMContentLoaded',()=>{
     <input id="login-email" type="email" placeholder="Email">
     <input id="login-password" type="password" placeholder="Password">
     <button onclick="loginUser()">Login</button>
-    <a href="#" class="nav-btn" data-target="signuppage">Sign Up</a>
+    <a href="#" onclick="showPage('signuppage')">Sign Up</a>
     <a href="#">Forgot Password?</a>
   </div>
-  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
+  <button class="back-btn" onclick="goBack()">Back</button>
 </div>
 
 <!-- Sign Up Page -->
@@ -177,9 +174,9 @@ document.addEventListener('DOMContentLoaded',()=>{
     <input id="signup-email" type="email" placeholder="Email">
     <input id="signup-password" type="password" placeholder="Password">
     <button onclick="signupUser()">Sign Up</button>
-    <a href="#" class="nav-btn" data-target="loginpage">Already have an account?</a>
+    <a href="#" onclick="showPage('loginpage')">Already have an account?</a>
   </div>
-  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
+  <button class="back-btn" onclick="goBack()">Back</button>
 </div>
 
 <!-- Lightbox -->
