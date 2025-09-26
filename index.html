@@ -6,7 +6,7 @@
 <title>Gloria's Cookhouse</title>
 <style>
 body {margin:0;font-family:Arial,sans-serif;background:#fff;color:#333;text-align:center;}
-header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:#fff;}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px;}
 header a{text-decoration:none;color:#B95E30;font-weight:bold;}
 main{margin-top:50px;}
 img#africa{max-width:200px;margin-bottom:20px;}
@@ -40,22 +40,22 @@ const firebaseConfig = {
   messagingSenderId: "242537183123",
   appId: "1:242537183123:web:4cdbc739f2f62b2b789a66"
 };
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 let lastPage = 'frontpage';
-
 function showPage(pageId){
-  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  const pages=['frontpage','menupage','contactpage','loginpage','signuppage'];
+  pages.forEach(p=>document.getElementById(p).style.display='none');
   document.getElementById(pageId).style.display='block';
+  lastPage = pageId;
 }
 
 function loginUser(){
   const email=document.getElementById('login-email').value;
   const password=document.getElementById('login-password').value;
   signInWithEmailAndPassword(auth,email,password)
-    .then(()=>{alert('Login successful'); lastPage='frontpage'; showPage('frontpage');})
+    .then(()=>{alert('Login successful'); showPage('frontpage');})
     .catch(e=>alert(e.message));
 }
 
@@ -63,23 +63,24 @@ function signupUser(){
   const email=document.getElementById('signup-email').value;
   const password=document.getElementById('signup-password').value;
   createUserWithEmailAndPassword(auth,email,password)
-    .then(()=>{alert('Signup successful'); lastPage='frontpage'; showPage('frontpage');})
+    .then(()=>{alert('Signup successful'); showPage('frontpage');})
     .catch(e=>alert(e.message));
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
+  // Navigation buttons
   document.querySelectorAll('.nav-btn').forEach(btn=>{
     btn.addEventListener('click',e=>{
       e.preventDefault();
-      lastPage=document.querySelector('.page:not([style*="display: none"])').id;
       showPage(btn.getAttribute('data-target'));
     });
   });
+  // Lightbox
   const lightbox=document.getElementById('lightbox');
   const lightboxImg=document.getElementById('lightbox-img');
   const lightboxDesc=document.getElementById('lightbox-desc');
   document.querySelectorAll('.gallery div').forEach(item=>{
-    item.addEventListener('click',()=>{
+    item.addEventListener('click',()=> {
       lightbox.style.display='flex';
       lightboxImg.src=item.querySelector('img').src;
       lightboxDesc.textContent=item.querySelector('p').textContent;
@@ -92,7 +93,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <body>
 
 <!-- Front Page -->
-<div id="frontpage" class="page">
+<div id="frontpage">
   <header>
     <div></div>
     <a href="#" class="nav-btn" data-target="contactpage">Contact Us</a>
@@ -101,8 +102,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     <img id="africa" src="africa.png" alt="Africa outline">
     <h1>Gloria's Cookhouse</h1>
     <div class="buttons">
-      <a href="https://wolt.com/your-restaurant-page" target="_blank">Order on Wolt</a>
-      <a href="https://www.just-eat.dk/your-restaurant-page" target="_blank">Order on Just-Eat</a>
+      <a href="https://wolt.com" target="_blank">Order on Wolt</a>
+      <a href="https://just-eat.dk" target="_blank">Order on Just-Eat</a>
       <a href="#" class="nav-btn" data-target="menupage">See Menu</a>
     </div>
     <div class="auth">
@@ -113,23 +114,23 @@ document.addEventListener('DOMContentLoaded',()=>{
 </div>
 
 <!-- Menu Page -->
-<div id="menupage" class="page" style="display:none;">
+<div id="menupage" style="display:none;">
   <h1>Our Menu</h1>
-  <p class="note">* All food is halal. Minimum order 300 DKK. Banana bread Saturday pickup only. 24H notice required. Contact us for bulk orders and catering. *</p>
+  <p class="note">* All food is halal. Minimum order 300 DKK. Banana bread is Saturday pickup only. 24H notice required. Contact us for bulk orders and catering. *</p>
   <div class="gallery">
     <div><img src="food1.jpg" alt=""><p>Mashed potatoes with salmon and asparagus — 149DKK/100g</p></div>
     <div><img src="food2.jpg" alt=""><p>Fried plantains with yams and egg sauce — 149DKK/100g</p></div>
-    <div><img src="food3.jpg" alt=""><p>Spicy crispy chicken — 99DKK min 3 drumsticks</p></div>
-    <div><img src="food4.jpg" alt=""><p>Beef suya kebabs — 149DKK min 2 servings</p></div>
+    <div><img src="food3.jpg" alt=""><p>Spicy crispy chicken — 99DKK (min 3 drumsticks)</p></div>
+    <div><img src="food4.jpg" alt=""><p>Beef suya kebabs — 149DKK (min 2 servings)</p></div>
     <div><img src="food5.jpg" alt=""><p>Avocado salad — 99DKK/100g</p></div>
-    <div><img src="food6.jpg" alt=""><p>Meatpies — 149DKK per 2, 299DKK per 4</p></div>
+    <div><img src="food6.jpg" alt=""><p>Meatpies — 299DKK (min 4)</p></div>
     <div><img src="food7.jpg" alt=""><p>Fried rice — 149DKK/100g</p></div>
     <div><img src="food8.jpg" alt=""><p>Fruit salad — 99DKK/100g</p></div>
     <div><img src="food9.jpg" alt=""><p>Jollof rice — 149DKK/100g</p></div>
-    <div><img src="food10.jpg" alt=""><p>Roasted potatoes with grilled chicken — 149DKK/100g + 99DKK chicken</p></div>
-    <div><img src="food11.jpg" alt=""><p>Crepes — 99DKK/100g</p></div>
-    <div><img src="food12.jpg" alt=""><p>Basmati rice with veggies and chicken kebabs — 149DKK/100g + 99DKK kebabs</p></div>
-    <div><img src="food13.jpg" alt=""><p>Pasta Alfredo with chicken chunks — 149DKK/100g + 99DKK chicken</p></div>
+    <div><img src="food10.jpg" alt=""><p>Roasted potatoes with grilled chicken — 149DKK/100g</p></div>
+    <div><img src="food11.jpg" alt=""><p>Crepes — 149DKK/100g</p></div>
+    <div><img src="food12.jpg" alt=""><p>Basmati rice with veggies and chicken kebabs — 149DKK/100g</p></div>
+    <div><img src="food13.jpg" alt=""><p>Pasta alfredo with chicken chunks — 149DKK/100g</p></div>
     <div><img src="food14.jpg" alt=""><p>Spaghetti and meatballs — 149DKK/100g</p></div>
     <div><img src="food15.jpg" alt=""><p>Beans pottage with fried plantains — 149DKK/100g + 99DKK plantains</p></div>
     <div><img src="food16.jpg" alt=""><p>Stir fry pasta — 149DKK/100g</p></div>
@@ -147,7 +148,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 </div>
 
 <!-- Contact Page -->
-<div id="contactpage" class="page" style="display:none;">
+<div id="contactpage" style="display:none;">
   <h1>Contact Us</h1>
   <p><strong>Name:</strong> Gloria Thompson Duruibe</p>
   <p><strong>Phone:</strong> +45 91 67 30 68</p>
@@ -156,7 +157,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 </div>
 
 <!-- Login Page -->
-<div id="loginpage" class="page" style="display:none;">
+<div id="loginpage" style="display:none;">
   <div class="modal">
     <h2>Login</h2>
     <input id="login-email" type="email" placeholder="Email">
@@ -169,7 +170,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 </div>
 
 <!-- Sign Up Page -->
-<div id="signuppage" class="page" style="display:none;">
+<div id="signuppage" style="display:none;">
   <div class="modal">
     <h2>Sign Up</h2>
     <input type="text" placeholder="Full Name">
