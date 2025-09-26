@@ -6,7 +6,7 @@
 <title>Gloria's Cookhouse</title>
 <style>
 body {margin:0;font-family:Arial,sans-serif;background:#fff;color:#333;text-align:center;}
-header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:#fff;}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px;}
 header a{text-decoration:none;color:#B95E30;font-weight:bold;}
 main{margin-top:50px;}
 img#africa{max-width:200px;margin-bottom:20px;}
@@ -22,10 +22,9 @@ h1{color:#B95E30;margin-bottom:30px;}
 .modal button{background:#BE9E42;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;}
 .modal a{display:block;margin:5px;color:#B95E30;text-decoration:none;}
 button.back-btn{margin:20px;padding:10px 20px;background:#B95E30;color:#fff;border:none;border-radius:8px;cursor:pointer;}
-/* Lightbox */
 #lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:1000;}
 #lightbox img{max-width:90%;max-height:80%;border-radius:10px;}
-#lightbox p{color:#fff;margin-top:10px;font-size:18px;}
+#lightbox p{color:#fff;margin-top:10px;}
 #lightbox span{position:absolute;top:20px;right:30px;color:#fff;font-size:30px;cursor:pointer;}
 </style>
 <script type="module">
@@ -47,16 +46,18 @@ let pageHistory = [];
 
 function showPage(pageId){
   const pages=['frontpage','menupage','contactpage','loginpage','signuppage'];
+  const currentVisible = pages.find(p => document.getElementById(p).style.display !== 'none');
+  if(currentVisible && currentVisible !== pageId) pageHistory.push(currentVisible);
   pages.forEach(p=>document.getElementById(p).style.display='none');
   document.getElementById(pageId).style.display='block';
-  pageHistory.push(pageId);
 }
 
 function goBack(){
-  if(pageHistory.length > 1){
-    pageHistory.pop(); // remove current
-    const prevPage = pageHistory.pop(); // get previous
-    if(prevPage) showPage(prevPage);
+  if(pageHistory.length > 0){
+    const prevPage = pageHistory.pop();
+    showPage(prevPage);
+  } else {
+    showPage('frontpage');
   }
 }
 
@@ -83,8 +84,6 @@ document.addEventListener('DOMContentLoaded',()=>{
       showPage(btn.getAttribute('data-target'));
     });
   });
-
-  // Lightbox
   const lightbox=document.getElementById('lightbox');
   const lightboxImg=document.getElementById('lightbox-img');
   const lightboxDesc=document.getElementById('lightbox-desc');
@@ -111,8 +110,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     <img id="africa" src="africa.png" alt="Africa outline">
     <h1>Gloria's Cookhouse</h1>
     <div class="buttons">
-      <a href="https://wolt.com" target="_blank">Order on Wolt</a>
-      <a href="https://www.just-eat.dk" target="_blank">Order on Just-Eat</a>
+      <a href="https://www.wolt.com" target="_blank">Order on Wolt</a>
+      <a href="https://www.just-eat.com" target="_blank">Order on Just-Eat</a>
       <a href="#" class="nav-btn" data-target="menupage">See Menu</a>
     </div>
     <div class="auth">
@@ -125,70 +124,33 @@ document.addEventListener('DOMContentLoaded',()=>{
 <!-- Menu Page -->
 <div id="menupage" style="display:none;">
   <h1>Our Menu</h1>
-  <p class="note">* All food is halal. Minimum order 300 DKK. Banana bread is Saturday pickup only. 24H notice required. Contact us for bulk orders and catering. *</p>
+  <p class="note">* All food is halal. Minimum order 300 DKK. Banana bread is Saturday pickup only. Contact us for bulk orders and catering. *</p>
   <div class="gallery">
-    <!-- Replace with actual images in root folder -->
-    <div><img src="food1.jpg" alt=""><p>Mashed potatoes with salmon and asparagus - 149 DKK/100g</p></div>
-    <div><img src="food2.jpg" alt=""><p>Fried plantains with yams and egg sauce - 149 DKK/100g</p></div>
+    <div><img src="food1.jpg" alt=""><p>Mashed potatoes with salmon and asparagus - 149 DKK/750g</p></div>
+    <div><img src="food2.jpg" alt=""><p>Fried plantains with yams and egg sauce - 149 DKK/750g</p></div>
     <div><img src="food3.jpg" alt=""><p>Spicy crispy chicken - 99 DKK/min 3 drumsticks</p></div>
     <div><img src="food4.jpg" alt=""><p>Beef suya kebabs - 149 DKK/min 2 servings</p></div>
-    <div><img src="food5.jpg" alt=""><p>Avocado salad - 99 DKK/100g</p></div>
-    <div><img src="food6.jpg" alt=""><p>Meatpies - 299 DKK/4 pcs</p></div>
-    <div><img src="food7.jpg" alt=""><p>Fried rice - 149 DKK/100g</p></div>
-    <div><img src="food8.jpg" alt=""><p>Fruit salad - 99 DKK/100g</p></div>
-    <div><img src="food9.jpg" alt=""><p>Jollof rice - 149 DKK/100g</p></div>
-    <div><img src="food10.jpg" alt=""><p>Roasted potatoes with grilled chicken - 149 DKK/100g</p></div>
-    <div><img src="food11.jpg" alt=""><p>Crepes - 149 DKK/100g</p></div>
-    <div><img src="food12.jpg" alt=""><p>Basmati rice with veggies and chicken kebabs - 149 DKK/100g</p></div>
-    <div><img src="food13.jpg" alt=""><p>Pasta Alfredo with chicken chunks - 149 DKK/100g</p></div>
-    <div><img src="food14.jpg" alt=""><p>Spaghetti and meatballs - 149 DKK/100g</p></div>
-    <div><img src="food15.jpg" alt=""><p>Beans pottage with fried plantains - 149 DKK/100g</p></div>
-    <div><img src="food16.jpg" alt=""><p>Stir fry pasta - 149 DKK/100g</p></div>
-    <div><img src="food17.jpg" alt=""><p>Fish fillet - 99 DKK/100g</p></div>
-    <div><img src="food18.jpg" alt=""><p>Stir fry sauce - 99 DKK/100g</p></div>
-    <div><img src="food19.jpg" alt=""><p>Green bell pepper sauce - 99 DKK/100g</p></div>
-    <div><img src="food20.jpg" alt=""><p>Banana bread - minis 99 DKK, big 85 DKK (2 for 149 DKK)</p></div>
-    <div><img src="food21.jpg" alt=""><p>Egusi soup - 249 DKK/portion + fufu 49 DKK</p></div>
-    <div><img src="food22.jpg" alt=""><p>Bean cakes with minced meat - 49 DKK/pc, min 4 pcs</p></div>
+    <div><img src="food5.jpg" alt=""><p>Avocado salad - 99 DKK/750g</p></div>
+    <div><img src="food6.jpg" alt=""><p>Meatpies - 2 pcs 149 DKK, 4 pcs 299 DKK</p></div>
+    <div><img src="food7.jpg" alt=""><p>Fried rice - 149 DKK/750g</p></div>
+    <div><img src="food8.jpg" alt=""><p>Fruit salad - 99 DKK/750g</p></div>
+    <div><img src="food9.jpg" alt=""><p>Jollof rice - 149 DKK/750g</p></div>
+    <div><img src="food10.jpg" alt=""><p>Roasted potatoes and grilled chicken - 149 DKK/750g</p></div>
+    <div><img src="food11.jpg" alt=""><p>Crepes - 149 DKK/750g</p></div>
+    <div><img src="food12.jpg" alt=""><p>Basmati rice with veggies and chicken kebabs - 149 DKK/750g</p></div>
+    <div><img src="food13.jpg" alt=""><p>Pasta alfredo with chicken chunks - 149 DKK/750g</p></div>
+    <div><img src="food14.jpg" alt=""><p>Spaghetti and meatballs - 149 DKK/750g</p></div>
+    <div><img src="food15.jpg" alt=""><p>Beans pottage with fried plantains - 149 DKK/750g</p></div>
+    <div><img src="food16.jpg" alt=""><p>Stir fry pasta - 149 DKK/750g</p></div>
+    <div><img src="food17.jpg" alt=""><p>Fish fillet - 99 DKK/750g</p></div>
+    <div><img src="food18.jpg" alt=""><p>Stir fry sauce - 99 DKK/750g</p></div>
+    <div><img src="food19.jpg" alt=""><p>Green bell pepper sauce - 99 DKK/750g</p></div>
+    <div><img src="food20.jpg" alt=""><p>Banana bread minis - 99 DKK / Big 85 DKK (2 for 149 DKK)</p></div>
+    <div><img src="food21.jpg" alt=""><p>Egusi soup - 249 DKK + fufu 49 DKK/750g</p></div>
+    <div><img src="food22.jpg" alt=""><p>Bean cakes with minced meat - 49 DKK/serving, min 4</p></div>
     <div><img src="food23.jpg" alt=""><p>Full roasted chicken - 199 DKK</p></div>
-    <div><img src="food24.jpg" alt=""><p>Okro soup - 249 DKK/portion + fufu 49 DKK</p></div>
-    <div><img src="food25.jpg" alt=""><p>Efo riro soup - 249 DKK/portion + fufu 49 DKK</p></div>
-  </div>
-  <button class="back-btn" onclick="goBack()">Back</button>
-</div>
-
-<!-- Contact Page -->
-<div id="contactpage" style="display:none;">
-  <h1>Contact Us</h1>
-  <p><strong>Name:</strong> Gloria Thompson Duruibe</p>
-  <p><strong>Phone:</strong> +45 91 67 30 68</p>
-  <p><strong>Email:</strong> g7thomson@yahoo.com</p>
-  <button class="back-btn" onclick="goBack()">Back</button>
-</div>
-
-<!-- Login Page -->
-<div id="loginpage" style="display:none;">
-  <div class="modal">
-    <h2>Login</h2>
-    <input id="login-email" type="email" placeholder="Email">
-    <input id="login-password" type="password" placeholder="Password">
-    <button onclick="loginUser()">Login</button>
-    <a href="#" class="nav-btn" data-target="signuppage">Sign Up</a>
-    <a href="#">Forgot Password?</a>
-  </div>
-  <button class="back-btn" onclick="goBack()">Back</button>
-</div>
-
-<!-- Sign Up Page -->
-<div id="signuppage" style="display:none;">
-  <div class="modal">
-    <h2>Sign Up</h2>
-    <input type="text" placeholder="Full Name">
-    <input type="date" placeholder="DOB">
-    <input id="signup-email" type="email" placeholder="Email">
-    <input id="signup-password" type="password" placeholder="Password">
-    <button onclick="signupUser()">Sign Up</button>
-    <a href="#" class="nav-btn" data-target="loginpage">Already have an account?</a>
+    <div><img src="food24.jpg" alt=""><p>Okro soup - 249 DKK + fufu 49 DKK/750g</p></div>
+    <div><img src="food25.jpg" alt=""><p>Efo riro soup - 249 DKK + fufu 49 DKK/750g</p></div>
   </div>
   <button class="back-btn" onclick="goBack()">Back</button>
 </div>
@@ -196,8 +158,39 @@ document.addEventListener('DOMContentLoaded',()=>{
 <!-- Lightbox -->
 <div id="lightbox">
   <span id="close-lightbox">&times;</span>
-  <img id="lightbox-img" src="">
+  <img id="lightbox-img" src="" alt="">
   <p id="lightbox-desc"></p>
+</div>
+
+<!-- Contact Page -->
+<div id="contactpage" style="display:none;">
+  <h1>Contact Us</h1>
+  <p>Phone: +45 12345678</p>
+  <p>Email: gloria@example.com</p>
+  <p>Name: Gloria's Cookhouse</p>
+  <button class="back-btn" onclick="goBack()">Back</button>
+</div>
+
+<!-- Login Page -->
+<div id="loginpage" style="display:none;">
+  <h1>Login</h1>
+  <div class="modal">
+    <input type="email" id="login-email" placeholder="Email">
+    <input type="password" id="login-password" placeholder="Password">
+    <button onclick="loginUser()">Login</button>
+    <a href="#" class="nav-btn" data-target="frontpage">Cancel</a>
+  </div>
+</div>
+
+<!-- Signup Page -->
+<div id="signuppage" style="display:none;">
+  <h1>Sign Up</h1>
+  <div class="modal">
+    <input type="email" id="signup-email" placeholder="Email">
+    <input type="password" id="signup-password" placeholder="Password">
+    <button onclick="signupUser()">Sign Up</button>
+    <a href="#" class="nav-btn" data-target="frontpage">Cancel</a>
+  </div>
 </div>
 
 </body>
