@@ -1,233 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gloria's Cookhouse</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-      background: #fff;
-      scroll-behavior: smooth;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gloria's Cookhouse</title>
+<style>
+/* General styling */
+body {margin:0;font-family:Arial,sans-serif;background:#fff;color:#333;text-align:center;}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:#F5E6D3;}
+header a{text-decoration:none;color:#B95E30;font-weight:bold;font-size:16px;}
+main{margin-top:50px;}
+h1{color:#B95E30;margin-bottom:30px;}
+.buttons a{display:block;margin:12px auto;padding:12px 20px;background:#F2994A;color:#fff;text-decoration:none;border-radius:8px;width:220px;font-weight:bold;transition:0.3s;}
+.buttons a:hover{opacity:0.85;}
+.auth a{margin:5px;text-decoration:none;color:#B95E30;font-weight:bold;cursor:pointer;}
+.note{font-style:italic;margin:20px;font-size:14px;}
+.gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;padding:20px;}
+.gallery div{text-align:center;cursor:pointer;}
+.gallery img{width:100%;border-radius:8px;object-fit:cover;height:150px;}
+.modal{background:#fff;color:#B95E30;padding:30px;margin:20px auto;border-radius:10px;width:300px;display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1001;}
+.modal input{width:90%;padding:8px;margin:10px 0;}
+.modal button{background:#BE9E42;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;}
+.modal a{display:block;margin:5px;color:#B95E30;text-decoration:none;cursor:pointer;}
+button.back-btn{margin:20px auto;padding:10px 20px;background:#F2994A;color:#fff;border:none;border-radius:8px;cursor:pointer;display:block;}
 
-    header {
-      padding: 20px;
-    }
+/* Lightbox */
+#lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;z-index:1000;flex-direction:column;}
+#lightbox img{max-width:90%;max-height:80%;border-radius:10px;}
+#lightbox p{color:#fff;margin-top:10px;font-size:16px;}
+#lightbox span{position:absolute;top:20px;right:30px;color:#fff;font-size:30px;cursor:pointer;}
+</style>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
-    header img {
-      max-width: 150px;
-      margin: 20px auto;
-      display: block;
-    }
+const firebaseConfig = {
+  apiKey: "AIzaSyCVeu4VrXiqDnyM5EZjQfc3y94ZVBhSt-Y",
+  authDomain: "gloria-s-cookhouse.firebaseapp.com",
+  projectId: "gloria-s-cookhouse",
+  storageBucket: "gloria-s-cookhouse.firebasestorage.app",
+  messagingSenderId: "242537183123",
+  appId: "1:242537183123:web:4cdbc739f2f62b2b789a66"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-    .buttons {
-      margin: 20px 0;
-    }
+function showPage(pageId){
+  const pages=['homepage','menupage','contactpage'];
+  pages.forEach(p=>document.getElementById(p).style.display='none');
+  document.getElementById(pageId).style.display='block';
+}
 
-    .buttons button, .buttons a {
-      margin: 8px;
-      padding: 12px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      background: #222;
-      color: #fff;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-    }
+// Back buttons go to homepage
+function goHome(){ showPage('homepage'); }
 
-    .buttons button:hover, .buttons a:hover {
-      background: #444;
-    }
+function loginUser(){
+  const email=document.getElementById('login-email').value;
+  const password=document.getElementById('login-password').value;
+  signInWithEmailAndPassword(auth,email,password)
+    .then(()=>{alert('Login successful'); closeModal('loginModal');})
+    .catch(e=>alert(e.message));
+}
 
-    section {
-      padding: 40px 20px;
-    }
+function signupUser(){
+  const email=document.getElementById('signup-email').value;
+  const password=document.getElementById('signup-password').value;
+  createUserWithEmailAndPassword(auth,email,password)
+    .then(()=>{alert('Signup successful'); closeModal('signupModal');})
+    .catch(e=>alert(e.message));
+}
 
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 15px;
-      justify-items: center;
-      margin-top: 20px;
-    }
+function openModal(id){ document.getElementById(id).style.display='block'; }
+function closeModal(id){ document.getElementById(id).style.display='none'; }
 
-    .gallery-item {
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      padding: 10px;
-      max-width: 180px;
-      text-align: center;
-    }
-
-    .gallery-item img {
-      width: 100%;
-      border-radius: 6px;
-    }
-
-    .back-button {
-      margin-top: 30px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .back-button a {
-      padding: 10px 18px;
-      font-size: 16px;
-      border-radius: 6px;
-      background: #222;
-      color: #fff;
-      text-decoration: none;
-    }
-
-    .back-button a:hover {
-      background: #444;
-    }
-
-    /* Contact page */
-    #contact p {
-      font-size: 18px;
-      margin: 8px 0;
-    }
-
-    /* Modal styles */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background: rgba(0,0,0,0.5);
-    }
-
-    .modal-content {
-      background: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      border-radius: 6px;
-      width: 300px;
-      text-align: left;
-    }
-
-    .modal-content h2 {
-      margin-top: 0;
-      text-align: center;
-    }
-
-    .modal-content input {
-      width: 100%;
-      margin: 10px 0;
-      padding: 8px;
-    }
-
-    .close {
-      float: right;
-      font-size: 22px;
-      cursor: pointer;
-    }
-  </style>
+document.addEventListener('DOMContentLoaded',()=>{
+  // Lightbox
+  const lightbox=document.getElementById('lightbox');
+  const lightboxImg=document.getElementById('lightbox-img');
+  const lightboxDesc=document.getElementById('lightbox-desc');
+  document.querySelectorAll('.gallery div').forEach(item=>{
+    item.addEventListener('click',()=> {
+      lightbox.style.display='flex';
+      lightboxImg.src=item.querySelector('img').src;
+      lightboxDesc.textContent=item.querySelector('p').textContent;
+    });
+  });
+  document.getElementById('close-lightbox').addEventListener('click',()=>{lightbox.style.display='none';});
+});
+</script>
 </head>
 <body>
-  <!-- Homepage -->
-  <header id="home">
-    <h1>Gloria's Cookhouse</h1>
-    <img src="africa.png" alt="Africa Logo"/>
-    <div class="buttons">
-      <a href="#menu">See Menu</a>
-      <button onclick="openModal('loginModal')">Login</button>
-      <button onclick="openModal('signupModal')">Signup</button>
-      <a href="#contact">Contact Us</a>
-      <a href="https://wolt.com" target="_blank">Order on Wolt</a>
-      <a href="https://just-eat.com" target="_blank">Order on Just Eat</a>
-    </div>
+
+<!-- Homepage -->
+<div id="homepage">
+  <header>
+    <div></div>
+    <a href="#" onclick="showPage('contactpage')">Contact Us</a>
   </header>
-
-  <!-- Menu Section -->
-  <section id="menu">
-    <h2>Our Menu</h2>
-    <div class="gallery">
-      <div class="gallery-item"><img src="food1.jpg" alt="Mashed Potatoes with Salmon and Asparagus"/><p>Mashed potatoes with salmon & asparagus (750g)</p></div>
-      <div class="gallery-item"><img src="food2.jpg" alt="Fried Plantains with Yams and Egg Sauce"/><p>Fried plantains with yams & egg sauce (750g)</p></div>
-      <div class="gallery-item"><img src="food3.jpg" alt="Spicy Crispy Chicken"/><p>Spicy crispy chicken (750g)</p></div>
-      <div class="gallery-item"><img src="food4.jpg" alt="Beef Suya Kebabs"/><p>Beef suya kebabs (750g)</p></div>
-      <div class="gallery-item"><img src="food5.jpg" alt="Avocado Salad"/><p>Avocado salad (tailored to your taste)</p></div>
-      <div class="gallery-item"><img src="food6.jpg" alt="Meatpies"/><p>Meatpies (750g)</p></div>
-      <div class="gallery-item"><img src="food7.jpg" alt="Fried Rice"/><p>Fried rice (750g)</p></div>
-      <div class="gallery-item"><img src="food8.jpg" alt="Fruit Salad"/><p>Fruit salad (750g)</p></div>
-      <div class="gallery-item"><img src="food9.jpg" alt="Jollof Rice"/><p>Jollof rice (750g)</p></div>
-      <div class="gallery-item"><img src="food10.jpg" alt="Roasted Potatoes and Grilled Chicken"/><p>Roasted potatoes & grilled chicken (750g)</p></div>
-      <div class="gallery-item"><img src="food11.jpg" alt="Crepes"/><p>Crepes (750g)</p></div>
-      <div class="gallery-item"><img src="food12.jpg" alt="Basmati Rice with Veggies and Chicken Kebabs"/><p>Basmati rice with veggies & chicken kebabs (750g)</p></div>
-      <div class="gallery-item"><img src="food13.jpg" alt="Pasta Alfredo with Chicken"/><p>Pasta alfredo with chicken chunks (750g)</p></div>
-      <div class="gallery-item"><img src="food14.jpg" alt="Spaghetti and Meatballs"/><p>Spaghetti & meatballs (750g)</p></div>
-      <div class="gallery-item"><img src="food15.jpg" alt="Beans Pottage with Fried Plantains"/><p>Beans pottage with fried plantains (750g)</p></div>
-      <div class="gallery-item"><img src="food16.jpg" alt="Stirfry Pasta"/><p>Stirfry pasta (750g)</p></div>
-      <div class="gallery-item"><img src="food17.jpg" alt="Fish Fillet"/><p>Fish fillet (750g)</p></div>
-      <div class="gallery-item"><img src="food18.jpg" alt="Stirfry Sauce"/><p>Stirfry sauce (750g)</p></div>
-      <div class="gallery-item"><img src="food19.jpg" alt="Green Bell Pepper Sauce"/><p>Green bell pepper sauce (750g)</p></div>
-      <div class="gallery-item"><img src="food20.jpg" alt="Banana Bread"/><p>Banana bread minis (pack of 8, 2 each flavor)</p></div>
-      <div class="gallery-item"><img src="food21.jpg" alt="Egusi Soup"/><p>Egusi soup (750g)</p></div>
-      <div class="gallery-item"><img src="food22.jpg" alt="Bean or Lentil Pudding"/><p>Bean/Lentil pudding (750g)</p></div>
-      <div class="gallery-item"><img src="food23.jpg" alt="Full Roasted Chicken"/><p>Full roasted chicken</p></div>
-      <div class="gallery-item"><img src="food24.jpg" alt="Okro Soup"/><p>Okro soup (750g)</p></div>
-      <div class="gallery-item"><img src="food25.jpg" alt="Efo Riro Soup"/><p>Efo riro soup (750g)</p></div>
+  <main>
+    <img src="africa.png" alt="Africa" style="max-width:250px;margin-bottom:20px;">
+    <h1>Gloria's Cookhouse</h1>
+    <div class="buttons">
+      <a href="https://wolt.com/" target="_blank">Order on Wolt</a>
+      <a href="https://www.just-eat.com/" target="_blank">Order on Just-Eat</a>
+      <a href="#" onclick="showPage('menupage')">See Menu</a>
     </div>
-    <div class="back-button"><a href="#home">Back</a></div>
-  </section>
-
-  <!-- Contact Section -->
-  <section id="contact">
-    <h2>Contact Us</h2>
-    <p><strong>Name:</strong> Gloria's Cookhouse</p>
-    <p><strong>Phone:</strong> +45 12 34 56 78</p>
-    <p><strong>Email:</strong> gloriascookhouse@example.com</p>
-    <div class="back-button"><a href="#home">Back</a></div>
-  </section>
-
-  <!-- Login Modal -->
-  <div id="loginModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('loginModal')">&times;</span>
-      <h2>Login</h2>
-      <input type="text" placeholder="Username"/>
-      <input type="password" placeholder="Password"/>
-      <button style="width:100%; padding:10px;">Login</button>
+    <div class="auth">
+      <a onclick="openModal('loginModal')">Login</a> | 
+      <a onclick="openModal('signupModal')">Sign Up</a>
     </div>
+  </main>
+</div>
+
+<!-- Menu Page -->
+<div id="menupage" style="display:none;">
+  <h1>Our Menu</h1>
+  <p class="note">* All food is halal. Minimum order 750g per serving. Banana bread is Saturday pickup only. Contact us for bulk orders and catering. *</p>
+  <div class="gallery">
+    <div><img src="food1.jpg"><p>Mashed potatoes with salmon and asparagus – 149 DKK/750g</p></div>
+    <div><img src="food2.jpg"><p>Fried plantains with yams and egg sauce – 149 DKK/750g</p></div>
+    <div><img src="food3.jpg"><p>Spicy crispy chicken – 99 DKK/min 3 drumsticks</p></div>
+    <div><img src="food4.jpg"><p>Beef suya kebabs – 149 DKK/min 2 servings</p></div>
+    <div><img src="food5.jpg"><p>Avocado salad (tailored to taste) – 99 DKK/750g</p></div>
+    <div><img src="food6.jpg"><p>Meatpies – 299 DKK/4 pcs</p></div>
+    <div><img src="food7.jpg"><p>Fried rice – 149 DKK/750g</p></div>
+    <div><img src="food8.jpg"><p>Fruit salad – 99 DKK/750g</p></div>
+    <div><img src="food9.jpg"><p>Jollof rice – 149 DKK/750g</p></div>
+    <div><img src="food10.jpg"><p>Roasted potatoes & grilled chicken – 99–199 DKK</p></div>
+    <div><img src="food11.jpg"><p>Crepes – 149 DKK/750g</p></div>
+    <div><img src="food12.jpg"><p>Basmati rice with veggies & chicken kebabs – 149 DKK/750g</p></div>
+    <div><img src="food13.jpg"><p>Pasta Alfredo with chicken chunks – 149 DKK/750g</p></div>
+    <div><img src="food14.jpg"><p>Spaghetti & meatballs – 149 DKK/750g</p></div>
+    <div><img src="food15.jpg"><p>Beans pottage with fried plantains – 149 DKK/750g</p></div>
+    <div><img src="food16.jpg"><p>Stir fry pasta – 149 DKK/750g</p></div>
+    <div><img src="food17.jpg"><p>Fish fillet – 99 DKK/100g</p></div>
+    <div><img src="food18.jpg"><p>Stir fry sauce – 99 DKK</p></div>
+    <div><img src="food19.jpg"><p>Green bell pepper sauce – 99 DKK</p></div>
+    <div><img src="food20.jpg"><p>Banana bread (pack of 8) – 149 DKK</p></div>
+    <div><img src="food21.jpg"><p>Egusi soup – 249 DKK/750g</p></div>
+    <div><img src="food22.jpg"><p>Bean/Lentil pudding – 49 DKK/min 4 pcs</p></div>
+    <div><img src="food23.jpg"><p>Full roasted chicken – 199 DKK</p></div>
+    <div><img src="food24.jpg"><p>Okro soup – 249 DKK/750g</p></div>
+    <div><img src="food25.jpg"><p>Efo riro soup – 249 DKK/750g</p></div>
   </div>
+  <button class="back-btn" onclick="goHome()">Back</button>
+</div>
 
-  <!-- Signup Modal -->
-  <div id="signupModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('signupModal')">&times;</span>
-      <h2>Signup</h2>
-      <input type="text" placeholder="Name"/>
-      <input type="email" placeholder="Email"/>
-      <input type="password" placeholder="Password"/>
-      <button style="width:100%; padding:10px;">Signup</button>
-    </div>
-  </div>
+<!-- Contact Page -->
+<div id="contactpage" style="display:none;">
+  <h1>Contact Us</h1>
+  <p><strong>Name:</strong> Gloria Thompson Duruibe</p>
+  <p><strong>Phone:</strong> +45 91 67 30 68</p>
+  <p><strong>Email:</strong> g7thomson@yahoo.com</p>
+  <button class="back-btn" onclick="goHome()">Back</button>
+</div>
 
-  <script>
-    function openModal(id) {
-      document.getElementById(id).style.display = 'block';
-    }
-    function closeModal(id) {
-      document.getElementById(id).style.display = 'none';
-    }
-    window.onclick = function(e) {
-      const login = document.getElementById('loginModal');
-      const signup = document.getElementById('signupModal');
-      if (e.target === login) login.style.display = "none";
-      if (e.target === signup) signup.style.display = "none";
-    }
-  </script>
+<!-- Login Modal -->
+<div id="loginModal" class="modal">
+  <h2>Login</h2>
+  <input id="login-email" type="email" placeholder="Email">
+  <input id="login-password" type="password" placeholder="Password">
+  <button onclick="loginUser()">Login</button>
+  <a onclick="closeModal('loginModal'); openModal('signupModal')">Sign Up</a>
+  <a href="#">Forgot Password?</a>
+  <button onclick="closeModal('loginModal')">Close</button>
+</div>
+
+<!-- SignUp Modal -->
+<div id="signupModal" class="modal">
+  <h2>Sign Up</h2>
+  <input type="text" placeholder="Full Name">
+  <input type="date" placeholder="DOB">
+  <input id="signup-email" type="email" placeholder="Email">
+  <input id="signup-password" type="password" placeholder="Password">
+  <button onclick="signupUser()">Sign Up</button>
+  <a onclick="closeModal('signupModal'); openModal('loginModal')">Already have an account?</a>
+  <button onclick="closeModal('signupModal')">Close</button>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox">
+  <span id="close-lightbox">&times;</span>
+  <img id="lightbox-img" src="">
+  <p id="lightbox-desc"></p>
+</div>
+
 </body>
 </html>
