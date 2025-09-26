@@ -32,7 +32,6 @@ button.back-btn{margin:20px;padding:10px 20px;background:#B95E30;color:#fff;bord
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
-// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCVeu4VrXiqDnyM5EZjQfc3y94ZVBhSt-Y",
   authDomain: "gloria-s-cookhouse.firebaseapp.com",
@@ -44,22 +43,21 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-let previousPage = null;
+let pageHistory = [];
 
 function showPage(pageId){
   const pages=['frontpage','menupage','contactpage','loginpage','signuppage'];
-  pages.forEach(p=>{
-    document.getElementById(p).style.display='none';
-  });
-  if(previousPage !== pageId){
-    previousPage = currentPage;
-  }
-  currentPage = pageId;
+  pages.forEach(p=>document.getElementById(p).style.display='none');
   document.getElementById(pageId).style.display='block';
+  pageHistory.push(pageId);
 }
 
 function goBack(){
-  if(previousPage) showPage(previousPage);
+  if(pageHistory.length > 1){
+    pageHistory.pop(); // remove current
+    const prevPage = pageHistory.pop(); // get previous
+    if(prevPage) showPage(prevPage);
+  }
 }
 
 function loginUser(){
@@ -85,6 +83,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       showPage(btn.getAttribute('data-target'));
     });
   });
+
   // Lightbox
   const lightbox=document.getElementById('lightbox');
   const lightboxImg=document.getElementById('lightbox-img');
@@ -128,6 +127,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   <h1>Our Menu</h1>
   <p class="note">* All food is halal. Minimum order 300 DKK. Banana bread is Saturday pickup only. 24H notice required. Contact us for bulk orders and catering. *</p>
   <div class="gallery">
+    <!-- Replace with actual images in root folder -->
     <div><img src="food1.jpg" alt=""><p>Mashed potatoes with salmon and asparagus - 149 DKK/100g</p></div>
     <div><img src="food2.jpg" alt=""><p>Fried plantains with yams and egg sauce - 149 DKK/100g</p></div>
     <div><img src="food3.jpg" alt=""><p>Spicy crispy chicken - 99 DKK/min 3 drumsticks</p></div>
