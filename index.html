@@ -5,32 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gloria's Cookhouse</title>
 <style>
-body {margin:0;font-family:Arial,sans-serif;background:#fff;color:#333;}
-header{display:flex;justify-content:flex-end;align-items:center;padding:20px;background:#fff;}
-header a{margin-left:20px;text-decoration:none;color:#B95E30;font-weight:bold;}
-main{text-align:center;margin-top:50px;}
-img#africa{max-width:250px;margin:20px auto;display:block;}
+body {margin:0;font-family:Arial,sans-serif;background:#fff;color:#333;text-align:center;}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:#fff;}
+header a{text-decoration:none;color:#B95E30;font-weight:bold;}
+main{margin-top:50px;}
+img#africa{max-width:200px;margin-bottom:20px;}
 h1{color:#B95E30;margin-bottom:30px;}
 .buttons a{display:block;margin:10px auto;padding:12px 20px;background:#B95E30;color:#fff;text-decoration:none;border-radius:8px;width:200px;}
-.note{font-style:italic;margin:10px;}
+.auth a{margin:5px;text-decoration:none;color:#B95E30;}
+.note{font-style:italic;margin:20px;}
 .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;padding:20px;}
 .gallery div{text-align:center;cursor:pointer;}
 .gallery img{width:100%;border-radius:8px;}
-button.back-btn{margin:20px;padding:10px 20px;background:#B95E30;color:#fff;border:none;border-radius:8px;cursor:pointer;}
-.modal{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;color:#B95E30;padding:30px;border-radius:10px;z-index:1001;}
+.modal{background:#fff;color:#B95E30;padding:30px;margin:20px auto;border-radius:10px;width:300px;}
 .modal input{width:90%;padding:8px;margin:10px 0;}
 .modal button{background:#BE9E42;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;}
 .modal a{display:block;margin:5px;color:#B95E30;text-decoration:none;}
-.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1000;}
-#lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;flex-direction:column;z-index:1002;}
+button.back-btn{margin:20px;padding:10px 20px;background:#B95E30;color:#fff;border:none;border-radius:8px;cursor:pointer;}
+/* Lightbox */
+#lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:1000;}
 #lightbox img{max-width:90%;max-height:80%;border-radius:10px;}
 #lightbox p{color:#fff;margin-top:10px;}
 #lightbox span{position:absolute;top:20px;right:30px;color:#fff;font-size:30px;cursor:pointer;}
 </style>
 <script type="module">
-// Firebase placeholder
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCVeu4VrXiqDnyM5EZjQfc3y94ZVBhSt-Y",
@@ -44,119 +44,149 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Lightbox
+let lastPage = 'frontpage';
+
+function showPage(pageId){
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.getElementById(pageId).style.display='block';
+}
+
+function loginUser(){
+  const email=document.getElementById('login-email').value;
+  const password=document.getElementById('login-password').value;
+  signInWithEmailAndPassword(auth,email,password)
+    .then(()=>{alert('Login successful'); lastPage='frontpage'; showPage('frontpage');})
+    .catch(e=>alert(e.message));
+}
+
+function signupUser(){
+  const email=document.getElementById('signup-email').value;
+  const password=document.getElementById('signup-password').value;
+  createUserWithEmailAndPassword(auth,email,password)
+    .then(()=>{alert('Signup successful'); lastPage='frontpage'; showPage('frontpage');})
+    .catch(e=>alert(e.message));
+}
+
 document.addEventListener('DOMContentLoaded',()=>{
-  const lightbox = document.getElementById('lightbox');
-  const lbImg = document.getElementById('lightbox-img');
-  const lbDesc = document.getElementById('lightbox-desc');
+  document.querySelectorAll('.nav-btn').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      e.preventDefault();
+      lastPage=document.querySelector('.page:not([style*="display: none"])').id;
+      showPage(btn.getAttribute('data-target'));
+    });
+  });
+  const lightbox=document.getElementById('lightbox');
+  const lightboxImg=document.getElementById('lightbox-img');
+  const lightboxDesc=document.getElementById('lightbox-desc');
   document.querySelectorAll('.gallery div').forEach(item=>{
     item.addEventListener('click',()=>{
       lightbox.style.display='flex';
-      lbImg.src = item.querySelector('img').src;
-      lbDesc.textContent = item.querySelector('p').textContent;
+      lightboxImg.src=item.querySelector('img').src;
+      lightboxDesc.textContent=item.querySelector('p').textContent;
     });
   });
   document.getElementById('close-lightbox').addEventListener('click',()=>{lightbox.style.display='none';});
 });
-
-// Login/Signup placeholders
-function openModal(id){document.getElementById(id).style.display='block';document.getElementById('overlay').style.display='block';}
-function closeModal(id){document.getElementById(id).style.display='none';document.getElementById('overlay').style.display='none';}
-function loginUser(){
-  const email=document.getElementById('login-email').value;
-  const password=document.getElementById('login-password').value;
-  signInWithEmailAndPassword(auth,email,password).then(()=>alert('Logged in')).catch(e=>alert(e.message));
-}
-function signupUser(){
-  const email=document.getElementById('signup-email').value;
-  const password=document.getElementById('signup-password').value;
-  createUserWithEmailAndPassword(auth,email,password).then(()=>alert('Signed up')).catch(e=>alert(e.message));
-}
 </script>
 </head>
 <body>
 
-<header>
-  <a href="#contact">Contact Us</a>
-  <a href="#" onclick="openModal('login-modal')">Login</a>
-  <a href="#" onclick="openModal('signup-modal')">Sign Up</a>
-</header>
+<!-- Front Page -->
+<div id="frontpage" class="page">
+  <header>
+    <div></div>
+    <a href="#" class="nav-btn" data-target="contactpage">Contact Us</a>
+  </header>
+  <main>
+    <img id="africa" src="africa.png" alt="Africa outline">
+    <h1>Gloria's Cookhouse</h1>
+    <div class="buttons">
+      <a href="https://wolt.com/your-restaurant-page" target="_blank">Order on Wolt</a>
+      <a href="https://www.just-eat.dk/your-restaurant-page" target="_blank">Order on Just-Eat</a>
+      <a href="#" class="nav-btn" data-target="menupage">See Menu</a>
+    </div>
+    <div class="auth">
+      <a href="#" class="nav-btn" data-target="loginpage">Login</a> | 
+      <a href="#" class="nav-btn" data-target="signuppage">Sign Up</a>
+    </div>
+  </main>
+</div>
 
-<main>
-  <img id="africa" src="africa.png" alt="Africa outline">
-  <h1>Gloria's Cookhouse</h1>
-  <div class="buttons">
-    <a href="#" target="_blank">Order on Wolt</a>
-    <a href="#" target="_blank">Order on Just-Eat</a>
-    <a href="#menu">See Menu</a>
-  </div>
-</main>
-
-<section id="menu">
+<!-- Menu Page -->
+<div id="menupage" class="page" style="display:none;">
   <h1>Our Menu</h1>
-  <p class="note">* All food is halal. Minimum order 300 DKK. Banana bread Saturday pickup only. 24H notice for all orders. Contact us for bulk orders/catering. *</p>
+  <p class="note">* All food is halal. Minimum order 300 DKK. Banana bread Saturday pickup only. 24H notice required. Contact us for bulk orders and catering. *</p>
   <div class="gallery">
-    <div><img src="images/food1.jpg" alt=""><p>Mashed potatoes with salmon and asparagus - 149 DKK</p></div>
-    <div><img src="images/food2.jpg" alt=""><p>Fried plantains with yams and egg sauce - 149 DKK</p></div>
-    <div><img src="images/food3.jpg" alt=""><p>Spicy crispy chicken (min 3 drumsticks) - 99 DKK</p></div>
-    <div><img src="images/food4.jpg" alt=""><p>Beef suya kebabs (min 2 servings) - 149 DKK</p></div>
-    <div><img src="images/food5.jpg" alt=""><p>Avocado salad - 99 DKK</p></div>
-    <div><img src="images/food6.jpg" alt=""><p>Meatpies (min 4 per order) - 299 DKK</p></div>
-    <div><img src="images/food7.jpg" alt=""><p>Fried rice - 149 DKK</p></div>
-    <div><img src="images/food8.jpg" alt=""><p>Fruit salad - 99 DKK</p></div>
-    <div><img src="images/food9.jpg" alt=""><p>Jollof rice - 149 DKK</p></div>
-    <div><img src="images/food10.jpg" alt=""><p>Roasted potatoes and grilled chicken - 149 DKK</p></div>
-    <div><img src="images/food11.jpg" alt=""><p>Crepes - 149 DKK</p></div>
-    <div><img src="images/food12.jpg" alt=""><p>Basmati rice with veggies and chicken kebabs - 149 DKK</p></div>
-    <div><img src="images/food13.jpg" alt=""><p>Pasta alfredo with chicken chunks - 149 DKK</p></div>
-    <div><img src="images/food14.jpg" alt=""><p>Spaghetti and meatballs - 149 DKK</p></div>
-    <div><img src="images/food15.jpg" alt=""><p>Beans pottage with fried plantains - 149 DKK</p></div>
-    <div><img src="images/food16.jpg" alt=""><p>Stirfry pasta - 149 DKK</p></div>
-    <div><img src="images/food17.jpg" alt=""><p>Fish fillet (100g) - 99 DKK</p></div>
-    <div><img src="images/food18.jpg" alt=""><p>Stirfry sauce - 99 DKK</p></div>
-    <div><img src="images/food19.jpg" alt=""><p>Green bell pepper sauce - 99 DKK</p></div>
-    <div><img src="images/food20.jpg" alt=""><p>Banana bread - Mini 99 DKK / Big 85 DKK (2 for 149 DKK)</p></div>
-    <div><img src="images/food21.jpg" alt=""><p>Egusi soup - 249 DKK</p></div>
-    <div><img src="images/food22.jpg" alt=""><p>Bean cakes with minced meat (min 4) - 49 DKK each</p></div>
-    <div><img src="images/food23.jpg" alt=""><p>Full roasted chicken - 199 DKK</p></div>
-    <div><img src="images/food24.jpg" alt=""><p>Okro soup - 249 DKK</p></div>
-    <div><img src="images/food25.jpg" alt=""><p>Efo riro soup - 249 DKK</p></div>
+    <div><img src="food1.jpg" alt=""><p>Mashed potatoes with salmon and asparagus — 149DKK/100g</p></div>
+    <div><img src="food2.jpg" alt=""><p>Fried plantains with yams and egg sauce — 149DKK/100g</p></div>
+    <div><img src="food3.jpg" alt=""><p>Spicy crispy chicken — 99DKK min 3 drumsticks</p></div>
+    <div><img src="food4.jpg" alt=""><p>Beef suya kebabs — 149DKK min 2 servings</p></div>
+    <div><img src="food5.jpg" alt=""><p>Avocado salad — 99DKK/100g</p></div>
+    <div><img src="food6.jpg" alt=""><p>Meatpies — 149DKK per 2, 299DKK per 4</p></div>
+    <div><img src="food7.jpg" alt=""><p>Fried rice — 149DKK/100g</p></div>
+    <div><img src="food8.jpg" alt=""><p>Fruit salad — 99DKK/100g</p></div>
+    <div><img src="food9.jpg" alt=""><p>Jollof rice — 149DKK/100g</p></div>
+    <div><img src="food10.jpg" alt=""><p>Roasted potatoes with grilled chicken — 149DKK/100g + 99DKK chicken</p></div>
+    <div><img src="food11.jpg" alt=""><p>Crepes — 99DKK/100g</p></div>
+    <div><img src="food12.jpg" alt=""><p>Basmati rice with veggies and chicken kebabs — 149DKK/100g + 99DKK kebabs</p></div>
+    <div><img src="food13.jpg" alt=""><p>Pasta Alfredo with chicken chunks — 149DKK/100g + 99DKK chicken</p></div>
+    <div><img src="food14.jpg" alt=""><p>Spaghetti and meatballs — 149DKK/100g</p></div>
+    <div><img src="food15.jpg" alt=""><p>Beans pottage with fried plantains — 149DKK/100g + 99DKK plantains</p></div>
+    <div><img src="food16.jpg" alt=""><p>Stir fry pasta — 149DKK/100g</p></div>
+    <div><img src="food17.jpg" alt=""><p>Fish fillet — 99DKK/100g</p></div>
+    <div><img src="food18.jpg" alt=""><p>Stir fry sauce — 99DKK/100g</p></div>
+    <div><img src="food19.jpg" alt=""><p>Green bell pepper sauce — 99DKK/100g</p></div>
+    <div><img src="food20.jpg" alt=""><p>Banana bread — 85-149DKK depending on size</p></div>
+    <div><img src="food21.jpg" alt=""><p>Egusi soup — 249DKK/portion + 49DKK fufu</p></div>
+    <div><img src="food22.jpg" alt=""><p>Bean cakes with minced meat — 49DKK each, min 4</p></div>
+    <div><img src="food23.jpg" alt=""><p>Full roasted chicken — 199DKK</p></div>
+    <div><img src="food24.jpg" alt=""><p>Okro soup — 249DKK/portion + 49DKK fufu</p></div>
+    <div><img src="food25.jpg" alt=""><p>Efo Riro soup — 249DKK/portion + 49DKK fufu</p></div>
   </div>
-</section>
+  <button class="back-btn" onclick="showPage(lastPage)">Back</button>
+</div>
 
-<section id="contact">
+<!-- Contact Page -->
+<div id="contactpage" class="page" style="display:none;">
   <h1>Contact Us</h1>
   <p><strong>Name:</strong> Gloria Thompson Duruibe</p>
   <p><strong>Phone:</strong> +45 91 67 30 68</p>
   <p><strong>Email:</strong> g7thomson@yahoo.com</p>
-</section>
+  <button class="back-btn" onclick="showPage(lastPage)">Back</button>
+</div>
 
-<button class="back-btn" onclick="history.back()">Back</button>
+<!-- Login Page -->
+<div id="loginpage" class="page" style="display:none;">
+  <div class="modal">
+    <h2>Login</h2>
+    <input id="login-email" type="email" placeholder="Email">
+    <input id="login-password" type="password" placeholder="Password">
+    <button onclick="loginUser()">Login</button>
+    <a href="#" class="nav-btn" data-target="signuppage">Sign Up</a>
+    <a href="#">Forgot Password?</a>
+  </div>
+  <button class="back-btn" onclick="showPage(lastPage)">Back</button>
+</div>
+
+<!-- Sign Up Page -->
+<div id="signuppage" class="page" style="display:none;">
+  <div class="modal">
+    <h2>Sign Up</h2>
+    <input type="text" placeholder="Full Name">
+    <input type="date" placeholder="DOB">
+    <input id="signup-email" type="email" placeholder="Email">
+    <input id="signup-password" type="password" placeholder="Password">
+    <button onclick="signupUser()">Sign Up</button>
+    <a href="#" class="nav-btn" data-target="loginpage">Already have an account?</a>
+  </div>
+  <button class="back-btn" onclick="showPage(lastPage)">Back</button>
+</div>
 
 <!-- Lightbox -->
 <div id="lightbox">
   <span id="close-lightbox">&times;</span>
   <img id="lightbox-img" src="">
   <p id="lightbox-desc"></p>
-</div>
-
-<!-- Modals -->
-<div class="overlay" id="overlay"></div>
-
-<div class="modal" id="login-modal">
-  <h2>Login</h2>
-  <input type="email" id="login-email" placeholder="Email">
-  <input type="password" id="login-password" placeholder="Password">
-  <button onclick="loginUser()">Login</button>
-  <a href="#" onclick="closeModal('login-modal')">Close</a>
-</div>
-
-<div class="modal" id="signup-modal">
-  <h2>Sign Up</h2>
-  <input type="email" id="signup-email" placeholder="Email">
-  <input type="password" id="signup-password" placeholder="Password">
-  <button onclick="signupUser()">Sign Up</button>
-  <a href="#" onclick="closeModal('signup-modal')">Close</a>
 </div>
 
 </body>
