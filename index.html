@@ -6,24 +6,23 @@
 <title>Gloria's Cookhouse</title>
 <style>
 body {margin:0;font-family:Arial,sans-serif;background:#fff;color:#333;text-align:center;}
-header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:#fff;}
-header a{text-decoration:none;color:#B95E30;font-weight:bold;font-size:1.1em;}
-main{margin-top:30px; display:flex; flex-direction:column; align-items:center;}
-#homepage-header{display:flex;align-items:center;justify-content:center;gap:40px;margin-bottom:20px;}
-#logo{max-width:180px;}
-#header-img{max-width:400px;}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px;}
+header a{text-decoration:none;color:#B95E30;font-weight:bold;}
+main{margin-top:50px; display:flex; justify-content:center; align-items:center;}
+#logo-img{width:180px; margin-right:20px;}
+#header-img{max-width:400px; margin-bottom:20px;}
 h1{color:#B95E30;margin-bottom:10px;}
-h2{color:#B95E30;margin-bottom:10px;}
-.buttons a{display:block;margin:10px auto;padding:12px 20px;background:#FFA500;color:#fff;text-decoration:none;border-radius:8px;width:220px;}
+h2{color:#B95E30;}
+.buttons a{display:block;margin:10px auto;padding:12px 20px;background:#FFA500;color:#fff;text-decoration:none;border-radius:8px;width:200px;}
 .auth a{margin:5px;text-decoration:none;color:#FFD700;cursor:pointer;}
-.note{font-style:italic;margin:20px; text-align:left; max-width:90%;}
-.gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;padding:20px; justify-items:center;}
+.note{font-style:italic;margin:20px;}
+.gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;padding:20px;}
 .gallery div{text-align:center;cursor:pointer;}
-.gallery img{width:100%;border-radius:8px;max-width:150px;}
-.modal{background:#fff;color:#B95E30;padding:30px;margin:20px auto;border-radius:10px;width:300px;text-align:center;}
+.gallery img{width:100%;border-radius:8px;}
+.modal{background:#fff;color:#B95E30;padding:30px;margin:20px auto;border-radius:10px;width:300px;}
 .modal input{width:90%;padding:8px;margin:10px 0;}
-.modal button{background:#BE9E42;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin-top:10px;}
-.modal a{display:block;margin:5px;color:#B95E30;text-decoration:none;cursor:pointer;}
+.modal button{background:#BE9E42;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;}
+.modal a{display:block;margin:5px;color:#B95E30;text-decoration:none;}
 button.back-btn{margin:20px auto;display:block;padding:10px 20px;background:#B95E30;color:#fff;border:none;border-radius:8px;cursor:pointer;}
 
 /* Lightbox */
@@ -81,7 +80,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const lightboxImg=document.getElementById('lightbox-img');
   const lightboxDesc=document.getElementById('lightbox-desc');
   document.querySelectorAll('.gallery div').forEach(item=>{
-    item.addEventListener('click',()=>{
+    item.addEventListener('click',()=> {
       lightbox.style.display='flex';
       lightboxImg.src=item.querySelector('img').src;
       lightboxDesc.textContent=item.querySelector('p').textContent;
@@ -96,27 +95,23 @@ document.addEventListener('DOMContentLoaded',()=>{
 <!-- Front Page -->
 <div id="frontpage">
   <header>
-    <div></div>
+    <img id="logo-img" src="logo.png" alt="Logo">
     <a href="#" class="nav-btn" data-target="contactpage">Contact Us</a>
   </header>
   <main>
-    <div id="homepage-header">
-      <img id="logo" src="logo.png" alt="Logo">
-      <div>
-        <img id="header-img" src="mainfood.png" alt="Header Image">
-        <h1>Gloria's Cookhouse</h1>
-        <p><strong>Soul Food Fusion</strong><br>
-        Crafted with Love; A Global Village Kitchen, Where Africa Meets the World.</p>
+    <div>
+      <img id="header-img" src="mainfood.png" alt="Header Image">
+      <h1>Gloria's Cookhouse</h1>
+      <p><strong>Soul Food Fusion</strong><br>Crafted with Love; A Global Village Kitchen, Where Africa Meets the World.</p>
+      <div class="buttons">
+        <a href="https://wolt.com" target="_blank">Order on Wolt</a>
+        <a href="https://just-eat.com" target="_blank">Order on Just Eat</a>
+        <a href="#" class="nav-btn" data-target="menupage">See Menu</a>
       </div>
-    </div>
-    <div class="buttons">
-      <a href="https://wolt.com" target="_blank">Order on Wolt</a>
-      <a href="https://just-eat.com" target="_blank">Order on Just Eat</a>
-      <a href="#" class="nav-btn" data-target="menupage">See Menu</a>
-    </div>
-    <div class="auth">
-      <a class="nav-btn" data-target="loginpage">Login</a> | 
-      <a class="nav-btn" data-target="signuppage">Sign Up</a>
+      <div class="auth">
+        <a class="nav-btn" data-target="loginpage">Login</a> | 
+        <a class="nav-btn" data-target="signuppage">Sign Up</a>
+      </div>
     </div>
   </main>
 </div>
@@ -128,42 +123,44 @@ document.addEventListener('DOMContentLoaded',()=>{
     Pre-order window: Customers may place orders from 10 a.m. to 6 p.m. the previous day.<br>
     Collection window: Orders will be freshly prepared and ready for collection between 5 p.m. and 8 p.m., Monday through Sunday.<br>
     This structure allows me to plan properly for each day’s meals, source fresh ingredients, and manage unexpected surges in demand.<br>
-    In addition, Gloria’s Cookhouse also offers a range of halal food, portions from 650g, and catering + bulk orders. 
+    In addition, Gloria’s Cookhouse also offers a range of halal food, portions from 650g, and catering + bulk orders.<br>
     For such large or special requests, I kindly ask for at least one week’s notice to ensure proper preparation and scheduling.<br>
-    The minimum order is 299DKK.
+    Minimum order: 299DKK.
   </p>
+
   <div class="gallery">
-    <!-- Row: Rice Dishes -->
-    <div><img src="food6.jpg"><p>Jollof rice with chicken - 179DKK</p></div>
-    <div><img src="food9.jpg"><p>Jollof rice with beef - 179DKK</p></div>
-    <div><img src="food12.jpg"><p>Rice with veggie sauce & chicken kebabs - 179DKK</p></div>
-    <div><img src="food20.jpg"><p>Pasta & veggie stir fry sauce - 179DKK</p></div>
-    <div><img src="food13.jpg"><p>Pasta Alfredo - 179DKK</p></div>
-    
-    <!-- Row: Fried Plantains/Yams -->
-    <div><img src="food1.jpg"><p>Mashed potatoes & salmon - 149DKK</p></div>
-    <div><img src="food2.jpg"><p>Plantains with yams & egg gravy - 149DKK</p></div>
-    <div><img src="food15.jpg"><p>Stewed beans & plantains - 149DKK</p></div>
-    <div><img src="food17.jpg"><p>Fish fillet with fried plantains - 199DKK</p></div>
-    <div><img src="food5.jpg"><p>Avocado salad (tailored to taste) - 99DKK</p></div>
-    
-    <!-- Row: Soups -->
-    <div><img src="food7.jpg"><p>Efo Riro Soup - 249DKK</p></div>
-    <div><img src="food16.jpg"><p>Egusi soup with fufu - 249DKK</p></div>
-    <div><img src="food10.jpg"><p>Grilled potatoes & grilled chicken - 149DKK</p></div>
-    <div><img src="food8.jpg"><p>Grilled spicy chicken - 149DKK</p></div>
-    <div><img src="food4.jpg"><p>Beef kebab - 149DKK</p></div>
-    
-    <!-- Row: Cakes/Pies -->
-    <div><img src="food11.jpg"><p>Meatpie & chicken pie - 278DKK</p></div>
-    <div><img src="food3.jpg"><p>Moi Moi with fried plantains - 199DKK</p></div>
-    <div><img src="food21.jpg"><p>Banana bread minis (8 pack) - 99DKK</p></div>
-    <div><img src="food24.jpg"><p>Big loafs of banana bread - 89DKK</p></div>
-    
-    <!-- Row: Extras/Sauces -->
-    <div><img src="food19.jpg"><p>Green bell pepper sauce - 99DKK</p></div>
-    <div><img src="food22.jpg"><p>Fried rice & chicken breast - 179DKK</p></div>
-    <div><img src="food23.jpg"><p>Full roasted chicken - 199DKK</p></div>
+    <!-- Rice Row -->
+    <div><img src="food6.jpg"><p>Jollof Rice with Chicken - 179 DKK</p></div>
+    <div><img src="food9.jpg"><p>Jollof Rice with Beef - 179 DKK</p></div>
+    <div><img src="food22.jpg"><p>Fried Rice with Chicken Breast - 179 DKK</p></div>
+
+    <!-- Plantains/Yams Row -->
+    <div><img src="food2.jpg"><p>Plantains with Yams and Egg Gravy - 149 DKK</p></div>
+    <div><img src="food15.jpg"><p>Stewed Beans with Plantains - 149 DKK</p></div>
+    <div><img src="food1.jpg"><p>Mashed Potatoes with Salmon and Asparagus - 149 DKK</p></div>
+
+    <!-- Chicken/Kebabs Row -->
+    <div><img src="food4.jpg"><p>Beef Kebab - 149 DKK</p></div>
+    <div><img src="food8.jpg"><p>Grilled Spicy Chicken - 149 DKK</p></div>
+    <div><img src="food10.jpg"><p>Grilled Potatoes with Grilled Chicken - 149 DKK</p></div>
+
+    <!-- Soups Row -->
+    <div><img src="food7.jpg"><p>Efo Riro Soup - 249 DKK</p></div>
+    <div><img src="food16.jpg"><p>Egusi Soup with Fufu - 249 DKK</p></div>
+    <div><img src="food19.jpg"><p>Green Bell Pepper Sauce - 99 DKK</p></div>
+
+    <!-- Cakes / Banana Bread Row -->
+    <div><img src="food3.jpg"><p>Moi Moi with Fried Plantains - 199 DKK</p></div>
+    <div><img src="food11.jpg"><p>Meatpie & Chicken Pie - 278 DKK</p></div>
+    <div><img src="food21.jpg"><p>Banana Bread Minis (8 Pack) - 99 DKK</p></div>
+    <div><img src="food24.jpg"><p>Banana Bread Large Loaf - 89 DKK</p></div>
+
+    <!-- Last Row: Salads/Pasta/Extras -->
+    <div><img src="food12.jpg"><p>Rice with Veggie Sauce and Chicken Kebabs - 149 DKK</p></div>
+    <div><img src="food13.jpg"><p>Pasta Alfredo - 149 DKK</p></div>
+    <div><img src="food14.jpg"><p>Spaghetti and Meatballs - 149 DKK</p></div>
+    <div><img src="food5.jpg"><p>Avocado Salad (Tailored to Taste) - 99 DKK</p></div>
+    <div><img src="food23.jpg"><p>Full Roasted Chicken - 199 DKK</p></div>
   </div>
   <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
