@@ -5,152 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gloria's Cookhouse</title>
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #fff;
-  color: #333;
-  text-align: center;
-}
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-}
-header a {
-  text-decoration: none;
-  color: #B95E30;
-  font-weight: bold;
-}
-main {
-  margin-top: 30px;
-}
-#left-poster {
-  position: absolute;
-  left: 40px;
-  top: 40%;
-  transform: translateY(-50%);
-  width: 220px;
-}
-img#header-img {
-  max-width: 250px;
-  margin-bottom: 15px;
-}
-h1 {
-  color: #B95E30;
-  margin-bottom: 15px;
-}
-h3 {
-  font-weight: normal;
-  font-style: italic;
-  color: #BE9E42;
-  margin-bottom: 25px;
-}
-.buttons a {
-  display: block;
-  margin: 10px auto;
-  padding: 14px 20px;
-  background: #FFA500;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 8px;
-  width: 220px;
-}
-.auth a {
-  margin: 5px;
-  text-decoration: none;
-  color: #FFD700;
-  cursor: pointer;
-}
-.note {
-  font-style: italic;
-  margin: 20px;
-}
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 20px;
-  padding: 20px;
-}
-.gallery div {
-  text-align: center;
-  cursor: pointer;
-}
-.gallery img {
-  width: 100%;
-  border-radius: 8px;
-}
-.modal {
-  background: #fff;
-  color: #B95E30;
-  padding: 30px;
-  margin: 20px auto;
-  border-radius: 10px;
-  width: 300px;
-}
-.modal input {
-  width: 90%;
-  padding: 8px;
-  margin: 10px 0;
-}
-.modal button {
-  background: #BE9E42;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-.modal a {
-  display: block;
-  margin: 5px;
-  color: #B95E30;
-  text-decoration: none;
-}
-button.back-btn {
-  margin: 20px auto;
-  display: block;
-  padding: 10px 20px;
-  background: #B95E30;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
+body {margin:0;font-family:Arial,sans-serif;background:#fff;color:#333;text-align:center;}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:#fff;}
+header a{text-decoration:none;color:#B95E30;font-weight:bold;font-size:1.1em;}
+main{margin-top:30px; display:flex; flex-direction:column; align-items:center;}
+#homepage-header{display:flex;align-items:center;justify-content:center;gap:40px;margin-bottom:20px;}
+#logo{max-width:180px;}
+#header-img{max-width:400px;}
+h1{color:#B95E30;margin-bottom:10px;}
+h2{color:#B95E30;margin-bottom:10px;}
+.buttons a{display:block;margin:10px auto;padding:12px 20px;background:#FFA500;color:#fff;text-decoration:none;border-radius:8px;width:220px;}
+.auth a{margin:5px;text-decoration:none;color:#FFD700;cursor:pointer;}
+.note{font-style:italic;margin:20px; text-align:left; max-width:90%;}
+.gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;padding:20px; justify-items:center;}
+.gallery div{text-align:center;cursor:pointer;}
+.gallery img{width:100%;border-radius:8px;max-width:150px;}
+.modal{background:#fff;color:#B95E30;padding:30px;margin:20px auto;border-radius:10px;width:300px;text-align:center;}
+.modal input{width:90%;padding:8px;margin:10px 0;}
+.modal button{background:#BE9E42;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin-top:10px;}
+.modal a{display:block;margin:5px;color:#B95E30;text-decoration:none;cursor:pointer;}
+button.back-btn{margin:20px auto;display:block;padding:10px 20px;background:#B95E30;color:#fff;border:none;border-radius:8px;cursor:pointer;}
 
 /* Lightbox */
-#lightbox {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.8);
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-#lightbox img {
-  max-width: 90%;
-  max-height: 80%;
-  border-radius: 10px;
-}
-#lightbox p {
-  color: #fff;
-  margin-top: 10px;
-}
-#lightbox span {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  color: #fff;
-  font-size: 30px;
-  cursor: pointer;
-}
+#lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:1000;}
+#lightbox img{max-width:90%;max-height:80%;border-radius:10px;}
+#lightbox p{color:#fff;margin-top:10px;}
+#lightbox span{position:absolute;top:20px;right:30px;color:#fff;font-size:30px;cursor:pointer;}
 </style>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
@@ -163,7 +44,6 @@ const firebaseConfig = {
   messagingSenderId: "242537183123",
   appId: "1:242537183123:web:4cdbc739f2f62b2b789a66"
 };
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
@@ -219,11 +99,16 @@ document.addEventListener('DOMContentLoaded',()=>{
     <div></div>
     <a href="#" class="nav-btn" data-target="contactpage">Contact Us</a>
   </header>
-  <img id="left-poster" src="logo.png" alt="Gloria's Cookhouse Poster">
   <main>
-    <img id="header-img" src="mainfood.png" alt="Header Image">
-    <h1>Gloria's Cookhouse</h1>
-    <h3>"Soul Food Fusion"<br>Crafted with Love; A Global Village Kitchen, Where Africa Meets the World.</h3>
+    <div id="homepage-header">
+      <img id="logo" src="logo.png" alt="Logo">
+      <div>
+        <img id="header-img" src="mainfood.png" alt="Header Image">
+        <h1>Gloria's Cookhouse</h1>
+        <p><strong>Soul Food Fusion</strong><br>
+        Crafted with Love; A Global Village Kitchen, Where Africa Meets the World.</p>
+      </div>
+    </div>
     <div class="buttons">
       <a href="https://wolt.com" target="_blank">Order on Wolt</a>
       <a href="https://just-eat.com" target="_blank">Order on Just Eat</a>
@@ -242,43 +127,45 @@ document.addEventListener('DOMContentLoaded',()=>{
   <p class="note">
     Pre-order window: Customers may place orders from 10 a.m. to 6 p.m. the previous day.<br>
     Collection window: Orders will be freshly prepared and ready for collection between 5 p.m. and 8 p.m., Monday through Sunday.<br>
-    This structure allows proper planning for fresh ingredients and managing demand.<br><br>
-    Gloria’s Cookhouse offers halal food, portions from 650g, and catering or bulk orders (1 week notice).<br>
-    Minimum order: 299 DKK
+    This structure allows me to plan properly for each day’s meals, source fresh ingredients, and manage unexpected surges in demand.<br>
+    In addition, Gloria’s Cookhouse also offers a range of halal food, portions from 650g, and catering + bulk orders. 
+    For such large or special requests, I kindly ask for at least one week’s notice to ensure proper preparation and scheduling.<br>
+    The minimum order is 299DKK.
   </p>
-
   <div class="gallery">
-    <div><img src="food1.jpg"><p>Mashed potatoes & salmon with asparagus - 179 DKK</p></div>
-    <div><img src="food2.jpg"><p>Plantains with yams & egg gravy - 179 DKK</p></div>
-    <div><img src="food3.jpg"><p>Moi moi with fried plantains - 199 DKK</p></div>
-    <div><img src="food4.jpg"><p>Beef kebabs - 149 DKK</p></div>
-    <div><img src="food5.jpg"><p>Avocado salad - 99 DKK</p></div>
-
-    <div><img src="food6.jpg"><p>Jollof rice with chicken - 179 DKK</p></div>
-    <div><img src="food9.jpg"><p>Jollof rice with beef - 179 DKK</p></div>
-    <div><img src="food7.jpg"><p>Vegetable soup with fufu - 249 DKK</p></div>
-    <div><img src="food8.jpg"><p>Grilled spicy chicken - 149 DKK</p></div>
-    <div><img src="food10.jpg"><p>Grilled potatoes & chicken - 149 DKK</p></div>
-
-    <div><img src="food11.jpg"><p>Meatpie & chicken pie - 278 DKK (pair)</p></div>
-    <div><img src="food12.jpg"><p>Rice with veggie sauce & kebabs - 179 DKK</p></div>
-    <div><img src="food13.jpg"><p>Pasta alfredo - 149 DKK</p></div>
-    <div><img src="food14.jpg"><p>Spaghetti & meatballs - 149 DKK</p></div>
-    <div><img src="food15.jpg"><p>Stewed beans & plantains - 199 DKK</p></div>
-
-    <div><img src="food16.jpg"><p>Egusi soup with fufu - 249 DKK</p></div>
-    <div><img src="food17.jpg"><p>Fish fillet & plantains - 219 DKK</p></div>
-    <div><img src="food18.jpg"><p>Scotch eggs (pair) - 278 DKK</p></div>
-    <div><img src="food19.jpg"><p>Green bell pepper sauce - 99 DKK</p></div>
-    <div><img src="food20.jpg"><p>Pasta & veggie stir-fry sauce - 179 DKK</p></div>
-
-    <div><img src="food22.jpg"><p>Fried rice & chicken breast - 179 DKK</p></div>
-    <div><img src="food23.jpg"><p>Full roasted chicken - 299 DKK</p></div>
-    <div><img src="food21.jpg"><p>Banana bread minis (pack of 6) - 99 DKK</p></div>
-    <div><img src="food24.jpg"><p>Banana bread loaf - 89 DKK</p></div>
+    <!-- Row: Rice Dishes -->
+    <div><img src="food6.jpg"><p>Jollof rice with chicken - 179DKK</p></div>
+    <div><img src="food9.jpg"><p>Jollof rice with beef - 179DKK</p></div>
+    <div><img src="food12.jpg"><p>Rice with veggie sauce & chicken kebabs - 179DKK</p></div>
+    <div><img src="food20.jpg"><p>Pasta & veggie stir fry sauce - 179DKK</p></div>
+    <div><img src="food13.jpg"><p>Pasta Alfredo - 179DKK</p></div>
+    
+    <!-- Row: Fried Plantains/Yams -->
+    <div><img src="food1.jpg"><p>Mashed potatoes & salmon - 149DKK</p></div>
+    <div><img src="food2.jpg"><p>Plantains with yams & egg gravy - 149DKK</p></div>
+    <div><img src="food15.jpg"><p>Stewed beans & plantains - 149DKK</p></div>
+    <div><img src="food17.jpg"><p>Fish fillet with fried plantains - 199DKK</p></div>
+    <div><img src="food5.jpg"><p>Avocado salad (tailored to taste) - 99DKK</p></div>
+    
+    <!-- Row: Soups -->
+    <div><img src="food7.jpg"><p>Efo Riro Soup - 249DKK</p></div>
+    <div><img src="food16.jpg"><p>Egusi soup with fufu - 249DKK</p></div>
+    <div><img src="food10.jpg"><p>Grilled potatoes & grilled chicken - 149DKK</p></div>
+    <div><img src="food8.jpg"><p>Grilled spicy chicken - 149DKK</p></div>
+    <div><img src="food4.jpg"><p>Beef kebab - 149DKK</p></div>
+    
+    <!-- Row: Cakes/Pies -->
+    <div><img src="food11.jpg"><p>Meatpie & chicken pie - 278DKK</p></div>
+    <div><img src="food3.jpg"><p>Moi Moi with fried plantains - 199DKK</p></div>
+    <div><img src="food21.jpg"><p>Banana bread minis (8 pack) - 99DKK</p></div>
+    <div><img src="food24.jpg"><p>Big loafs of banana bread - 89DKK</p></div>
+    
+    <!-- Row: Extras/Sauces -->
+    <div><img src="food19.jpg"><p>Green bell pepper sauce - 99DKK</p></div>
+    <div><img src="food22.jpg"><p>Fried rice & chicken breast - 179DKK</p></div>
+    <div><img src="food23.jpg"><p>Full roasted chicken - 199DKK</p></div>
   </div>
-
-  <button class="back-btn" onclick="showPage('frontpage')">Back to Homepage</button>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
 <!-- Contact Page -->
@@ -287,7 +174,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   <p><strong>Name:</strong> Gloria Thompson Duruibe</p>
   <p><strong>Phone:</strong> +45 91 67 30 68</p>
   <p><strong>Email:</strong> g7thomson@yahoo.com</p>
-  <button class="back-btn" onclick="showPage('frontpage')">Back to Homepage</button>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
 <!-- Login Page -->
@@ -300,7 +187,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     <a class="nav-btn" data-target="signuppage">Sign Up</a>
     <a href="#">Forgot Password?</a>
   </div>
-  <button class="back-btn" onclick="showPage('frontpage')">Back to Homepage</button>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
 <!-- Sign Up Page -->
@@ -314,7 +201,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     <button onclick="signupUser()">Sign Up</button>
     <a class="nav-btn" data-target="loginpage">Already have an account?</a>
   </div>
-  <button class="back-btn" onclick="showPage('frontpage')">Back to Homepage</button>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
 <!-- Lightbox -->
