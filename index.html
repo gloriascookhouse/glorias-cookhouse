@@ -5,33 +5,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gloria's Cookhouse</title>
 <style>
+/* GENERAL STYLES */
 body {margin:0;font-family:Arial,sans-serif;background:#fff;color:#333;text-align:center;}
-header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:#fff;}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:#fff;position:sticky;top:0;z-index:10;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
 header a{text-decoration:none;color:#B95E30;font-weight:bold;font-size:1.1em;}
-main{margin-top:30px; display:flex; flex-direction:column; align-items:center;}
-#homepage-header{display:flex;align-items:center;justify-content:center;gap:40px;margin-bottom:20px; flex-wrap:wrap;}
-#logo{max-width:220px; flex-shrink:0;}
-#header-img{max-width:400px;}
-h1{color:#B95E30;margin-bottom:10px;}
-h2{color:#B95E30;margin-bottom:10px;}
+main{margin-top:30px;display:flex;flex-direction:column;align-items:center;}
+h1,h2{color:#B95E30;margin-bottom:10px;}
 .buttons a{display:block;margin:10px auto;padding:12px 20px;background:#FFA500;color:#fff;text-decoration:none;border-radius:8px;width:220px;}
 .auth a{margin:5px;text-decoration:none;color:#FFD700;cursor:pointer;}
-.note{font-style:italic;margin:20px; text-align:center; max-width:90%;}
-.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px;padding:20px; justify-items:center;}
+.note{font-style:italic;margin:20px;text-align:center;max-width:90%;}
+
+/* HOMEPAGE HEADER */
+#homepage-header{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:40px;margin-bottom:20px;}
+#logo{max-width:220px;flex-shrink:0;}
+#header-img{max-width:400px;}
+
+/* GALLERY/MENU */
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px;padding:20px;justify-items:center;}
 .gallery div{text-align:center;cursor:pointer;}
-.gallery img{width:100%;border-radius:8px;max-width:150px;}
-.modal{background:#fff;color:#B95E30;padding:30px;margin:20px auto;border-radius:10px;width:300px;text-align:center;}
-.modal input, .modal select{width:90%;padding:8px;margin:10px 0;}
+.gallery img{width:100%;border-radius:8px;max-width:150px;transition: transform .2s;}
+.gallery img:hover{transform: scale(1.05);}
+
+/* MODALS */
+.modal{background:#fff;color:#B95E30;padding:30px;margin:20px auto;border-radius:10px;width:300px;text-align:center;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1001;display:none;box-shadow:0 5px 15px rgba(0,0,0,0.3);}
+.modal input, .modal select{width:90%;padding:8px;margin:10px 0;border:1px solid #ccc;border-radius:5px;}
 .modal button{background:#BE9E42;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin-top:10px;}
 .modal a{display:block;margin:5px;color:#B95E30;text-decoration:none;cursor:pointer;}
+
+/* BACK BUTTON */
 button.back-btn{margin:20px auto;display:block;padding:10px 20px;background:#B95E30;color:#fff;border:none;border-radius:8px;cursor:pointer;}
-.cart-icon{position:fixed;top:20px;right:20px;width:50px;height:50px;background:#FFA500;color:#fff;border-radius:50%;display:flex;justify-content:center;align-items:center;font-weight:bold;font-size:18px;cursor:pointer;z-index:100;}
-#cart-modal,#item-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:1000;}
-#cart-content,#item-content{background:#fff;color:#333;padding:20px;border-radius:10px;width:90%;max-width:400px;text-align:left;}
-#cart-content h2,#item-content h2{color:#B95E30;text-align:center;}
-#cart-content ul{list-style:none;padding:0;}
-#cart-content li{margin:10px 0;}
-#cart-content button{margin-top:10px;background:#B95E30;color:#fff;padding:10px;border:none;border-radius:8px;cursor:pointer;width:100%;}
+
+/* CART BUTTON */
+#cart-btn{position:fixed;bottom:30px;right:30px;background:#FFA500;color:#fff;width:60px;height:60px;border-radius:50%;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1000;box-shadow:0 4px 10px rgba(0,0,0,0.2);}
+#cart-count{position:absolute;top:-8px;right:-8px;background:#FFD700;color:#000;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px;}
+
+/* LIGHTBOX */
 #lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:1000;}
 #lightbox img{max-width:90%;max-height:80%;border-radius:10px;}
 #lightbox p{color:#fff;margin-top:10px;}
@@ -42,6 +50,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebas
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
+// FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyCVeu4VrXiqDnyM5EZjQfc3y94ZVBhSt-Y",
   authDomain: "gloria-s-cookhouse.firebaseapp.com",
@@ -53,17 +62,19 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const database = getDatabase(app);
+const db = getDatabase(app);
 
+// CART
 let cart = [];
-let currentItem = {};
 
+// NAVIGATION
 function showPage(pageId){
-  const pages=['frontpage','menupage','contactpage','loginpage','signuppage','checkoutpage'];
+  const pages=['frontpage','menupage','contactpage','loginpage','signuppage'];
   pages.forEach(p=>document.getElementById(p).style.display='none');
   document.getElementById(pageId).style.display='block';
 }
 
+// AUTH
 function loginUser(){
   const email=document.getElementById('login-email').value;
   const password=document.getElementById('login-password').value;
@@ -71,7 +82,6 @@ function loginUser(){
     .then(()=>{alert('Login successful'); showPage('frontpage');})
     .catch(e=>alert(e.message));
 }
-
 function signupUser(){
   const email=document.getElementById('signup-email').value;
   const password=document.getElementById('signup-password').value;
@@ -80,74 +90,10 @@ function signupUser(){
     .catch(e=>alert(e.message));
 }
 
-// Item modal
-function openItemModal(name, price){
-  currentItem = {name, price};
-  document.getElementById('item-name').textContent = name;
-  document.getElementById('item-price').textContent = price + " DKK";
-  document.getElementById('item-quantity').value = 1;
-  document.getElementById('item-modal').style.display = 'flex';
-}
-
-function addCurrentItemToCart(){
-  const quantity = parseInt(document.getElementById('item-quantity').value);
-  if(quantity<1) return alert("Enter valid quantity");
-  cart.push({...currentItem, quantity});
-  document.getElementById('cart-count').textContent = cart.length;
-  document.getElementById('item-modal').style.display = 'none';
-}
-
-// Cart
-function openCart(){
-  const cartModal = document.getElementById('cart-modal');
-  const cartList = document.getElementById('cart-list');
-  cartList.innerHTML = '';
-  let total = 0;
-  cart.forEach((item,index)=>{
-    const li = document.createElement('li');
-    li.textContent = `${item.quantity} x ${item.name} = ${item.price*item.quantity} DKK`;
-    const removeBtn = document.createElement('button');
-    removeBtn.textContent = "Remove";
-    removeBtn.style.background="#B95E30"; removeBtn.style.marginTop="5px";
-    removeBtn.onclick = ()=>{
-      cart.splice(index,1);
-      document.getElementById('cart-count').textContent = cart.length;
-      openCart();
-    };
-    li.appendChild(removeBtn);
-    cartList.appendChild(li);
-    total += item.price*item.quantity;
-  });
-  document.getElementById('cart-total').textContent = `Total: ${total} DKK`;
-  cartModal.style.display='flex';
-}
-
-// Checkout
-function checkout(){
-  if(cart.length===0) return alert("Cart empty");
-  const name = prompt("Full Name:");
-  const phone = prompt("Phone Number:");
-  const pickup = confirm("Click OK for Pickup (10% discount), Cancel for Delivery");
-  const datetime = prompt("Enter desired date & time (e.g., 2025-10-15 18:00):");
-  if(!name || !phone || !datetime) return alert("All fields required");
-  let total = cart.reduce((sum,i)=>sum+i.price*i.quantity,0);
-  if(pickup) total = Math.round(total*0.9); // 10% off
-  push(ref(database,'orders'),{
-    customer:name,
-    phone:phone,
-    pickup: pickup?"Pickup":"Delivery",
-    datetime,
-    items:cart,
-    total
-  });
-  alert(`Order confirmed! Total: ${total} DKK.\nPay via MobilePay +45 91 67 30 68`);
-  cart = [];
-  document.getElementById('cart-count').textContent = 0;
-  document.getElementById('cart-modal').style.display='none';
-  showPage('frontpage');
-}
-
+// DOM READY
 document.addEventListener('DOMContentLoaded',()=>{
+
+  // NAVIGATION BUTTONS
   document.querySelectorAll('.nav-btn').forEach(btn=>{
     btn.addEventListener('click',e=>{
       e.preventDefault();
@@ -155,103 +101,199 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
   });
 
-  const lightbox=document.getElementById('lightbox');
-  const lightboxImg=document.getElementById('lightbox-img');
-  const lightboxDesc=document.getElementById('lightbox-desc');
+  // LIGHTBOX MODAL FOR ADDING TO CART
+  const itemModal=document.getElementById('item-modal');
+  const modalTitle=document.getElementById('modal-title');
+  const modalPrice=document.getElementById('modal-price');
+  const modalQty=document.getElementById('modal-qty');
+  const modalAdd=document.getElementById('modal-add');
+
+  let selectedItem = null;
+
   document.querySelectorAll('.gallery div').forEach(item=>{
-    item.addEventListener('dblclick',()=>{ // double click to view in lightbox
-      lightbox.style.display='flex';
-      lightboxImg.src=item.querySelector('img').src;
-      lightboxDesc.textContent=item.querySelector('p').textContent;
+    item.addEventListener('click',()=>{
+      selectedItem={
+        name:item.querySelector('p').textContent,
+        price:parseFloat(item.querySelector('p').textContent.replace(/[^0-9.]/g,'')),
+      };
+      modalTitle.textContent=selectedItem.name;
+      modalPrice.textContent="Price: "+selectedItem.price+" DKK";
+      modalQty.value=1;
+      itemModal.style.display='block';
     });
   });
-  document.getElementById('close-lightbox').addEventListener('click',()=>{lightbox.style.display='none';});
+
+  // ADD TO CART
+  modalAdd.addEventListener('click',()=>{
+    const qty=parseInt(modalQty.value);
+    const existing=cart.find(c=>c.name===selectedItem.name);
+    if(existing){existing.qty+=qty;} else {cart.push({...selectedItem,qty});}
+    updateCartCount();
+    itemModal.style.display='none';
+  });
+
+  // CART BUTTON
+  const cartBtn=document.getElementById('cart-btn');
+  const cartModal=document.getElementById('cart-modal');
+  const cartList=document.getElementById('cart-list');
+  const checkoutBtn=document.getElementById('checkout-btn');
+
+  function updateCartCount(){
+    document.getElementById('cart-count').textContent=cart.reduce((a,b)=>a+b.qty,0);
+  }
+
+  cartBtn.addEventListener('click',()=>{
+    cartList.innerHTML="";
+    cart.forEach((item,i)=>{
+      const li=document.createElement('li');
+      li.textContent=item.name+" x "+item.qty+" = "+(item.qty*item.price)+" DKK";
+      const removeBtn=document.createElement('button');
+      removeBtn.textContent="Remove";
+      removeBtn.style.marginLeft="10px";
+      removeBtn.onclick=()=>{cart.splice(i,1);updateCartCount();cartBtn.click();};
+      li.appendChild(removeBtn);
+      cartList.appendChild(li);
+    });
+    cartModal.style.display='block';
+  });
+
+  checkoutBtn.addEventListener('click',()=>{
+    cartModal.style.display='none';
+    showPage('checkoutpage');
+    renderCheckout();
+  });
+
 });
+
+// CHECKOUT
+function renderCheckout(){
+  const checkoutList=document.getElementById('checkout-list');
+  const checkoutTotal=document.getElementById('checkout-total');
+  const orderName=document.getElementById('order-name');
+  const orderPhone=document.getElementById('order-phone');
+  const orderType=document.getElementById('order-type');
+  const orderDate=document.getElementById('order-date');
+  const orderTime=document.getElementById('order-time');
+
+  checkoutList.innerHTML="";
+  cart.forEach(item=>{
+    const li=document.createElement('li');
+    li.textContent=item.name+" x "+item.qty+" = "+(item.price*item.qty)+" DKK";
+    checkoutList.appendChild(li);
+  });
+
+  const subtotal=cart.reduce((a,b)=>a+b.price*b.qty,0);
+  let total=subtotal;
+  if(orderType.value==="Pickup"){total=subtotal*0.9;}
+  checkoutTotal.textContent="Total: "+total.toFixed(2)+" DKK";
+
+  document.getElementById('confirm-order').onclick=()=>{
+    if(!orderName.value || !orderPhone.value || !orderType.value || !orderDate.value || !orderTime.value){alert("Please fill all fields");return;}
+    const orderData={
+      name: orderName.value,
+      phone: orderPhone.value,
+      type: orderType.value,
+      date: orderDate.value,
+      time: orderTime.value,
+      items: cart,
+      total: total.toFixed(2),
+    };
+    push(ref(getDatabase(), 'orders'), orderData);
+    alert("Order confirmed! Pay via MobilePay +45 91 67 30 68");
+    cart=[];
+    updateCartCount();
+    showPage('frontpage');
+  };
+}
+
+function updateCartCount(){document.getElementById('cart-count').textContent=cart.reduce((a,b)=>a+b.qty,0);}
 </script>
 </head>
 <body>
 
-<!-- Cart Icon -->
-<div class="cart-icon" id="cart-count" onclick="openCart()">0</div>
-
-<!-- Item Modal -->
-<div id="item-modal">
-  <div id="item-content">
-    <h2 id="item-name">Item</h2>
-    <p id="item-price">0 DKK</p>
-    <input type="number" id="item-quantity" min="1" value="1">
-    <button onclick="addCurrentItemToCart()">Add to Cart</button>
-    <button onclick="document.getElementById('item-modal').style.display='none'">Close</button>
-  </div>
-</div>
-
-<!-- Cart Modal -->
-<div id="cart-modal">
-  <div id="cart-content">
-    <h2>Your Cart</h2>
-    <ul id="cart-list"></ul>
-    <p id="cart-total"></p>
-    <button onclick="checkout()">Checkout</button>
-    <button onclick="document.getElementById('cart-modal').style.display='none'">Close</button>
-    <p style="font-size:12px;margin-top:10px;color:#555;">
-      You can also order via Wolt or Just Eat, but direct orders get 10% off for pickup!
-    </p>
-  </div>
-</div>
-
-<!-- Lightbox -->
-<div id="lightbox">
-  <span id="close-lightbox">&times;</span>
-  <img id="lightbox-img" src="">
-  <p id="lightbox-desc"></p>
-</div>
-
-<!-- Front Page -->
+<!-- FRONT PAGE -->
 <div id="frontpage">
-  <header>
-    <div></div>
-    <a href="#" class="nav-btn" data-target="contactpage">Contact Us</a>
-  </header>
-  <main>
-    <div id="homepage-header">
-      <img id="logo" src="logo.png" alt="Poster Image">
-      <div style="text-align:center;">
-        <img id="header-img" src="mainfood.png" alt="Header Image">
-        <h1>Gloria's Cookhouse</h1>
-        <p><strong>Soul Food Fusion</strong><br>
-        Crafted with Love; A Global Village Kitchen, Where Africa Meets the World.</p>
-      </div>
+<header>
+  <div></div>
+  <a href="#" class="nav-btn" data-target="contactpage">Contact Us</a>
+</header>
+<main>
+  <div id="homepage-header">
+    <img id="logo" src="logo.png" alt="Poster Image">
+    <div style="text-align:center;">
+      <img id="header-img" src="mainfood.png" alt="Header Image">
+      <h1>Gloria's Cookhouse</h1>
+      <p><strong>Soul Food Fusion</strong><br>Crafted with Love; A Global Village Kitchen, Where Africa Meets the World.</p>
     </div>
-    <div class="buttons">
-      <a href="https://wolt.com" target="_blank">Order on Wolt</a>
-      <a href="https://just-eat.com" target="_blank">Order on Just Eat</a>
-      <a href="#" class="nav-btn" data-target="menupage">See Menu</a>
-    </div>
-    <div class="auth">
-      <a class="nav-btn" data-target="loginpage">Login</a> | 
-      <a class="nav-btn" data-target="signuppage">Sign Up</a>
-    </div>
-  </main>
+  </div>
+  <div class="buttons">
+    <a href="https://wolt.com" target="_blank">Order on Wolt</a>
+    <a href="https://just-eat.com" target="_blank">Order on Just Eat</a>
+    <a href="#" class="nav-btn" data-target="menupage">See Menu</a>
+  </div>
+  <div class="auth">
+    <a class="nav-btn" data-target="loginpage">Login</a> | 
+    <a class="nav-btn" data-target="signuppage">Sign Up</a>
+  </div>
+</main>
 </div>
 
-<!-- Menu Page -->
+<!-- MENU PAGE -->
 <div id="menupage" style="display:none;">
   <h1 style="text-align:center;">Our Menu (Bestsellers)</h1>
   <p class="note">
-    Click any food image → set quantity → Add to cart.<br>
-    Pre-order: 10am-6pm previous day. Collection: 5-8pm. Min order: 299DKK.
+    Pre-order window: 10am–6pm previous day.<br>
+    Collection window: 5pm–8pm.<br>
+    Minimum order: 299DKK.
   </p>
   <div class="gallery">
-    <div onclick="openItemModal('Jollof rice with chicken',179)"><img src="food6.jpg"><p>Jollof rice with chicken - 179DKK</p></div>
-    <div onclick="openItemModal('Jollof rice with beef',179)"><img src="food9.jpg"><p>Jollof rice with beef - 179DKK</p></div>
-    <div onclick="openItemModal('Fried rice & chicken',179)"><img src="food22.jpg"><p>Fried rice & chicken - 179DKK</p></div>
-    <div onclick="openItemModal('Rice & veggie sauce & chicken kebabs',179)"><img src="food12.jpg"><p>Rice & veggie sauce & chicken kebabs - 179DKK</p></div>
-    <div onclick="openItemModal('Pasta & veggie stir fry',179)"><img src="food20.jpg"><p>Pasta & veggie stir fry - 179DKK</p></div>
+    <div><img src="food6.jpg"><p>Jollof rice with chicken = 179DKK</p></div>
+    <div><img src="food9.jpg"><p>Jollof rice with beef = 179DKK</p></div>
+    <div><img src="food22.jpg"><p>Fried rice with chicken = 179DKK</p></div>
   </div>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
+  <button id="cart-btn"><span id="cart-count">0</span>🛒</button>
+</div>
+
+<!-- CART MODAL -->
+<div id="cart-modal" class="modal">
+  <h2>Your Cart</h2>
+  <ul id="cart-list" style="list-style:none;padding:0;"></ul>
+  <button id="checkout-btn">Checkout</button>
+  <button onclick="document.getElementById('cart-modal').style.display='none';">Close</button>
+</div>
+
+<!-- ITEM MODAL -->
+<div id="item-modal" class="modal">
+  <h2 id="modal-title">Item</h2>
+  <p id="modal-price"></p>
+  <input type="number" id="modal-qty" min="1" value="1">
+  <button id="modal-add">Add to Cart</button>
+  <button onclick="document.getElementById('item-modal').style.display='none';">Cancel</button>
+</div>
+
+<!-- CHECKOUT PAGE -->
+<div id="checkoutpage" style="display:none;">
+  <h2>Checkout</h2>
+  <ul id="checkout-list" style="list-style:none;padding:0;"></ul>
+  <p id="checkout-total"></p>
+  <input id="order-name" placeholder="Your Name">
+  <input id="order-phone" placeholder="Phone Number">
+  <select id="order-type">
+    <option value="">Select Pickup/Delivery</option>
+    <option value="Pickup">Pickup (10% discount)</option>
+    <option value="Delivery">Delivery</option>
+  </select>
+  <input type="date" id="order-date">
+  <input type="time" id="order-time">
+  <button id="confirm-order">Confirm Order</button>
+  <p style="font-size:0.9em;margin-top:10px;color:#333;">
+    You can also order via Wolt or Just Eat, but ordering directly gives a 10% discount for pickup.
+  </p>
   <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
-<!-- Contact Page -->
+<!-- CONTACT PAGE -->
 <div id="contactpage" style="display:none;">
   <h1>Contact Us</h1>
   <p><strong>Name:</strong> Gloria Thompson Duruibe</p>
@@ -260,7 +302,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
-<!-- Login Page -->
+<!-- LOGIN PAGE -->
 <div id="loginpage" style="display:none;">
   <div class="modal">
     <h2>Login</h2>
@@ -268,11 +310,12 @@ document.addEventListener('DOMContentLoaded',()=>{
     <input id="login-password" type="password" placeholder="Password">
     <button onclick="loginUser()">Login</button>
     <a class="nav-btn" data-target="signuppage">Sign Up</a>
+    <a href="#">Forgot Password?</a>
   </div>
   <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
-<!-- Sign Up Page -->
+<!-- SIGNUP PAGE -->
 <div id="signuppage" style="display:none;">
   <div class="modal">
     <h2>Sign Up</h2>
@@ -285,6 +328,5 @@ document.addEventListener('DOMContentLoaded',()=>{
   </div>
   <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
-
 </body>
 </html>
