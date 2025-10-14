@@ -20,10 +20,9 @@ h2{color:#B95E30;margin-bottom:10px;}
 .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px;padding:20px; justify-items:center;}
 .gallery div{text-align:center;cursor:pointer;}
 .gallery img{width:100%;border-radius:8px;max-width:150px;}
-.modal{background:#fff;color:#B95E30;padding:30px;margin:20px auto;border-radius:10px;width:300px;text-align:center;display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1001;}
+.modal{background:#fff;color:#B95E30;padding:20px;margin:20px auto;border-radius:10px;width:300px;text-align:center;display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1001;}
 .modal input, .modal textarea, .modal select{width:90%;padding:8px;margin:10px 0;}
 .modal button{background:#BE9E42;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin-top:10px;}
-.modal a{display:block;margin:5px;color:#B95E30;text-decoration:none;cursor:pointer;}
 button.back-btn{margin:20px auto;display:block;padding:10px 20px;background:#B95E30;color:#fff;border:none;border-radius:8px;cursor:pointer;}
 #cart-icon{position:fixed;bottom:20px;right:20px;background:#FFA500;color:#fff;width:60px;height:60px;border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:24px;cursor:pointer;z-index:1002;display:none;}
 #cart-count{position:absolute;top:-5px;right:-5px;background:red;color:#fff;width:20px;height:20px;border-radius:50%;font-size:12px;display:flex;justify-content:center;align-items:center;}
@@ -42,6 +41,7 @@ const firebaseConfig = {
   messagingSenderId: "242537183123",
   appId: "1:242537183123:web:4cdbc739f2f62b2b789a66"
 };
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
@@ -116,9 +116,7 @@ function closeCartModal(){document.getElementById('cart-modal').style.display='n
 function updateCheckoutPage(){
   const itemsDiv=document.getElementById('checkout-items');
   itemsDiv.innerHTML='';
-  let total=0;
   cart.forEach(item=>{
-    total+=item.price*item.qty;
     const p=document.createElement('p');
     p.textContent=`${item.name} x ${item.qty} = ${item.price*item.qty} DKK`;
     itemsDiv.appendChild(p);
@@ -156,20 +154,21 @@ document.addEventListener('DOMContentLoaded',()=>{
       showPage(btn.getAttribute('data-target'));
     });
   });
+
+  document.querySelectorAll('input[name="order-type"]').forEach(r=>{
+    r.addEventListener('change',()=>{document.getElementById('address-label').style.display=r.value==='delivery'?'block':'none';calculateTotal();});
+  });
 });
 </script>
 </head>
 <body>
 
-<!-- Front Page -->
+<!-- FRONT PAGE -->
 <div id="frontpage">
-  <header>
-    <div></div>
-    <a href="#" class="nav-btn" data-target="contactpage">Contact Us</a>
-  </header>
+  <header><div></div><a href="#" class="nav-btn" data-target="contactpage">Contact Us</a></header>
   <main>
     <div id="homepage-header">
-      <img id="logo" src="logo.png" alt="Poster">
+      <img id="logo" src="logo.png" alt="Logo">
       <div style="text-align:center;">
         <img id="header-img" src="mainfood.png" alt="Header Image">
         <h1>Gloria's Cookhouse</h1>
@@ -189,11 +188,11 @@ document.addEventListener('DOMContentLoaded',()=>{
   </main>
 </div>
 
-<!-- Menu Page -->
+<!-- MENU PAGE -->
 <div id="menupage" style="display:none;">
   <h1>Our Menu (Bestsellers)</h1>
   <p class="note">
-    Pre-order window: Customers may place orders from 10 a.m. to 6 p.m. the previous day.<br>
+    Pre-order window: Customers may place orders from 10 a.m. to 6 p.m. the previous day.<br> 
     Collection window: Orders will be freshly prepared and ready for collection between 5 p.m. and 8 p.m., Monday through Sunday.<br>
     This structure allows me to plan properly for each day’s meals, source fresh ingredients, and manage unexpected surges in demand.<br>
     In addition, Gloria’s Cookhouse also offers a range of halal food, portions from 650g, and catering + bulk orders. 
@@ -201,76 +200,110 @@ document.addEventListener('DOMContentLoaded',()=>{
     The minimum order is 299DKK.
   </p>
   <div class="gallery">
-    <div><img src="food6.jpg" onclick="openItemModal('Jollof rice with chicken',179)"><p>The Famous Nigerian Jollof rice with chicken = 179DKK</p></div>
-    <div><img src="food9.jpg" onclick="openItemModal('Jollof rice with beef',179)"><p>The Famous Nigerian Jollof rice with beef = 179DKK</p></div>
-    <div><img src="food22.jpg" onclick="openItemModal('Fried rice with chicken breast',179)"><p>The Famous Nigerian Fried rice with chicken breast = 179DKK</p></div>
-    <div><img src="food12.jpg" onclick="openItemModal('Rice with veggie sauce & chicken kebabs',179)"><p>Rice with veggie sauce & chicken kebabs = 179DKK</p></div>
-    <div><img src="food20.jpg" onclick="openItemModal('Pasta & green veggie stir fry sauce',179)"><p>Pasta & green veggie stir fry sauce = 179DKK</p></div>
-    <div><img src="food14.jpg" onclick="openItemModal('Spaghetti & meatballs',179)"><p>Spaghetti & juicy meatballs in tomato sauce = 179DKK</p></div>
-    <div><img src="food13.jpg" onclick="openItemModal('Pasta Alfredo with chicken',179)"><p>Pasta Alfredo with chicken breast chunks = 179DKK</p></div>
-    <div><img src="food1.jpg" onclick="openItemModal('Mashed potatoes & salmon',179)"><p>Mashed potatoes & salmon with asparagus = 179DKK</p></div>
-    <div><img src="food2.jpg" onclick="openItemModal('Fried plantains & yam',179)"><p>Fried plantains with yam chips & egg gravy = 179DKK</p></div>
-    <div><img src="food15.jpg" onclick="openItemModal('Stewed blackeyed-beans & plantains',179)"><p>Stewed blackeyed-beans & a side of fried plantains = 179DKK</p></div>
-    <div><img src="food17.jpg" onclick="openItemModal('Fried fish fillet',199)"><p>Fried fish fillet in batter with fried plantains = 199DKK</p></div>
-    <div><img src="food5.jpg" onclick="openItemModal('Avocado salad',99)"><p>Avocado salad (tailored to taste) = 99DKK</p></div>
-    <div><img src="food7.jpg" onclick="openItemModal('Efo Riro Soup with fufu',249)"><p>The Famous Nigerian Efo Riro Soup with fufu = 249DKK</p></div>
-    <div><img src="food16.jpg" onclick="openItemModal('Egusi Soup with fufu',249)"><p>The Famous Nigerian Egusi soup with fufu = 249DKK</p></div>
-    <div><img src="food10.jpg" onclick="openItemModal('Grilled potatoes & chicken',179)"><p>Grilled potatoes & grilled chicken = 179DKK</p></div>
-    <div><img src="food19.jpg" onclick="openItemModal('African Green bell pepper sauce',179)"><p>African Green bell pepper sauce = 179DKK</p></div>
-    <div><img src="food11.jpg" onclick="openItemModal('Meatpie/Chicken pie',279)"><p>The Famous Nigerian Meatpie/Chicken pie - Minimum order 4 pieces = 279DKK</p></div>
-    <div><img src="food3.jpg" onclick="openItemModal('Moi Moi with plantains',199)"><p>African Moi Moi with fried plantains (Beans pudding) = 199DKK</p></div>
-    <div><img src="food21.jpg" onclick="openItemModal('Banana bread minis',89)"><p>Banana bread minis (4 in a pack with different flavours) = 89DKK</p></div>
-    <div><img src="food24.jpg" onclick="openItemModal('Big loaves of Banana bread',89)"><p>Big loaves of Banana bread (Choco chip, Nutty, Oreos, Plain) - Minimum order 3 pieces = 89DKK each</p></div>
-    <div><img src="food23.jpg" onclick="openItemModal('African Full roasted chicken',199)"><p>African Full roasted chicken = 199DKK</p></div>
-    <div><img src="food8.jpg" onclick="openItemModal('African Grilled spicy chicken',149)"><p>African Grilled spicy chicken = 149DKK</p></div>
-    <div><img src="food4.jpg" onclick="openItemModal('African Beef kebabs',149)"><p>African Beef kebabs = 149DKK</p></div>
+    <div onclick="openItemModal('Nigerian Jollof rice with chicken',179)"><img src="food6.jpg"><p>The Famous Nigerian Jollof rice with chicken = 179DKK</p></div>
+    <div onclick="openItemModal('Nigerian Jollof rice with beef',179)"><img src="food9.jpg"><p>The Famous Nigerian Jollof rice with beef = 179DKK</p></div>
+    <div onclick="openItemModal('Nigerian Fried rice with chicken breast',179)"><img src="food22.jpg"><p>The Famous Nigerian Fried rice with chicken breast = 179DKK</p></div>
+    <div onclick="openItemModal('Rice with veggie sauce & chicken kebabs',179)"><img src="food12.jpg"><p>Rice with veggie sauce & chicken kebabs = 179DKK</p></div>
+    <div onclick="openItemModal('Pasta & green veggie stir fry sauce',179)"><img src="food20.jpg"><p>Pasta & green veggie stir fry sauce = 179DKK</p></div>
+    <div onclick="openItemModal('Spaghetti & juicy meatballs',179)"><img src="food14.jpg"><p>Spaghetti & juicy meatballs in tomato sauce = 179DKK</p></div>
+    <div onclick="openItemModal('Pasta Alfredo with chicken breast chunks',179)"><img src="food13.jpg"><p>Pasta Alfredo with chicken breast chunks = 179DKK</p></div>
+    <div onclick="openItemModal('Mashed potatoes & salmon',179)"><img src="food1.jpg"><p>Mashed potatoes & salmon with asparagus = 179DKK</p></div>
+    <div onclick="openItemModal('Fried plantains with yam chips & egg gravy',179)"><img src="food2.jpg"><p>Fried plantains with yam chips & egg gravy = 179DKK</p></div>
+    <div onclick="openItemModal('Stewed blackeyed-beans & fried plantains',179)"><img src="food15.jpg"><p>Stewed blackeyed-beans & a side of fried plantains = 179DKK</p></div>
+    <div onclick="openItemModal('Fried fish fillet with fried plantains',199)"><img src="food17.jpg"><p>Fried fish fillet in batter with fried plantains = 199DKK</p></div>
+    <div onclick="openItemModal('Avocado salad',99)"><img src="food5.jpg"><p>Avocado salad (tailored to taste) = 99DKK</p></div>
+    <div onclick="openItemModal('Nigerian Efo Riro Soup with fufu',249)"><img src="food7.jpg"><p>The Famous Nigerian Efo Riro Soup with fufu = 249DKK</p></div>
+    <div onclick="openItemModal('Nigerian Egusi soup with fufu',249)"><img src="food16.jpg"><p>The Famous Nigerian Egusi soup with fufu = 249DKK</p></div>
+    <div onclick="openItemModal('Grilled potatoes & grilled chicken',179)"><img src="food10.jpg"><p>Grilled potatoes & grilled chicken = 179DKK</p></div>
+    <div onclick="openItemModal('African Green bell pepper sauce',179)"><img src="food19.jpg"><p>African Green bell pepper sauce = 179DKK</p></div>
+    <div onclick="openItemModal('Meatpie/Chicken pie',279)"><img src="food11.jpg"><p>The Famous Nigerian Meatpie/Chicken pie = 279DKK</p></div>
+    <div onclick="openItemModal('African Moi Moi with fried plantains',199)"><img src="food3.jpg"><p>African Moi Moi with fried plantains = 199DKK</p></div>
+    <div onclick="openItemModal('Banana bread minis (4-pack)',89)"><img src="food21.jpg"><p>Banana bread minis (4 in a pack with different flavours) = 89DKK</p></div>
+    <div onclick="openItemModal('Big loaves of Banana bread',89)"><img src="food24.jpg"><p>Big loaves of Banana bread = 89DKK each</p></div>
+    <div onclick="openItemModal('African Full roasted chicken',199)"><img src="food23.jpg"><p>African Full roasted chicken = 199DKK</p></div>
+    <div onclick="openItemModal('African Grilled spicy chicken',149)"><img src="food8.jpg"><p>African Grilled spicy chicken = 149DKK</p></div>
+    <div onclick="openItemModal('African Beef kebabs',149)"><img src="food4.jpg"><p>African Beef kebabs = 149DKK</p></div>
   </div>
   <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
+<!-- CART ICON -->
 <div id="cart-icon" onclick="openCartModal()">
   🛒<div id="cart-count">0</div>
 </div>
 
-<div id="item-modal" class="modal">
-  <h2 id="modal-item-name"></h2>
+<!-- ITEM MODAL -->
+<div class="modal" id="item-modal">
+  <h3 id="modal-item-name"></h3>
   <p id="modal-item-price"></p>
-  <input id="modal-item-qty" type="number" min="1" value="1">
+  <input type="number" id="modal-item-qty" value="1" min="1">
   <button onclick="addToCart()">Add to Cart</button>
   <button onclick="closeItemModal()">Close</button>
 </div>
 
-<div id="cart-modal" class="modal">
+<!-- CART MODAL -->
+<div class="modal" id="cart-modal">
+  <h3>Cart</h3>
   <div id="cart-content"></div>
-  <button onclick="closeCartModal()">Close Cart</button>
+  <button onclick="closeCartModal()">Close</button>
 </div>
 
-<!-- Checkout Page -->
+<!-- CHECKOUT PAGE -->
 <div id="checkout-page" style="display:none;">
-  <h1>Checkout</h1>
+  <h2>Checkout</h2>
   <div id="checkout-items"></div>
   <p>Total: <span id="checkout-total">0 DKK</span></p>
-  <label>Name: <input type="text" id="checkout-name"></label>
-  <label>Phone: <input type="text" id="checkout-phone"></label>
-  <p>
-    <input type="radio" name="order-type" value="pickup" onchange="calculateTotal()"> Pickup
-    <input type="radio" name="order-type" value="delivery" onchange="calculateTotal()"> Delivery
-  </p>
-  <label>Date: <input type="date" id="checkout-date"></label>
-  <label>Time: <input type="time" id="checkout-time"></label>
-  <label id="address-label" style="display:none">Address: <input type="text" id="checkout-address"></label>
-  <label>Note: <textarea id="checkout-note" placeholder="Special instructions"></textarea></label>
-  <p>You can also order Gloria's Cookhouse meals conveniently via Wolt or Just Eat - but when you order directly through our website or call us for guidance or MobilePay options, you'll enjoy a 10% discount on all pickup orders.</p>
+  <form onsubmit="event.preventDefault(); confirmOrder();">
+    <input type="text" id="checkout-name" placeholder="Name" required>
+    <input type="tel" id="checkout-phone" placeholder="Phone" required>
+    <p>Order Type:</p>
+    <label><input type="radio" name="order-type" value="pickup" required> Pickup (10% discount)</label>
+    <label><input type="radio" name="order-type" value="delivery"> Delivery</label>
+    <label id="address-label" style="display:none;">Address:<input type="text" id="checkout-address"></label>
+    <input type="date" id="checkout-date" required>
+    <input type="time" id="checkout-time" required>
+    <textarea id="checkout-note" placeholder="Note (optional)"></textarea>
+    <button type="submit">Confirm Order</button>
+  </form>
+  <p>You can also order Gloria's Cookhouse meals via Wolt or Just Eat, but ordering directly gives 10% off on pickup.</p>
   <p>MobilePay: +45 91673068</p>
-  <button onclick="confirmOrder()">Confirm Order</button>
   <button class="back-btn" onclick="showPage('menupage')">Back</button>
 </div>
 
-<script>
-document.querySelectorAll('input[name="order-type"]').forEach(r=>{
-  r.addEventListener('change',()=>{document.getElementById('address-label').style.display=r.value==='delivery'?'block':'none';calculateTotal();});
-});
-</script>
+<!-- LOGIN PAGE -->
+<div id="loginpage" style="display:none;">
+  <div class="modal">
+    <h2>Login</h2>
+    <input id="login-email" type="email" placeholder="Email" required>
+    <input id="login-password" type="password" placeholder="Password" required>
+    <button onclick="loginUser()">Login</button>
+    <a class="nav-btn" data-target="signuppage">Sign Up</a>
+  </div>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
+</div>
+
+<!-- SIGNUP PAGE -->
+<div id="signuppage" style="display:none;">
+  <div class="modal">
+    <h2>Sign Up</h2>
+    <input type="text" placeholder="Full Name">
+    <input type="date" placeholder="DOB">
+    <input id="signup-email" type="email" placeholder="Email" required>
+    <input id="signup-password" type="password" placeholder="Password" required>
+    <button onclick="signupUser()">Sign Up</button>
+    <a class="nav-btn" data-target="loginpage">Already have an account?</a>
+  </div>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
+</div>
+
+<!-- CONTACT PAGE -->
+<div id="contactpage" style="display:none;">
+  <h1>Contact Us</h1>
+  <p><strong>Name:</strong> Gloria Thompson Duruibe</p>
+  <p><strong>Phone:</strong> +45 91 67 30 68</p>
+  <p><strong>Email:</strong> g7thomson@yahoo.com</p>
+  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
+</div>
 
 </body>
 </html>
