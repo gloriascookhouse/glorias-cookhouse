@@ -12,22 +12,27 @@ main{margin-top:30px; display:flex; flex-direction:column; align-items:center;}
 #homepage-header{display:flex;align-items:center;justify-content:center;gap:40px;margin-bottom:20px; flex-wrap:wrap;}
 #logo{max-width:220px; flex-shrink:0;}
 #header-img{max-width:400px;}
-h1,h2{color:#B95E30;margin-bottom:10px;}
+h1{color:#B95E30;margin-bottom:10px;}
+h2{color:#B95E30;margin-bottom:10px;}
 .buttons a{display:block;margin:10px auto;padding:12px 20px;background:#FFA500;color:#fff;text-decoration:none;border-radius:8px;width:220px;}
 .auth a{margin:5px;text-decoration:none;color:#FFD700;cursor:pointer;}
 .note{font-style:italic;margin:20px; text-align:center; max-width:90%;}
-.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;padding:20px; justify-items:center;}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px;padding:20px; justify-items:center;}
 .gallery div{text-align:center;cursor:pointer;}
 .gallery img{width:100%;border-radius:8px;max-width:150px;}
-button.back-btn, button.add-cart, button.checkout-btn{margin:10px auto;display:block;padding:10px 20px;background:#B95E30;color:#fff;border:none;border-radius:8px;cursor:pointer;}
-.modal{background:#fff;color:#B95E30;padding:20px;margin:20px auto;border-radius:10px;width:300px;text-align:center; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:2000; display:none;}
-.modal input, .modal select{width:90%;padding:8px;margin:5px 0;}
-#cart-icon{position:fixed;bottom:20px;right:20px;width:60px;height:60px;background:#FFA500;border-radius:50%;display:flex;justify-content:center;align-items:center;cursor:pointer;z-index:1000;}
-#cart-count{position:absolute;top:5px;right:5px;background:red;color:#fff;border-radius:50%;width:20px;height:20px;font-size:12px;display:flex;justify-content:center;align-items:center;}
-#cart-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;justify-content:center;align-items:center;z-index:2000;}
-#cart-modal .content{background:#fff;color:#333;padding:20px;border-radius:10px;width:90%;max-width:500px;max-height:90%;overflow:auto;text-align:left;}
-#checkout-page{display:none;padding:20px;}
-input[type="text"], input[type="email"], input[type="number"], input[type="date"], input[type="time"], textarea, select{width:90%;padding:8px;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
+.modal{background:#fff;color:#B95E30;padding:30px;margin:20px auto;border-radius:10px;width:300px;text-align:center;display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1001;}
+.modal input, .modal textarea, .modal select{width:90%;padding:8px;margin:10px 0;}
+.modal button{background:#BE9E42;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin-top:10px;}
+.modal a{display:block;margin:5px;color:#B95E30;text-decoration:none;cursor:pointer;}
+button.back-btn{margin:20px auto;display:block;padding:10px 20px;background:#B95E30;color:#fff;border:none;border-radius:8px;cursor:pointer;}
+/* Cart Icon */
+#cart-icon{position:fixed;bottom:20px;right:20px;background:#FFA500;color:#fff;width:60px;height:60px;border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:24px;cursor:pointer;z-index:1002;display:none;}
+#cart-count{position:absolute;top:-5px;right:-5px;background:red;color:#fff;width:20px;height:20px;border-radius:50%;font-size:12px;display:flex;justify-content:center;align-items:center;}
+/* Lightbox */
+#lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:1000;}
+#lightbox img{max-width:90%;max-height:80%;border-radius:10px;}
+#lightbox p{color:#fff;margin-top:10px;}
+#lightbox span{position:absolute;top:20px;right:30px;color:#fff;font-size:30px;cursor:pointer;}
 </style>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
@@ -43,18 +48,18 @@ const firebaseConfig = {
   messagingSenderId: "242537183123",
   appId: "1:242537183123:web:4cdbc739f2f62b2b789a66"
 };
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
 let cart = [];
+let currentItem = null;
 
 function showPage(pageId){
-  ['frontpage','menupage','contactpage','loginpage','signuppage','checkout-page'].forEach(p=>{
-    document.getElementById(p).style.display='none';
-  });
+  const pages=['frontpage','menupage','contactpage','loginpage','signuppage','checkout-page'];
+  pages.forEach(p=>document.getElementById(p).style.display='none');
   document.getElementById(pageId).style.display='block';
+  document.getElementById('cart-icon').style.display = pageId==='menupage' ? 'flex' : 'none';
 }
 
 function loginUser(){
@@ -73,28 +78,26 @@ function signupUser(){
     .catch(e=>alert(e.message));
 }
 
-function openItemModal(itemName, itemPrice){
-  const modal=document.getElementById('item-modal');
-  modal.style.display='block';
-  document.getElementById('modal-item-name').textContent = itemName;
-  document.getElementById('modal-item-price').textContent = itemPrice;
+function openItemModal(name,price){
+  currentItem={name,price};
+  document.getElementById('modal-item-name').textContent=name;
+  document.getElementById('modal-item-price').textContent=price;
   document.getElementById('modal-item-qty').value=1;
+  document.getElementById('item-modal').style.display='block';
 }
 
 function closeItemModal(){document.getElementById('item-modal').style.display='none';}
 
 function addToCart(){
-  const name=document.getElementById('modal-item-name').textContent;
-  const price=parseInt(document.getElementById('modal-item-price').textContent);
   const qty=parseInt(document.getElementById('modal-item-qty').value);
-  let exists=cart.find(i=>i.name===name);
-  if(exists){exists.qty+=qty;} else{cart.push({name, price, qty});}
+  const index=cart.findIndex(i=>i.name===currentItem.name);
+  if(index>-1){cart[index].qty+=qty;} else {cart.push({...currentItem,qty});}
   updateCartCount();
   closeItemModal();
 }
 
 function updateCartCount(){
-  document.getElementById('cart-count').textContent=cart.reduce((acc,i)=>acc+i.qty,0);
+  document.getElementById('cart-count').textContent=cart.reduce((a,b)=>a+b.qty,0);
 }
 
 function openCartModal(){
@@ -102,45 +105,41 @@ function openCartModal(){
   const content=document.getElementById('cart-content');
   content.innerHTML='';
   if(cart.length===0){content.innerHTML='<p>Cart is empty</p>';}
-  cart.forEach((item,i)=>{
-    const div=document.createElement('div');
-    div.innerHTML=`${item.name} - ${item.price} DKK x <input type="number" min="1" value="${item.qty}" data-index="${i}" style="width:50px;"> 
-    <button onclick="removeCartItem(${i})">Remove</button>`;
-    content.appendChild(div);
-  });
-  content.innerHTML+='<button class="checkout-btn" onclick="checkout()">Checkout</button>';
-  modal.style.display='flex';
-  document.querySelectorAll('#cart-content input').forEach(inp=>{
-    inp.addEventListener('change',()=>{cart[inp.dataset.index].qty=parseInt(inp.value); updateCartCount();});
-  });
+  else{
+    cart.forEach((item,i)=>{
+      const div=document.createElement('div');
+      div.innerHTML=`${item.name} - ${item.price} DKK x <input type="number" value="${item.qty}" min="1" onchange="cart[${i}].qty=this.value;updateCartCount();"> 
+      <button onclick="cart.splice(${i},1);updateCartCount();openCartModal();">Remove</button>`;
+      content.appendChild(div);
+    });
+    const checkoutBtn=document.createElement('button');
+    checkoutBtn.textContent='Checkout';
+    checkoutBtn.onclick=()=>{showPage('checkout-page'); updateCheckoutPage(); closeCartModal();}
+    content.appendChild(checkoutBtn);
+  }
+  modal.style.display='block';
 }
-
-function removeCartItem(i){cart.splice(i,1); updateCartCount(); openCartModal();}
 
 function closeCartModal(){document.getElementById('cart-modal').style.display='none';}
 
-function checkout(){
-  closeCartModal();
-  showPage('checkout-page');
-  renderCartCheckout();
-}
-
-function renderCartCheckout(){
-  const container=document.getElementById('checkout-items');
-  container.innerHTML='';
+function updateCheckoutPage(){
+  const itemsDiv=document.getElementById('checkout-items');
+  itemsDiv.innerHTML='';
+  let total=0;
   cart.forEach(item=>{
-    const div=document.createElement('div');
-    div.textContent=`${item.name} - ${item.price} DKK x ${item.qty}`;
-    container.appendChild(div);
+    total+=item.price*item.qty;
+    const p=document.createElement('p');
+    p.textContent=`${item.name} x ${item.qty} = ${item.price*item.qty} DKK`;
+    itemsDiv.appendChild(p);
   });
-  calculateTotal();
+  document.getElementById('checkout-total').textContent=total+' DKK';
 }
 
 function calculateTotal(){
+  let total=cart.reduce((a,b)=>a+b.price*b.qty,0);
   const type=document.querySelector('input[name="order-type"]:checked')?.value;
-  let total=cart.reduce((acc,i)=>acc+i.price*i.qty,0);
-  if(type==='pickup'){total=Math.round(total*0.9);}
-  document.getElementById('checkout-total').textContent=total+' DKK';
+  if(type==='pickup'){total*=0.9;}
+  document.getElementById('checkout-total').textContent=Math.round(total)+' DKK';
 }
 
 function confirmOrder(){
@@ -151,9 +150,9 @@ function confirmOrder(){
   const time=document.getElementById('checkout-time').value;
   const address=document.getElementById('checkout-address').value;
   const note=document.getElementById('checkout-note').value;
-  if(!name || !phone || !type || !date || !time || (type==='delivery' && !address)){alert('Please fill all fields'); return;}
-  const orderData={name, phone, type, date, time, address, note, items:cart, total:document.getElementById('checkout-total').textContent};
-  push(ref(db,'orders'), orderData).then(()=>{alert('Order confirmed! Use MobilePay +45 91673068'); cart=[]; updateCartCount(); showPage('frontpage');});
+  if(!name||!phone||!type||!date||!time||(type==='delivery'&&!address)){alert('Please fill all fields'); return;}
+  const orderData={name,phone,type,date,time,address,note,items:cart,total:document.getElementById('checkout-total').textContent};
+  push(ref(db,'orders'),orderData).then(()=>{alert('Order confirmed! Use MobilePay +45 91673068'); cart=[]; updateCartCount(); showPage('frontpage');});
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
@@ -168,7 +167,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 </head>
 <body>
 
-<!-- Homepage -->
+<!-- Front Page -->
 <div id="frontpage">
   <header>
     <div></div>
@@ -200,7 +199,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="menupage" style="display:none;">
   <h1 style="text-align:center;">Our Menu (Bestsellers)</h1>
   <p class="note">
-    Pre-order window: Customers may place orders from 10 a.m. to 6 p.m. the previous day.<br> 
+    Pre-order window: Customers may place orders from 10 a.m. to 6 p.m. the previous day.<br>
     Collection window: Orders will be freshly prepared and ready for collection between 5 p.m. and 8 p.m., Monday through Sunday.<br>
     This structure allows me to plan properly for each day’s meals, source fresh ingredients, and manage unexpected surges in demand.<br>
     In addition, Gloria’s Cookhouse also offers a range of halal food, portions from 650g, and catering + bulk orders. 
@@ -208,33 +207,28 @@ document.addEventListener('DOMContentLoaded',()=>{
     The minimum order is 299DKK.
   </p>
   <div class="gallery">
-    <div><img src="food6.jpg" onclick="openItemModal('Jollof rice with chicken',179)"><p>The Famous Nigerian Jollof rice with chicken = 179DKK</p></div>
-    <div><img src="food9.jpg" onclick="openItemModal('Jollof rice with beef',179)"><p>The Famous Nigerian Jollof rice with beef = 179DKK</p></div>
-    <div><img src="food22.jpg" onclick="openItemModal('Fried rice with chicken breast',179)"><p>The Famous Nigerian Fried rice with chicken breast = 179DKK</p></div>
-    <div><img src="food12.jpg" onclick="openItemModal('Rice with veggie sauce & chicken kebabs',179)"><p>Rice with veggie sauce & chicken kebabs = 179DKK</p></div>
-    <div><img src="food20.jpg" onclick="openItemModal('Pasta & green veggie stir fry sauce',179)"><p>Pasta & green veggie stir fry sauce = 179DKK</p></div>
-    <div><img src="food14.jpg" onclick="openItemModal('Spaghetti & juicy meatballs',179)"><p>Spaghetti & juicy meatballs in tomato sauce = 179DKK</p></div>
-    <div><img src="food13.jpg" onclick="openItemModal('Pasta Alfredo with chicken chunks',179)"><p>Pasta Alfredo with chicken breast chunks = 179DKK</p></div>
-
-    <div><img src="food1.jpg" onclick="openItemModal('Mashed potatoes & salmon',179)"><p>Mashed potatoes & salmon with asparagus = 179DKK</p></div>
-    <div><img src="food2.jpg" onclick="openItemModal('Fried plantains with yams',179)"><p>Fried plantains with yam chips & egg gravy = 179DKK</p></div>
-    <div><img src="food15.jpg" onclick="openItemModal('Stewed blackeyed-beans & plantains',179)"><p>Stewed blackeyed-beans & a side of fried plantains = 179DKK</p></div>
-    <div><img src="food17.jpg" onclick="openItemModal('Fried fish fillet',199)"><p>Fried fish fillet in batter with fried plantains = 199DKK</p></div>
-    <div><img src="food5.jpg" onclick="openItemModal('Avocado salad',99)"><p>Avocado salad (tailored to taste) = 99DKK</p></div>
-
-    <div><img src="food7.jpg" onclick="openItemModal('Efo Riro Soup',249)"><p>The Famous Nigerian Efo Riro Soup with fufu = 249DKK</p></div>
-    <div><img src="food16.jpg" onclick="openItemModal('Egusi Soup',249)"><p>The Famous Nigerian Egusi soup with fufu = 249DKK</p></div>
-    <div><img src="food10.jpg" onclick="openItemModal('Grilled potatoes & chicken',179)"><p>Grilled potatoes & grilled chicken = 179DKK</p></div>
-    <div><img src="food19.jpg" onclick="openItemModal('African Green bell pepper sauce',179)"><p>African Green bell pepper sauce (can be served with steamed rice or boiled yam) = 179DKK</p></div>
-
-    <div><img src="food11.jpg" onclick="openItemModal('Meatpie/Chicken pie',279)"><p>The Famous Nigerian Meatpie/Chicken pie - Minimum order 4 pieces = 279DKK</p></div>
-    <div><img src="food3.jpg" onclick="openItemModal('Moi Moi with fried plantains',199)"><p>African Moi Moi with fried plantains (Beans pudding) = 199DKK</p></div>
-    <div><img src="food21.jpg" onclick="openItemModal('Banana bread minis',89)"><p>Banana bread minis (4 in a pack with different flavours) = 89DKK</p></div>
-    <div><img src="food24.jpg" onclick="openItemModal('Big Banana bread loaves',89)"><p>Big loaves of Banana bread (Choco chip, Nutty, Oreos, Plain) - Minimum order 3 pieces = 89DKK each</p></div>
-
-    <div><img src="food23.jpg" onclick="openItemModal('Full roasted chicken',199)"><p>African Full roasted chicken = 199DKK</p></div>
-    <div><img src="food8.jpg" onclick="openItemModal('Grilled spicy chicken',149)"><p>African Grilled spicy chicken = 149DKK</p></div>
-    <div><img src="food4.jpg" onclick="openItemModal('Beef kebabs',149)"><p>African Beef kebabs = 149DKK</p></div>
+    <div><img src="food6.jpg" onclick="openItemModal('Jollof rice with chicken',179)"><p>Jollof rice with chicken - 179DKK</p></div>
+    <div><img src="food9.jpg" onclick="openItemModal('Jollof rice with beef',179)"><p>Jollof rice with beef - 179DKK</p></div>
+    <div><img src="food22.jpg" onclick="openItemModal('Fried rice & chicken breast',179)"><p>Fried rice & chicken breast - 179DKK</p></div>
+    <div><img src="food12.jpg" onclick="openItemModal('Rice with veggie sauce & chicken kebabs',179)"><p>Rice with veggie sauce & chicken kebabs - 179DKK</p></div>
+    <div><img src="food20.jpg" onclick="openItemModal('Pasta & veggie stir fry sauce',179)"><p>Pasta & veggie stir fry sauce - 179DKK</p></div>
+    <div><img src="food13.jpg" onclick="openItemModal('Pasta Alfredo',179)"><p>Pasta Alfredo - 179DKK</p></div>
+    <div><img src="food1.jpg" onclick="openItemModal('Mashed potatoes & salmon',149)"><p>Mashed potatoes & salmon - 149DKK</p></div>
+    <div><img src="food2.jpg" onclick="openItemModal('Plantains with yams & egg gravy',149)"><p>Plantains with yams & egg gravy - 149DKK</p></div>
+    <div><img src="food15.jpg" onclick="openItemModal('Stewed beans & plantains',149)"><p>Stewed beans & plantains - 149DKK</p></div>
+    <div><img src="food17.jpg" onclick="openItemModal('Fish fillet with fried plantains',199)"><p>Fish fillet with fried plantains - 199DKK</p></div>
+    <div><img src="food5.jpg" onclick="openItemModal('Avocado salad',99)"><p>Avocado salad - 99DKK</p></div>
+    <div><img src="food7.jpg" onclick="openItemModal('Efo Riro Soup',249)"><p>Efo Riro Soup - 249DKK</p></div>
+    <div><img src="food16.jpg" onclick="openItemModal('Egusi soup with fufu',249)"><p>Egusi soup with fufu - 249DKK</p></div>
+    <div><img src="food10.jpg" onclick="openItemModal('Grilled potatoes & grilled chicken',149)"><p>Grilled potatoes & grilled chicken - 149DKK</p></div>
+    <div><img src="food19.jpg" onclick="openItemModal('Green bell pepper sauce',99)"><p>Green bell pepper sauce - 99DKK</p></div>
+    <div><img src="food11.jpg" onclick="openItemModal('Meatpie & chicken pie',278)"><p>Meatpie & chicken pie - 278DKK</p></div>
+    <div><img src="food3.jpg" onclick="openItemModal('Moi Moi with fried plantains',199)"><p>Moi Moi with fried plantains - 199DKK</p></div>
+    <div><img src="food21.jpg" onclick="openItemModal('Banana bread minis',99)"><p>Banana bread minis (8 pack) - 99DKK</p></div>
+    <div><img src="food24.jpg" onclick="openItemModal('Big loafs of banana bread',89)"><p>Big loafs of banana bread - 89DKK</p></div>
+    <div><img src="food23.jpg" onclick="openItemModal('Full roasted chicken',199)"><p>Full roasted chicken - 199DKK</p></div>
+    <div><img src="food8.jpg" onclick="openItemModal('Grilled spicy chicken',149)"><p>Grilled spicy chicken - 149DKK</p></div>
+    <div><img src="food4.jpg" onclick="openItemModal('Beef kebab',149)"><p>Beef kebab - 149DKK</p></div>
   </div>
   <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
@@ -244,43 +238,44 @@ document.addEventListener('DOMContentLoaded',()=>{
   🛒<div id="cart-count">0</div>
 </div>
 
-<!-- Cart Modal -->
-<div id="cart-modal">
-  <div class="content" id="cart-content"></div>
-  <button onclick="closeCartModal()">Close</button>
-</div>
-
 <!-- Item Modal -->
 <div class="modal" id="item-modal">
   <h2 id="modal-item-name"></h2>
-  <p>Price: <span id="modal-item-price"></span> DKK</p>
+  <p id="modal-item-price"></p>
   <input type="number" id="modal-item-qty" min="1" value="1">
-  <button class="add-cart" onclick="addToCart()">Add to Cart</button>
+  <button onclick="addToCart()">Add to Cart</button>
   <button onclick="closeItemModal()">Cancel</button>
 </div>
 
+<!-- Cart Modal -->
+<div class="modal" id="cart-modal">
+  <h2>Cart</h2>
+  <div id="cart-content"></div>
+  <button onclick="closeCartModal()">Close</button>
+</div>
+
 <!-- Checkout Page -->
-<div id="checkout-page">
+<div id="checkout-page" style="display:none;">
   <h1>Checkout</h1>
   <div id="checkout-items"></div>
-  <p>Total: <span id="checkout-total">0 DKK</span></p>
-  <h3>Customer Info</h3>
+  <p>Total: <span id="checkout-total"></span></p>
   <input type="text" id="checkout-name" placeholder="Full Name">
-  <input type="text" id="checkout-phone" placeholder="Phone">
-  <p>Order Type:</p>
-  <label><input type="radio" name="order-type" value="pickup" onclick="calculateTotal()"> Pickup (10% off)</label>
-  <label><input type="radio" name="order-type" value="delivery" onclick="calculateTotal()"> Delivery</label>
+  <input type="text" id="checkout-phone" placeholder="Phone Number">
+  <p>
+    <label><input type="radio" name="order-type" value="pickup" onclick="calculateTotal()">Pickup (10% discount)</label>
+    <label><input type="radio" name="order-type" value="delivery" onclick="calculateTotal()">Delivery</label>
+  </p>
   <input type="text" id="checkout-address" placeholder="Delivery Address (if delivery)">
   <input type="date" id="checkout-date">
   <input type="time" id="checkout-time">
   <textarea id="checkout-note" placeholder="Additional notes"></textarea>
   <button onclick="confirmOrder()">Confirm Order</button>
   <p>MobilePay: +45 91673068</p>
-  <p>You can also order Gloria's Cookhouse meals conveniently via Wolt or Just Eat - but when you order directly through our website or call us for guidance or MobilePay options, you'll enjoy a 10% discount on all pickup orders.</p>
-  <button class="back-btn" onclick="showPage('menupage')">Back</button>
+  <p>You can also order Gloria's Cookhouse meals via Wolt or Just Eat - but ordering directly gives 10% discount on pickup.</p>
+  <button class="back-btn" onclick="showPage('menupage')">Back to Menu</button>
 </div>
 
-<!-- Contact Page -->
+<!-- Other Pages (Contact/Login/Signup) -->
 <div id="contactpage" style="display:none;">
   <h1>Contact Us</h1>
   <p><strong>Name:</strong> Gloria Thompson Duruibe</p>
@@ -288,8 +283,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   <p><strong>Email:</strong> g7thomson@yahoo.com</p>
   <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
-
-<!-- Login Page -->
 <div id="loginpage" style="display:none;">
   <div class="modal">
     <h2>Login</h2>
@@ -297,12 +290,9 @@ document.addEventListener('DOMContentLoaded',()=>{
     <input id="login-password" type="password" placeholder="Password">
     <button onclick="loginUser()">Login</button>
     <a class="nav-btn" data-target="signuppage">Sign Up</a>
-    <a href="#">Forgot Password?</a>
   </div>
   <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
-
-<!-- Sign Up Page -->
 <div id="signuppage" style="display:none;">
   <div class="modal">
     <h2>Sign Up</h2>
@@ -315,6 +305,5 @@ document.addEventListener('DOMContentLoaded',()=>{
   </div>
   <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
-
 </body>
 </html>
