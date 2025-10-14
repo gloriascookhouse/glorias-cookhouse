@@ -1,226 +1,657 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Gloria's Cookhouse</title>
 <style>
-body {margin:0;font-family:Arial,sans-serif;background:#fff;color:#333;text-align:center;}
-header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:#fff;}
-header a{text-decoration:none;color:#B95E30;font-weight:bold;font-size:1.1em;}
-main{margin-top:30px; display:flex; flex-direction:column; align-items:center;}
-#homepage-header{display:flex;align-items:center;justify-content:center;gap:40px;margin-bottom:20px; flex-wrap:wrap;}
-#logo{max-width:220px; flex-shrink:0;}
-#header-img{max-width:400px;}
-h1{color:#B95E30;margin-bottom:10px;}
-h2{color:#B95E30;margin-bottom:10px;}
-.buttons a{display:block;margin:10px auto;padding:12px 20px;background:#FFA500;color:#fff;text-decoration:none;border-radius:8px;width:220px;}
-.auth a{margin:5px;text-decoration:none;color:#FFD700;cursor:pointer;}
-.note{font-style:italic;margin:20px; text-align:center; max-width:90%;}
-.gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;padding:20px; justify-items:center;}
-.gallery div{text-align:center;cursor:pointer;}
-.gallery img{width:100%;border-radius:8px;max-width:150px;}
-.modal{background:#fff;color:#B95E30;padding:30px;margin:20px auto;border-radius:10px;width:300px;text-align:center;}
-.modal input{width:90%;padding:8px;margin:10px 0;}
-.modal button{background:#BE9E42;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin-top:10px;}
-.modal a{display:block;margin:5px;color:#B95E30;text-decoration:none;cursor:pointer;}
-button.back-btn{margin:20px auto;display:block;padding:10px 20px;background:#B95E30;color:#fff;border:none;border-radius:8px;cursor:pointer;}
-
-/* Lightbox */
-#lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:1000;}
-#lightbox img{max-width:90%;max-height:80%;border-radius:10px;}
-#lightbox p{color:#fff;margin-top:10px;}
-#lightbox span{position:absolute;top:20px;right:30px;color:#fff;font-size:30px;cursor:pointer;}
+  :root{
+    --brand:#B95E30;
+    --action:#BE9E42;
+    --accent:#FFA500;
+    --dark:#222;
+    --muted:#333;
+    --white:#ffffff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,system-ui,-apple-system; background:var(--white); color:var(--muted);}
+  header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid #eee;background:#fff;}
+  header .left{display:flex;align-items:center;gap:12px;}
+  header a{color:var(--brand);text-decoration:none;font-weight:700}
+  #logo{width:140px; height:auto;}
+  main{padding:28px 16px;display:flex;flex-direction:column;align-items:center;gap:18px;}
+  #homepage-header{display:flex;align-items:center;gap:28px;flex-wrap:wrap;justify-content:center;}
+  #header-img{max-width:420px;width:90%;height:auto;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.06)}
+  h1{color:var(--brand);margin:8px 0 6px;font-size:28px;}
+  p.lead{margin:0 0 12px;color:var(--muted);max-width:900px}
+  .buttons{display:flex;flex-direction:column;gap:10px;align-items:center;}
+  .btn{display:inline-block;padding:12px 20px;background:var(--brand);color:#fff;text-decoration:none;border-radius:8px;width:220px;text-align:center;font-weight:700}
+  .btn-secondary{background:var(--action);}
+  .small-links{margin-top:6px}
+  .small-links a{color:var(--brand);cursor:pointer;text-decoration:underline}
+  .note{font-style:italic;color:var(--muted);max-width:980px;text-align:center;margin:12px auto}
+  /* gallery */
+  .gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;padding:18px;max-width:1200px;width:100%;justify-items:center}
+  .card{width:100%;max-width:170px;cursor:pointer;text-align:center}
+  .card img{width:100%;height:120px;object-fit:cover;border-radius:8px;display:block}
+  .card p{margin:8px 0 0;font-size:14px;color:var(--dark);line-height:1.1}
+  /* modals */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1100;align-items:center;justify-content:center;padding:20px}
+  .modal{background:#fff;padding:18px;border-radius:10px;max-width:420px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,0.2)}
+  .modal h3{margin:0 0 8px;color:var(--brand)}
+  .modal .price{font-weight:700;margin-bottom:10px}
+  .field{margin:8px 0;text-align:left}
+  .field label{display:block;font-size:13px;margin-bottom:6px;color:var(--muted)}
+  .field input,.field textarea,.field select{width:100%;padding:8px;border-radius:6px;border:1px solid #ddd}
+  .qty-row{display:flex;gap:8px;align-items:center}
+  .qty-btn{padding:6px 10px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer}
+  .add-cart{display:inline-block;margin-top:10px;background:var(--action);color:#fff;padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+  /* cart icon */
+  .cart-btn{position:fixed;right:18px;bottom:18px;background:var(--brand);width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;z-index:1200;box-shadow:0 12px 30px rgba(0,0,0,0.2);cursor:pointer}
+  .cart-count{position:absolute;top:-6px;right:-6px;background:#fff;color:var(--brand);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid var(--brand)}
+  /* cart modal */
+  .cart-list{max-height:420px;overflow:auto;margin-top:6px}
+  .cart-item{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #f1f1f1}
+  .cart-item img{width:60px;height:50px;object-fit:cover;border-radius:6px}
+  .cart-item .meta{flex:1;text-align:left}
+  .cart-item .meta p{margin:0;font-weight:700}
+  .cart-item .meta small{color:#666}
+  .cart-item .controls{display:flex;gap:6px;align-items:center}
+  .checkout-btn{display:block;width:100%;padding:12px;background:var(--brand);color:#fff;border:none;border-radius:8px;margin-top:12px;font-weight:700;cursor:pointer}
+  .muted{color:#666;font-size:14px}
+  /* small screens */
+  @media (max-width:900px){
+    .gallery{grid-template-columns:repeat(3,1fr)}
+    #header-img{max-width:320px}
+  }
+  @media (max-width:560px){
+    .gallery{grid-template-columns:repeat(2,1fr)}
+    #logo{width:110px}
+    .btn{width:180px}
+  }
 </style>
+<!-- Firebase SDKs -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+  import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCVeu4VrXiqDnyM5EZjQfc3y94ZVBhSt-Y",
-  authDomain: "gloria-s-cookhouse.firebaseapp.com",
-  projectId: "gloria-s-cookhouse",
-  storageBucket: "gloria-s-cookhouse.firebasestorage.app",
-  messagingSenderId: "242537183123",
-  appId: "1:242537183123:web:4cdbc739f2f62b2b789a66"
-};
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+  // ---------- YOUR FIREBASE CONFIG (you provided this) ----------
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVeu4VrXiqDnyM5EZjQfc3y94ZVBhSt-Y",
+    authDomain: "gloria-s-cookhouse.firebaseapp.com",
+    databaseURL: "https://gloria-s-cookhouse-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "gloria-s-cookhouse",
+    storageBucket: "gloria-s-cookhouse.firebasestorage.app",
+    messagingSenderId: "242537183123",
+    appId: "1:242537183123:web:4cdbc739f2f62b2b789a66"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+  // ----------------------------------------------------------------
 
-function showPage(pageId){
-  const pages=['frontpage','menupage','contactpage','loginpage','signuppage'];
-  pages.forEach(p=>document.getElementById(p).style.display='none');
-  document.getElementById(pageId).style.display='block';
-}
-
-function loginUser(){
-  const email=document.getElementById('login-email').value;
-  const password=document.getElementById('login-password').value;
-  signInWithEmailAndPassword(auth,email,password)
-    .then(()=>{alert('Login successful'); showPage('frontpage');})
-    .catch(e=>alert(e.message));
-}
-
-function signupUser(){
-  const email=document.getElementById('signup-email').value;
-  const password=document.getElementById('signup-password').value;
-  createUserWithEmailAndPassword(auth,email,password)
-    .then(()=>{alert('Signup successful'); showPage('frontpage');})
-    .catch(e=>alert(e.message));
-}
-
-document.addEventListener('DOMContentLoaded',()=>{
-  document.querySelectorAll('.nav-btn').forEach(btn=>{
-    btn.addEventListener('click',e=>{
-      e.preventDefault();
-      showPage(btn.getAttribute('data-target'));
+  // Pages: frontpage, menupage, contactpage, loginpage, signuppage, checkoutpage
+  function showPage(pageId){
+    const pages = ['frontpage','menupage','contactpage','loginpage','signuppage','checkoutpage'];
+    pages.forEach(p=>{
+      const el=document.getElementById(p);
+      if(el) el.style.display = (p===pageId ? 'block' : 'none');
     });
-  });
+    // scroll to top on page change
+    window.scrollTo(0,0);
+  }
 
-  const lightbox=document.getElementById('lightbox');
-  const lightboxImg=document.getElementById('lightbox-img');
-  const lightboxDesc=document.getElementById('lightbox-desc');
-  document.querySelectorAll('.gallery div').forEach(item=>{
-    item.addEventListener('click',()=>{
-      lightbox.style.display='flex';
-      lightboxImg.src=item.querySelector('img').src;
-      lightboxDesc.textContent=item.querySelector('p').textContent;
+  // ----- Cart utilities (stored in localStorage under key 'gloria_cart') -----
+  const CART_KEY = 'gloria_cart_v1';
+  function readCart(){ try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch(e){ return []; } }
+  function writeCart(cart){ localStorage.setItem(CART_KEY, JSON.stringify(cart)); updateCartCount(); }
+  function updateCartCount(){
+    const cart = readCart();
+    const count = cart.reduce((s,i)=>s + (i.qty||0),0);
+    const badge = document.getElementById('cart-count');
+    if(badge) badge.textContent = count;
+  }
+  function addToCart(item){
+    const cart = readCart();
+    const idx = cart.findIndex(i=>i.id===item.id);
+    if(idx >=0){ cart[idx].qty += item.qty; } else { cart.push(item); }
+    writeCart(cart);
+  }
+  function removeFromCart(id){
+    let cart = readCart();
+    cart = cart.filter(i=>i.id !== id);
+    writeCart(cart);
+  }
+  function updateQty(id, qty){
+    const cart = readCart();
+    const idx = cart.findIndex(i=>i.id===id);
+    if(idx>=0){ cart[idx].qty = qty; if(qty<=0) cart.splice(idx,1); writeCart(cart); }
+  }
+  function clearCart(){ localStorage.removeItem(CART_KEY); updateCartCount(); }
+
+  // ----- Write order to Firebase Realtime DB -----
+  async function pushOrderToFirebase(orderObj){
+    try{
+      const ordersRef = ref(db, 'orders');
+      const newRef = push(ordersRef); // generates a new id
+      await set(newRef, orderObj);
+      return newRef.key;
+    }catch(err){
+      console.error('Firebase write error', err);
+      throw err;
+    }
+  }
+
+  // ----- On DOM ready: wire up UI interactions -----
+  document.addEventListener('DOMContentLoaded', ()=>{
+
+    // page nav buttons
+    document.querySelectorAll('.nav-btn').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        e.preventDefault();
+        const t = btn.getAttribute('data-target');
+        if(t) showPage(t);
+      });
     });
-  });
-  document.getElementById('close-lightbox').addEventListener('click',()=>{lightbox.style.display='none';});
-});
+
+    // initialize cart count
+    updateCartCount();
+
+    // wire up gallery item clicks -> open item modal
+    document.querySelectorAll('.card').forEach(card=>{
+      card.addEventListener('click', ()=>{
+        const id = card.getAttribute('data-id');
+        const name = card.getAttribute('data-name');
+        const price = Number(card.getAttribute('data-price'));
+        openItemModal({id,name,price});
+      });
+    });
+
+    // cart button
+    document.getElementById('cart-button').addEventListener('click', showCartModal);
+
+    // close overlay when clicking outside modal content
+    document.querySelectorAll('.modal-overlay').forEach(ov=>{
+      ov.addEventListener('click', (ev)=>{
+        if(ev.target === ov) ov.style.display='none';
+      });
+    });
+
+    // cart modal actions (delegated)
+    document.getElementById('cart-list').addEventListener('click', (e)=>{
+      const target = e.target;
+      if(target.matches('.qty-inc')){
+        const id = target.dataset.id; const item = readCart().find(i=>i.id===id);
+        if(item) updateQty(id, item.qty+1), renderCart();
+      } else if(target.matches('.qty-dec')){
+        const id = target.dataset.id; const item = readCart().find(i=>i.id===id);
+        if(item) updateQty(id, Math.max(0,item.qty-1)), renderCart();
+      } else if(target.matches('.remove-item')){
+        const id = target.dataset.id; removeFromCart(id); renderCart();
+      }
+    });
+
+    // checkout button in cart modal
+    document.getElementById('go-checkout').addEventListener('click', ()=>{
+      document.getElementById('cart-overlay').style.display='none';
+      showPage('checkoutpage');
+      renderCheckout(); // populate checkout fields
+    });
+
+    // checkout confirm
+    document.getElementById('confirm-order').addEventListener('click', async ()=>{
+      // gather form data
+      const name = document.getElementById('cust-name').value.trim();
+      const phone = document.getElementById('cust-phone').value.trim();
+      const pickupOrDelivery = document.getElementById('pickup-delivery').value;
+      const requested = document.getElementById('requested-time').value.trim();
+      const note = document.getElementById('order-note').value.trim();
+
+      if(!name || !phone){
+        alert('Please enter your name and phone number so we can contact you.');
+        return;
+      }
+      const cart = readCart();
+      if(!cart.length){ alert('Your cart is empty. Add something first.'); return; }
+
+      // totals and discount
+      let subtotal = cart.reduce((s,i)=>s + (i.unitPrice * i.qty), 0);
+      let discountApplied = 0;
+      if(pickupOrDelivery === 'Pickup'){
+        discountApplied = Math.round(subtotal * 0.10); // 10% pickup discount
+      }
+      const total = subtotal - discountApplied;
+
+      // prepare payload
+      const orderObj = {
+        customerName: name,
+        phone,
+        pickupOrDelivery,
+        requestedTime: requested || 'ASAP',
+        note,
+        items: cart.map(i=>({id:i.id,name:i.name,qty:i.qty,unitPrice:i.unitPrice})),
+        subtotal,
+        discountApplied,
+        total,
+        mobilePayNumber: '+45 91 67 30 68',
+        status: 'pending',
+        timestamp: Date.now()
+      };
+
+      // write to firebase
+      try{
+        document.getElementById('confirm-order').disabled = true;
+        document.getElementById('confirm-order').textContent = 'Placing order...';
+        const orderId = await pushOrderToFirebase(orderObj);
+        // success
+        clearCart();
+        renderCart();
+        // show confirmation area with mobilepay instructions
+        document.getElementById('checkout-success').style.display = 'block';
+        document.getElementById('checkout-form-area').style.display = 'none';
+        document.getElementById('success-order-id').textContent = orderId;
+        document.getElementById('success-total').textContent = total + ' DKK';
+        document.getElementById('success-mobile').textContent = '+45 91 67 30 68';
+        // reset button
+        document.getElementById('confirm-order').disabled = false;
+        document.getElementById('confirm-order').textContent = 'Confirm Order';
+      }catch(err){
+        alert('Sorry — there was an error placing your order. Try again or contact us.');
+        console.error(err);
+        document.getElementById('confirm-order').disabled = false;
+        document.getElementById('confirm-order').textContent = 'Confirm Order';
+      }
+    });
+
+    // back buttons that should always return home
+    document.querySelectorAll('.back-home').forEach(b=>{
+      b.addEventListener('click', ()=> showPage('frontpage'));
+    });
+
+  }); // DOMContentLoaded
+
+  // ------- UI functions -------
+  function openItemModal(item){
+    const ov = document.getElementById('item-overlay');
+    ov.style.display = 'flex';
+    document.getElementById('item-name').textContent = item.name;
+    document.getElementById('item-price').textContent = item.price + ' DKK';
+    document.getElementById('item-qty').value = 1;
+    document.getElementById('item-add').onclick = ()=>{
+      const qty = Number(document.getElementById('item-qty').value) || 1;
+      addToCart({ id:item.id, name:item.name, qty, unitPrice: item.price });
+      document.getElementById('item-overlay').style.display='none';
+      renderCart();
+      showToast(`${item.name} x${qty} added to cart`);
+    };
+  }
+
+  function showCartModal(){
+    renderCart();
+    document.getElementById('cart-overlay').style.display='flex';
+  }
+
+  function renderCart(){
+    const list = document.getElementById('cart-list');
+    const cart = readCart();
+    list.innerHTML = '';
+    if(!cart.length){
+      list.innerHTML = '<p class="muted">Your cart is empty.</p>';
+    } else {
+      cart.forEach(it=>{
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          <img src="${it.id}.jpg" alt="${escapeHtml(it.name)}">
+          <div class="meta"><p>${escapeHtml(it.name)}</p><small>${it.unitPrice} DKK each</small></div>
+          <div class="controls">
+            <button class="qty-dec qty-btn" data-id="${it.id}">-</button>
+            <div>${it.qty}</div>
+            <button class="qty-inc qty-btn" data-id="${it.id}">+</button>
+            <button class="remove-item qty-btn" data-id="${it.id}" title="Remove">🗑️</button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+      const subtotal = cart.reduce((s,i)=>s + (i.qty * i.unitPrice),0);
+      const subtotalEl = document.createElement('div');
+      subtotalEl.style.marginTop='10px';
+      subtotalEl.innerHTML = `<div style="font-weight:700">Subtotal: ${subtotal} DKK</div>`;
+      list.appendChild(subtotalEl);
+    }
+    updateCartCount();
+  }
+
+  function renderCheckout(){
+    const cart = readCart();
+    const area = document.getElementById('checkout-items');
+    area.innerHTML = '';
+    if(!cart.length){
+      area.innerHTML = '<p class="muted">Your cart is empty.</p>';
+      document.getElementById('confirm-order').disabled = true;
+    } else {
+      document.getElementById('confirm-order').disabled = false;
+      let subtotal = 0;
+      cart.forEach(it=>{
+        subtotal += it.qty * it.unitPrice;
+        const r = document.createElement('div');
+        r.style.display='flex'; r.style.justifyContent='space-between'; r.style.padding='6px 0';
+        r.innerHTML = `<div>${escapeHtml(it.name)} x${it.qty}</div><div>${it.qty * it.unitPrice} DKK</div>`;
+        area.appendChild(r);
+      });
+      const sub = document.createElement('div'); sub.style.fontWeight='700'; sub.style.marginTop='8px';
+      sub.textContent = `Subtotal: ${subtotal} DKK`;
+      area.appendChild(sub);
+
+      // apply discount preview when pickup selected
+      const pickupSelector = document.getElementById('pickup-delivery');
+      function updateDiscountPreview(){
+        const pick = pickupSelector.value;
+        const d = (pick === 'Pickup') ? Math.round(subtotal * 0.10) : 0;
+        document.getElementById('checkout-discount').textContent = d ? (`-${d} DKK (10% pickup)`) : '-';
+        document.getElementById('checkout-total').textContent = (subtotal - d) + ' DKK';
+      }
+      pickupSelector.onchange = updateDiscountPreview;
+      updateDiscountPreview();
+    }
+  }
+
+  // small toast
+  function showToast(msg){
+    let t = document.getElementById('toast');
+    if(!t){
+      t = document.createElement('div'); t.id='toast';
+      Object.assign(t.style,{position:'fixed',left:'50%',bottom:'90px,',transform:'translateX(-50%)',background:'#111',color:'#fff',padding:'8px 12px',borderRadius:'8px',zIndex:1400});
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.opacity = '1';
+    setTimeout(()=>{ if(t) t.style.opacity='0'; },2000);
+  }
+
+  function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
 </script>
 </head>
 <body>
 
-<!-- Front Page -->
-<div id="frontpage">
-  <header>
-    <div></div>
+<!-- Header -->
+<header>
+  <div class="left">
+    <img id="logo" src="logo.png" alt="Gloria's Cookhouse logo">
+  </div>
+  <div>
     <a href="#" class="nav-btn" data-target="contactpage">Contact Us</a>
-  </header>
-  <main>
+  </div>
+</header>
+
+<main>
+  <!-- FRONT PAGE -->
+  <div id="frontpage">
     <div id="homepage-header">
-      <img id="logo" src="logo.png" alt="Poster Image">
-      <div style="text-align:center;">
-        <img id="header-img" src="mainfood.png" alt="Header Image">
+      <img id="header-img" src="mainfood.png" alt="Main food header">
+      <div style="max-width:560px;text-align:center">
         <h1>Gloria's Cookhouse</h1>
-        <p><strong>Soul Food Fusion</strong><br>
-        Crafted with Love; A Global Village Kitchen, Where Africa Meets the World.</p>
+        <p class="lead"><strong>Soul Food Fusion</strong><br>Crafted with Love; A Global Village Kitchen, Where Africa Meets the World.</p>
       </div>
     </div>
+
     <div class="buttons">
-      <a href="https://wolt.com" target="_blank">Order on Wolt</a>
-      <a href="https://just-eat.com" target="_blank">Order on Just Eat</a>
-      <a href="#" class="nav-btn" data-target="menupage">See Menu</a>
+      <a class="btn" href="https://wolt.com" target="_blank">Order on Wolt</a>
+      <a class="btn" href="https://just-eat.com" target="_blank">Order on Just Eat</a>
+      <a class="btn" href="#" data-target="menupage" class="nav-btn">See Menu</a>
     </div>
-    <div class="auth">
-      <a class="nav-btn" data-target="loginpage">Login</a> | 
-      <a class="nav-btn" data-target="signuppage">Sign Up</a>
+    <div class="small-links">
+      <a class="nav-btn" data-target="loginpage">Login</a> | <a class="nav-btn" data-target="signuppage">Sign Up</a>
     </div>
-  </main>
-</div>
-
-<!-- Menu Page -->
-<div id="menupage" style="display:none;">
-  <h1 style="text-align:center;">Our Menu (Bestsellers)</h1>
-  <p class="note">
-    Pre-order window: Customers may place orders from 10 a.m. to 6 p.m. the previous day.<br>
-    Collection window: Orders will be freshly prepared and ready for collection between 5 p.m. and 8 p.m., Monday through Sunday.<br>
-    This structure allows me to plan properly for each day’s meals, source fresh ingredients, and manage unexpected surges in demand.<br>
-    In addition, Gloria’s Cookhouse also offers a range of halal food, portions from 650g, and catering + bulk orders. 
-    For such large or special requests, I kindly ask for at least one week’s notice to ensure proper preparation and scheduling.<br>
-    PS: The minimum order is 299DKK.
-  </p>
-  <div class="gallery">
-    <!-- Row: Rice Dishes -->
-    <div><img src="food6.jpg"><p>The Famous Nigerian Jollof rice with chicken = 179DKK</p></div>
-    <div><img src="food9.jpg"><p>The Famous Nigerian Jollof rice with beef = 179DKK</p></div>
-    <div><img src="food22.jpg"><p>The Famous Nigerian Fried rice with chicken breast = 179DKK</p></div>
-    <div><img src="food12.jpg"><p>Rice with veggie sauce & chicken kebabs = 179DKK</p></div>
-    <div><img src="food20.jpg"><p>Pasta & green veggie stir fry sauce = 179DKK</p></div>
-    <div><img src="food14.jpg"><p>Spaghetti & juicy meatballs in tomato sauce = 179DK</p></div>
-    <div><img src="food13.jpg"><p>Pasta Alfredo with chicken breast chunks = 179DKK</p></div>
-    
-    <!-- Row: Fried Plantains/Yams -->
-    <div><img src="food1.jpg"><p>Mashed potatoes & salmon with asparagus = 179DKK</p></div>
-    <div><img src="food2.jpg"><p>Fried plantains with yam chips & egg gravy = 179DKK</p></div>
-    <div><img src="food15.jpg"><p>Stewed blackeyed-beans & a side of fried plantains = 179DKK</p></div>
-    <div><img src="food17.jpg"><p></p>Fried fish fillet in batter with fried plantains = 199DKK</p></div>
-    <div><img src="food5.jpg"><p>Avocado salad (tailored to taste) = 99DKK</p></div>
-    
-    <!-- Row: Soups -->
-    <div><img src="food7.jpg"><p>The Famous Nigerian Efo Riro Soup with fufu = 249DKK</p></div>
-    <div><img src="food16.jpg"><p>The Famous Nigerian Egusi soup with fufu = 249DKK</p></div>
-    <div><img src="food10.jpg"><p>Grilled potatoes & grilled chicken = 179DKK</p></div>
-    <div><img src="food19.jpg"><p>African Green bell pepper sauce (can be served with steamed rice or boiled yam) = 179DKK</p></div>
-    
-    <!-- Row: Cakes/Pies -->
-    <div><img src="food11.jpg"><p>The Famous Nigerian Meatpie/Chicken pie - Minimum order 4 pieces = 279DKK</p></div>
-    <div><img src="food3.jpg"><p> African Moi Moi with fried plantains (Beans pudding) = 199DKK</p></div>
-    <div><img src="food21.jpg"><p>Banana bread minis (4 in a pack with different flavours) = 89DKK</p></div>
-    <div><img src="food24.jpg"><p>Big loaves of Banana bread (Choco chip, Nutty, Oreos, Plain) - Minimum order 3 pieces = 89DKK each</p></div>
-    
-    <!-- Row: Meats/Chicken -->
-    <div><img src="food23.jpg"><p>African Full roasted chicken = 199DKK</p></div>
-    <div><img src="food8.jpg"><p>African Grilled spicy chicken = 149DKK</p></div>
-    <div><img src="food4.jpg"><p>African Beef kebabs = 149DKK</p></div>
+    <p class="note">* All food is halal. Portions from 650g. Banana bread: Saturday pickup only. Contact us for bulk orders and catering. Minimum order 299DKK.</p>
   </div>
-  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
-</div>
 
-<!-- Contact Page -->
-<div id="contactpage" style="display:none;">
-  <h1>Contact Us</h1>
-  <p><strong>Name:</strong> Gloria Thompson Duruibe</p>
-  <p><strong>Phone:</strong> +45 91 67 30 68</p>
-  <p><strong>Email:</strong> g7thomson@yahoo.com</p>
-  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
-</div>
+  <!-- MENU PAGE -->
+  <div id="menupage" style="display:none;">
+    <h1 style="text-align:center">Our Menu (Bestsellers)</h1>
+    <p class="note">Pre-order window: Orders from 10 a.m. to 6 p.m. the previous day. Collection: 5 p.m. - 8 p.m. Mon–Sun. For bulk orders please give at least one week's notice. Minimum order: 299DKK.</p>
 
-<!-- Login Page -->
-<div id="loginpage" style="display:none;">
+    <!-- gallery (cards have data attributes used by JS) -->
+    <div class="gallery">
+      <!-- Rice row -->
+      <div class="card" data-id="food6" data-name="The Famous Nigerian Jollof rice with chicken" data-price="179">
+        <img src="food6.jpg" alt="">
+        <p>The Famous Nigerian Jollof rice with chicken = 179DKK</p>
+      </div>
+      <div class="card" data-id="food9" data-name="The Famous Nigerian Jollof rice with beef" data-price="179">
+        <img src="food9.jpg" alt="">
+        <p>The Famous Nigerian Jollof rice with beef = 179DKK</p>
+      </div>
+      <div class="card" data-id="food22" data-name="The Famous Nigerian Fried rice with chicken breast" data-price="179">
+        <img src="food22.jpg" alt="">
+        <p>The Famous Nigerian Fried rice with chicken breast = 179DKK</p>
+      </div>
+      <div class="card" data-id="food12" data-name="Rice with veggie sauce & chicken kebabs" data-price="179">
+        <img src="food12.jpg" alt="">
+        <p>Rice with veggie sauce & chicken kebabs = 179DKK</p>
+      </div>
+      <div class="card" data-id="food20" data-name="Pasta & green veggie stir fry sauce" data-price="179">
+        <img src="food20.jpg" alt="">
+        <p>Pasta & green veggie stir fry sauce = 179DKK</p>
+      </div>
+
+      <!-- Pasta etc (keeps grid) -->
+      <div class="card" data-id="food14" data-name="Spaghetti & juicy meatballs in tomato sauce" data-price="179">
+        <img src="food14.jpg" alt="">
+        <p>Spaghetti & juicy meatballs in tomato sauce = 179DKK</p>
+      </div>
+      <div class="card" data-id="food13" data-name="Pasta Alfredo with chicken breast chunks" data-price="179">
+        <img src="food13.jpg" alt="">
+        <p>Pasta Alfredo with chicken breast chunks = 179DKK</p>
+      </div>
+
+      <!-- fried plantains/yams -->
+      <div class="card" data-id="food1" data-name="Mashed potatoes & salmon with asparagus" data-price="179">
+        <img src="food1.jpg" alt="">
+        <p>Mashed potatoes & salmon with asparagus = 179DKK</p>
+      </div>
+      <div class="card" data-id="food2" data-name="Fried plantains with yam chips & egg gravy" data-price="179">
+        <img src="food2.jpg" alt="">
+        <p>Fried plantains with yam chips & egg gravy = 179DKK</p>
+      </div>
+      <div class="card" data-id="food15" data-name="Stewed blackeyed-beans & fried plantains" data-price="179">
+        <img src="food15.jpg" alt="">
+        <p>Stewed blackeyed-beans & a side of fried plantains = 179DKK</p>
+      </div>
+      <div class="card" data-id="food17" data-name="Fried fish fillet with fried plantains" data-price="199">
+        <img src="food17.jpg" alt="">
+        <p>Fried fish fillet with fried plantains = 199DKK</p>
+      </div>
+      <div class="card" data-id="food5" data-name="Avocado salad (tailored)" data-price="99">
+        <img src="food5.jpg" alt="">
+        <p>Avocado salad (tailored to taste) = 99DKK</p>
+      </div>
+
+      <!-- soups -->
+      <div class="card" data-id="food7" data-name="The Famous Nigerian Efo Riro Soup with fufu" data-price="249">
+        <img src="food7.jpg" alt="">
+        <p>The Famous Nigerian Efo Riro Soup with fufu = 249DKK</p>
+      </div>
+      <div class="card" data-id="food16" data-name="The Famous Nigerian Egusi soup with fufu" data-price="249">
+        <img src="food16.jpg" alt="">
+        <p>The Famous Nigerian Egusi soup with fufu = 249DKK</p>
+      </div>
+      <div class="card" data-id="food10" data-name="Grilled potatoes & grilled chicken" data-price="179">
+        <img src="food10.jpg" alt="">
+        <p>Grilled potatoes & grilled chicken = 179DKK</p>
+      </div>
+      <div class="card" data-id="food19" data-name="Green bell pepper sauce" data-price="179">
+        <img src="food19.jpg" alt="">
+        <p>African Green bell pepper sauce = 179DKK</p>
+      </div>
+
+      <!-- cakes/pies -->
+      <div class="card" data-id="food11" data-name="Meatpie & chicken pie (min 4)" data-price="279">
+        <img src="food11.jpg" alt="">
+        <p>The Famous Nigerian Meatpie/Chicken pie - Minimum order 4 pieces = 279DKK</p>
+      </div>
+      <div class="card" data-id="food3" data-name="Moi Moi with fried plantains" data-price="199">
+        <img src="food3.jpg" alt="">
+        <p>African Moi Moi with fried plantains (Beans pudding) = 199DKK</p>
+      </div>
+      <div class="card" data-id="food21" data-name="Banana bread minis (4 pack)" data-price="89">
+        <img src="food21.jpg" alt="">
+        <p>Banana bread minis (4 in a pack with different flavours) = 89DKK</p>
+      </div>
+      <div class="card" data-id="food24" data-name="Big loaves of banana bread" data-price="89">
+        <img src="food24.jpg" alt="">
+        <p>Big loaves of Banana bread (various flavours) - Minimum order 3 pieces = 89DKK each</p>
+      </div>
+
+      <!-- meats/chicken -->
+      <div class="card" data-id="food23" data-name="Full roasted chicken" data-price="199">
+        <img src="food23.jpg" alt="">
+        <p>African Full roasted chicken = 199DKK</p>
+      </div>
+      <div class="card" data-id="food8" data-name="Grilled spicy chicken" data-price="149">
+        <img src="food8.jpg" alt="">
+        <p>African Grilled spicy chicken = 149DKK</p>
+      </div>
+      <div class="card" data-id="food4" data-name="African Beef kebabs" data-price="149">
+        <img src="food4.jpg" alt="">
+        <p>African Beef kebabs = 149DKK</p>
+      </div>
+
+    </div> <!-- gallery -->
+
+    <button class="back-btn back-home">Back</button>
+  </div>
+
+  <!-- CONTACT -->
+  <div id="contactpage" style="display:none">
+    <h1>Contact Us</h1>
+    <p><strong>Name:</strong> Gloria Thompson Duruibe</p>
+    <p><strong>Phone:</strong> +45 91 67 30 68</p>
+    <p><strong>Email:</strong> g7thomson@yahoo.com</p>
+    <button class="back-btn back-home">Back</button>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="loginpage" style="display:none">
+    <div class="modal">
+      <h3>Login</h3>
+      <div class="field"><input id="login-email" type="email" placeholder="Email"></div>
+      <div class="field"><input id="login-password" type="password" placeholder="Password"></div>
+      <div style="display:flex;gap:8px;justify-content:center"><button class="add-cart" onclick="loginUser()">Login</button></div>
+      <div style="text-align:center;margin-top:8px"><a class="nav-btn" data-target="signuppage">Sign Up</a></div>
+    </div>
+    <button class="back-btn back-home">Back</button>
+  </div>
+
+  <!-- SIGNUP -->
+  <div id="signuppage" style="display:none">
+    <div class="modal">
+      <h3>Sign Up</h3>
+      <div class="field"><input type="text" id="signup-name" placeholder="Full name"></div>
+      <div class="field"><input type="date" id="signup-dob"></div>
+      <div class="field"><input id="signup-email" type="email" placeholder="Email"></div>
+      <div class="field"><input id="signup-password" type="password" placeholder="Password"></div>
+      <div style="display:flex;gap:8px;justify-content:center"><button class="add-cart" onclick="signupUser()">Sign Up</button></div>
+      <div style="text-align:center;margin-top:8px"><a class="nav-btn" data-target="loginpage">Already have an account?</a></div>
+    </div>
+    <button class="back-btn back-home">Back</button>
+  </div>
+
+  <!-- CHECKOUT (page inside same file) -->
+  <div id="checkoutpage" style="display:none;max-width:920px;margin:0 auto;padding:20px;">
+    <h1 style="text-align:center">Checkout</h1>
+
+    <div id="checkout-form-area" style="display:block;background:#fff;padding:16px;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,0.06)">
+      <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between">
+        <div style="flex:1;min-width:280px;">
+          <h3>Order Summary</h3>
+          <div id="checkout-items" style="margin-bottom:10px;"></div>
+          <div style="display:flex;justify-content:space-between"><div class="muted">Discount</div><div id="checkout-discount">-</div></div>
+          <div style="display:flex;justify-content:space-between;font-weight:700;margin-top:6px"><div>Total</div><div id="checkout-total">-</div></div>
+        </div>
+
+        <div style="width:360px;min-width:260px;">
+          <h3>Your details</h3>
+          <div class="field"><label>Name</label><input id="cust-name" type="text" placeholder="Full name"></div>
+          <div class="field"><label>Phone</label><input id="cust-phone" type="text" placeholder="+45 ..."></div>
+          <div class="field"><label>Pickup or Delivery</label>
+            <select id="pickup-delivery"><option>Pickup</option><option>Delivery</option></select>
+          </div>
+          <div class="field"><label>Requested ready time / delivery time</label><input id="requested-time" placeholder="e.g. Tomorrow 17:30 or ASAP"></div>
+          <div class="field"><label>Notes (allergies / extra info)</label><textarea id="order-note" rows="3" placeholder="Extra spicy, no onions..."></textarea></div>
+
+          <div style="margin-top:8px"><button id="confirm-order" class="checkout-btn">Confirm Order</button></div>
+        </div>
+      </div>
+
+      <p style="margin-top:12px;font-size:13px;color:#444">
+        <strong>Payment:</strong> After confirming, please send payment to MobilePay <strong>+45 91 67 30 68</strong> and include your name in the payment message.<br>
+        <em>You can also order Gloria's Cookhouse meals conveniently via Wolt or Just Eat - but when you order directly through our website or call us for guidance or MobilePay options, you'll enjoy a 10% discount on all pickup orders.</em>
+      </p>
+    </div>
+
+    <div id="checkout-success" style="display:none;background:#fff;margin-top:12px;padding:16px;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,0.06)">
+      <h3>Order placed</h3>
+      <p>Thanks! Your order ID: <strong id="success-order-id"></strong></p>
+      <p>Total to pay: <strong id="success-total"></strong></p>
+      <p>Please send the amount to MobilePay number: <strong id="success-mobile"></strong> and include your name in the payment message. We'll confirm once payment is received.</p>
+      <button class="btn" onclick="showPage('frontpage')">Back to homepage</button>
+    </div>
+
+    <button class="back-btn back-home" style="margin-top:10px">Back</button>
+  </div>
+
+</main>
+
+<!-- item modal -->
+<div id="item-overlay" class="modal-overlay" style="display:none;align-items:center;">
   <div class="modal">
-    <h2>Login</h2>
-    <input id="login-email" type="email" placeholder="Email">
-    <input id="login-password" type="password" placeholder="Password">
-    <button onclick="loginUser()">Login</button>
-    <a class="nav-btn" data-target="signuppage">Sign Up</a>
-    <a href="#">Forgot Password?</a>
+    <h3 id="item-name"></h3>
+    <div class="price" id="item-price"></div>
+    <div class="field">
+      <label>Quantity</label>
+      <div class="qty-row">
+        <button class="qty-btn" onclick="document.getElementById('item-qty').stepDown()">-</button>
+        <input id="item-qty" type="number" min="1" value="1" style="width:70px;padding:8px;border-radius:6px;border:1px solid #ddd">
+        <button class="qty-btn" onclick="document.getElementById('item-qty').stepUp()">+</button>
+      </div>
+    </div>
+    <div style="text-align:center">
+      <button id="item-add" class="add-cart">Add to cart</button>
+    </div>
+    <div style="text-align:center;margin-top:8px"><button onclick="document.getElementById('item-overlay').style.display='none'" class="back-btn">Cancel</button></div>
   </div>
-  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
-<!-- Sign Up Page -->
-<div id="signuppage" style="display:none;">
-  <div class="modal">
-    <h2>Sign Up</h2>
-    <input type="text" placeholder="Full Name">
-    <input type="date" placeholder="DOB">
-    <input id="signup-email" type="email" placeholder="Email">
-    <input id="signup-password" type="password" placeholder="Password">
-    <button onclick="signupUser()">Sign Up</button>
-    <a class="nav-btn" data-target="loginpage">Already have an account?</a>
+<!-- cart modal -->
+<div id="cart-overlay" class="modal-overlay" style="display:none;align-items:flex-end;justify-content:flex-end;padding:24px;">
+  <div class="modal" style="max-width:420px;width:100%;">
+    <h3>Your Cart</h3>
+    <div id="cart-list" class="cart-list"></div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="checkout-btn" id="go-checkout">Checkout</button>
+      <button class="back-btn" onclick="document.getElementById('cart-overlay').style.display='none'">Close</button>
+    </div>
   </div>
-  <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
 
-<!-- Lightbox -->
-<div id="lightbox">
-  <span id="close-lightbox">&times;</span>
-  <img id="lightbox-img" src="">
-  <p id="lightbox-desc"></p>
+<!-- lightbox image area (keeps original lightbox idea) -->
+<div id="lightbox" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;z-index:1300">
+  <span style="position:absolute;top:18px;right:18px;color:#fff;font-size:28px;cursor:pointer" onclick="document.getElementById('lightbox').style.display='none'">&times;</span>
+  <img id="lightbox-img" src="" style="max-width:90%;max-height:80%;border-radius:10px">
+  <p id="lightbox-desc" style="color:#fff;margin-top:8px"></p>
 </div>
+
+<!-- floating cart button -->
+<div id="cart-button" class="cart-btn" title="View cart">
+  <div style="font-size:20px">🛒</div>
+  <div id="cart-count" class="cart-count">0</div>
+</div>
+
+<!-- small toast -->
+<div id="toast" style="display:none"></div>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
