@@ -17,22 +17,21 @@ h2{color:#B95E30;margin-bottom:10px;}
 .buttons a{display:block;margin:10px auto;padding:12px 20px;background:#FFA500;color:#fff;text-decoration:none;border-radius:8px;width:220px;}
 .auth a{margin:5px;text-decoration:none;color:#FFD700;cursor:pointer;}
 .note{font-style:italic;margin:20px; text-align:center; max-width:90%;}
-.gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;padding:20px; justify-items:center;}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px;padding:20px; justify-items:center;}
 .gallery div{text-align:center;cursor:pointer;}
 .gallery img{width:100%;border-radius:8px;max-width:150px;}
 .modal{background:#fff;color:#B95E30;padding:30px;margin:20px auto;border-radius:10px;width:300px;text-align:center;}
-.modal input{width:90%;padding:8px;margin:10px 0;}
+.modal input, .modal select{width:90%;padding:8px;margin:10px 0;}
 .modal button{background:#BE9E42;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin-top:10px;}
 .modal a{display:block;margin:5px;color:#B95E30;text-decoration:none;cursor:pointer;}
 button.back-btn{margin:20px auto;display:block;padding:10px 20px;background:#B95E30;color:#fff;border:none;border-radius:8px;cursor:pointer;}
 .cart-icon{position:fixed;top:20px;right:20px;width:50px;height:50px;background:#FFA500;color:#fff;border-radius:50%;display:flex;justify-content:center;align-items:center;font-weight:bold;font-size:18px;cursor:pointer;z-index:100;}
-#cart-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:1000;}
-#cart-content{background:#fff;color:#333;padding:20px;border-radius:10px;width:90%;max-width:400px;text-align:left;}
-#cart-content h2{color:#B95E30;text-align:center;}
+#cart-modal,#item-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:1000;}
+#cart-content,#item-content{background:#fff;color:#333;padding:20px;border-radius:10px;width:90%;max-width:400px;text-align:left;}
+#cart-content h2,#item-content h2{color:#B95E30;text-align:center;}
 #cart-content ul{list-style:none;padding:0;}
 #cart-content li{margin:10px 0;}
 #cart-content button{margin-top:10px;background:#B95E30;color:#fff;padding:10px;border:none;border-radius:8px;cursor:pointer;width:100%;}
-/* Lightbox */
 #lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:1000;}
 #lightbox img{max-width:90%;max-height:80%;border-radius:10px;}
 #lightbox p{color:#fff;margin-top:10px;}
@@ -57,6 +56,7 @@ const auth = getAuth(app);
 const database = getDatabase(app);
 
 let cart = [];
+let currentItem = {};
 
 function showPage(pageId){
   const pages=['frontpage','menupage','contactpage','loginpage','signuppage','checkoutpage'];
@@ -80,22 +80,41 @@ function signupUser(){
     .catch(e=>alert(e.message));
 }
 
-function addToCart(name, price){
-  const quantity = prompt(`How many of "${name}" would you like?`, "1");
-  if(!quantity || isNaN(quantity) || quantity<1) return;
-  cart.push({name, price, quantity:Number(quantity)});
-  alert(`${quantity} x ${name} added to cart.`);
-  document.getElementById('cart-count').textContent = cart.length;
+// Item modal
+function openItemModal(name, price){
+  currentItem = {name, price};
+  document.getElementById('item-name').textContent = name;
+  document.getElementById('item-price').textContent = price + " DKK";
+  document.getElementById('item-quantity').value = 1;
+  document.getElementById('item-modal').style.display = 'flex';
 }
 
+function addCurrentItemToCart(){
+  const quantity = parseInt(document.getElementById('item-quantity').value);
+  if(quantity<1) return alert("Enter valid quantity");
+  cart.push({...currentItem, quantity});
+  document.getElementById('cart-count').textContent = cart.length;
+  document.getElementById('item-modal').style.display = 'none';
+}
+
+// Cart
 function openCart(){
   const cartModal = document.getElementById('cart-modal');
   const cartList = document.getElementById('cart-list');
   cartList.innerHTML = '';
   let total = 0;
-  cart.forEach(item=>{
+  cart.forEach((item,index)=>{
     const li = document.createElement('li');
     li.textContent = `${item.quantity} x ${item.name} = ${item.price*item.quantity} DKK`;
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = "Remove";
+    removeBtn.style.background="#B95E30"; removeBtn.style.marginTop="5px";
+    removeBtn.onclick = ()=>{
+      cart.splice(index,1);
+      document.getElementById('cart-count').textContent = cart.length;
+      openCart();
+    };
+    li.appendChild(removeBtn);
     cartList.appendChild(li);
     total += item.price*item.quantity;
   });
@@ -103,19 +122,25 @@ function openCart(){
   cartModal.style.display='flex';
 }
 
+// Checkout
 function checkout(){
-  const name = prompt("Enter your full name:");
-  const email = prompt("Enter your email:");
-  const delivery = prompt("Delivery/Pickup time:");
-  if(!name || !email || !delivery) return alert("All fields required.");
-  const ordersRef = ref(database, 'orders');
-  push(ordersRef, {
-    customer: name,
-    email: email,
-    delivery: delivery,
-    items: cart
+  if(cart.length===0) return alert("Cart empty");
+  const name = prompt("Full Name:");
+  const phone = prompt("Phone Number:");
+  const pickup = confirm("Click OK for Pickup (10% discount), Cancel for Delivery");
+  const datetime = prompt("Enter desired date & time (e.g., 2025-10-15 18:00):");
+  if(!name || !phone || !datetime) return alert("All fields required");
+  let total = cart.reduce((sum,i)=>sum+i.price*i.quantity,0);
+  if(pickup) total = Math.round(total*0.9); // 10% off
+  push(ref(database,'orders'),{
+    customer:name,
+    phone:phone,
+    pickup: pickup?"Pickup":"Delivery",
+    datetime,
+    items:cart,
+    total
   });
-  alert("Order submitted! Please use MobilePay to pay. You also got 10% off for ordering directly!");
+  alert(`Order confirmed! Total: ${total} DKK.\nPay via MobilePay +45 91 67 30 68`);
   cart = [];
   document.getElementById('cart-count').textContent = 0;
   document.getElementById('cart-modal').style.display='none';
@@ -134,7 +159,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const lightboxImg=document.getElementById('lightbox-img');
   const lightboxDesc=document.getElementById('lightbox-desc');
   document.querySelectorAll('.gallery div').forEach(item=>{
-    item.addEventListener('click',()=>{
+    item.addEventListener('dblclick',()=>{ // double click to view in lightbox
       lightbox.style.display='flex';
       lightboxImg.src=item.querySelector('img').src;
       lightboxDesc.textContent=item.querySelector('p').textContent;
@@ -148,6 +173,38 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 <!-- Cart Icon -->
 <div class="cart-icon" id="cart-count" onclick="openCart()">0</div>
+
+<!-- Item Modal -->
+<div id="item-modal">
+  <div id="item-content">
+    <h2 id="item-name">Item</h2>
+    <p id="item-price">0 DKK</p>
+    <input type="number" id="item-quantity" min="1" value="1">
+    <button onclick="addCurrentItemToCart()">Add to Cart</button>
+    <button onclick="document.getElementById('item-modal').style.display='none'">Close</button>
+  </div>
+</div>
+
+<!-- Cart Modal -->
+<div id="cart-modal">
+  <div id="cart-content">
+    <h2>Your Cart</h2>
+    <ul id="cart-list"></ul>
+    <p id="cart-total"></p>
+    <button onclick="checkout()">Checkout</button>
+    <button onclick="document.getElementById('cart-modal').style.display='none'">Close</button>
+    <p style="font-size:12px;margin-top:10px;color:#555;">
+      You can also order via Wolt or Just Eat, but direct orders get 10% off for pickup!
+    </p>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox">
+  <span id="close-lightbox">&times;</span>
+  <img id="lightbox-img" src="">
+  <p id="lightbox-desc"></p>
+</div>
 
 <!-- Front Page -->
 <div id="frontpage">
@@ -181,18 +238,15 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="menupage" style="display:none;">
   <h1 style="text-align:center;">Our Menu (Bestsellers)</h1>
   <p class="note">
-    Pre-order window: Customers may place orders from 10 a.m. to 6 p.m. the previous day.<br>
-    Collection window: Orders will be freshly prepared and ready for collection between 5 p.m. and 8 p.m., Monday through Sunday.<br>
-    Gloria’s Cookhouse offers halal options, portions from 650g, catering + bulk orders.<br>
-    Minimum order is 299DKK.<br>
-    Click on any dish to choose quantity and add to cart.
+    Click any food image → set quantity → Add to cart.<br>
+    Pre-order: 10am-6pm previous day. Collection: 5-8pm. Min order: 299DKK.
   </p>
   <div class="gallery">
-    <div onclick="addToCart('Jollof rice with chicken',179)"><img src="food6.jpg"><p>Jollof rice with chicken - 179DKK</p></div>
-    <div onclick="addToCart('Jollof rice with beef',179)"><img src="food9.jpg"><p>Jollof rice with beef - 179DKK</p></div>
-    <div onclick="addToCart('Fried rice & chicken',179)"><img src="food22.jpg"><p>Fried rice & chicken - 179DKK</p></div>
-    <div onclick="addToCart('Rice & veggie sauce & chicken kebabs',179)"><img src="food12.jpg"><p>Rice & veggie sauce & chicken kebabs - 179DKK</p></div>
-    <div onclick="addToCart('Pasta & veggie stir fry',179)"><img src="food20.jpg"><p>Pasta & veggie stir fry - 179DKK</p></div>
+    <div onclick="openItemModal('Jollof rice with chicken',179)"><img src="food6.jpg"><p>Jollof rice with chicken - 179DKK</p></div>
+    <div onclick="openItemModal('Jollof rice with beef',179)"><img src="food9.jpg"><p>Jollof rice with beef - 179DKK</p></div>
+    <div onclick="openItemModal('Fried rice & chicken',179)"><img src="food22.jpg"><p>Fried rice & chicken - 179DKK</p></div>
+    <div onclick="openItemModal('Rice & veggie sauce & chicken kebabs',179)"><img src="food12.jpg"><p>Rice & veggie sauce & chicken kebabs - 179DKK</p></div>
+    <div onclick="openItemModal('Pasta & veggie stir fry',179)"><img src="food20.jpg"><p>Pasta & veggie stir fry - 179DKK</p></div>
   </div>
   <button class="back-btn" onclick="showPage('frontpage')">Back</button>
 </div>
@@ -230,27 +284,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     <a class="nav-btn" data-target="loginpage">Already have an account?</a>
   </div>
   <button class="back-btn" onclick="showPage('frontpage')">Back</button>
-</div>
-
-<!-- Cart Modal -->
-<div id="cart-modal">
-  <div id="cart-content">
-    <h2>Your Cart</h2>
-    <ul id="cart-list"></ul>
-    <p id="cart-total"></p>
-    <button onclick="checkout()">Checkout</button>
-    <button onclick="document.getElementById('cart-modal').style.display='none'">Close</button>
-    <p style="font-size:12px;margin-top:10px;color:#555;">
-      You can also order Gloria's Cookhouse meals via Wolt or Just Eat, but direct orders get 10% off!
-    </p>
-  </div>
-</div>
-
-<!-- Lightbox -->
-<div id="lightbox">
-  <span id="close-lightbox">&times;</span>
-  <img id="lightbox-img" src="">
-  <p id="lightbox-desc"></p>
 </div>
 
 </body>
