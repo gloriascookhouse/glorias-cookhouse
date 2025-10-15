@@ -1,622 +1,368 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Gloria's Cookhouse</title>
-<!-- Styles: responsive, mobile-first -->
 <style>
-  :root{
-    --brand:#B95E30;
-    --accent:#BE9E42;
-    --cta:#FFA500;
-    --bg:#ffffff;
-    --muted:#666;
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #fff;
+    color: #333;
   }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:#222;line-height:1.35}
-  header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #eee}
-  header a{color:var(--brand);text-decoration:none;font-weight:700}
-  main{padding:18px;max-width:1100px;margin:0 auto}
-  /* homepage header */
-  #homepage-header{display:flex;gap:28px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
-  #logo{width:140px;height:auto;flex:0 0 140px;object-fit:contain}
-  #header-img{max-width:420px;width:100%;height:auto;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
-  h1{color:var(--brand);margin:10px 0 6px;font-size:28px}
-  .slogan{color:#222;margin:0;font-size:14px}
-  /* buttons */
-  .buttons{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:18px 0}
-  .buttons a{display:inline-block;padding:10px 16px;background:var(--brand);color:#fff;border-radius:8px;text-decoration:none;font-weight:700}
-  .inline-links{margin-top:6px}
-  .inline-links .auth-btn{color:var(--brand);text-decoration:none;margin:0 8px;font-weight:700;cursor:pointer}
-  /* note */
-  .note{font-style:italic;color:var(--muted);text-align:center;margin:18px auto;max-width:900px}
-  /* gallery */
-  .gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;padding:14px}
-  .gallery-item{cursor:pointer;text-align:center}
-  .gallery-item img{width:100%;height:140px;object-fit:cover;border-radius:8px;display:block}
-  .gallery-item p{margin:8px 6px 0;font-size:13px;color:#111}
-  /* responsive adjustments */
-  @media (max-width:1000px){ .gallery{grid-template-columns:repeat(4,1fr)} #logo{width:120px} }
-  @media (max-width:800px){ .gallery{grid-template-columns:repeat(3,1fr)} #homepage-header{gap:12px} }
-  @media (max-width:520px){ .gallery{grid-template-columns:repeat(2,1fr)} #logo{width:90px} h1{font-size:22px} }
-  /* modals */
-  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1200}
-  .modal{background:#fff;border-radius:10px;max-width:420px;width:92%;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.12);text-align:left}
-  .modal h3{margin:8px 0 6px;color:var(--brand)}
-  .modal .big-img{width:100%;height:260px;object-fit:cover;border-radius:8px}
-  .modal .row{display:flex;gap:8px;align-items:center;margin-top:10px}
-  .qty{width:72px;padding:8px;border-radius:8px;border:1px solid #ddd}
-  .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
-  .btn.secondary{background:#eee;color:#222}
-  /* cart icon */
-  #cart-icon{position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:50%;background:var(--brand);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;z-index:1300;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.12)}
-  #cart-count{position:absolute;right:8px;top:6px;background:#ff3b30;color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
-  /* cart modal content */
-  #cart-content div{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f2f2f2}
-  #cart-content input[type=number]{width:64px;padding:6px;border-radius:6px;border:1px solid #ddd}
-  /* checkout page */
-  .checkout{max-width:800px;margin:0 auto;text-align:left;padding:10px}
-  .checkout p.note{font-style:italic}
-  .form-row{display:flex;gap:10px;margin:10px 0;flex-wrap:wrap}
-  .form-row input,.form-row textarea{padding:10px;border-radius:8px;border:1px solid #ddd;width:100%}
-  .small{width:48%}
-  .warning{color:#b71c1c;font-weight:700;margin-top:8px}
-  @media (max-width:520px){ .small{width:100%} }
-  footer{padding:18px;text-align:center;color:#777;font-size:13px}
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header a {
+    text-decoration: none;
+    color: #B95E30;
+    font-weight: bold;
+  }
+  h1, h2 {
+    color: #B95E30;
+    text-align: center;
+  }
+  p.note {
+    text-align: center;
+    font-style: italic;
+    margin: 15px auto;
+    max-width: 95%;
+  }
+  .buttons a {
+    display: block;
+    margin: 10px auto;
+    padding: 12px 20px;
+    background: #FFA500;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    width: 220px;
+    text-align: center;
+  }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 15px;
+    padding: 20px;
+  }
+  .gallery div {
+    text-align: center;
+    cursor: pointer;
+  }
+  .gallery img {
+    width: 100%;
+    border-radius: 10px;
+    max-width: 180px;
+  }
+  .cart-icon {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #B95E30;
+    color: #fff;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 200;
+  }
+  .cart-count {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    background: #FFD700;
+    color: #000;
+    border-radius: 50%;
+    padding: 3px 7px;
+    font-size: 12px;
+  }
+  button, input, select, textarea {
+    font-family: inherit;
+  }
+  button {
+    cursor: pointer;
+  }
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 300;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-content {
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+  }
+  .modal-content img {
+    max-width: 200px;
+    border-radius: 8px;
+  }
+  .modal-content input {
+    width: 80%;
+    padding: 8px;
+    margin: 10px 0;
+  }
+  .modal-content button {
+    background: #B95E30;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin: 5px;
+  }
+  .checkout-page {
+    display: none;
+    padding: 20px;
+    max-width: 500px;
+    margin: auto;
+  }
+  .checkout-page input, .checkout-page select, .checkout-page textarea {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+  }
+  .checkout-page button {
+    display: block;
+    margin: 15px auto;
+    background: #B95E30;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+  }
+  @media(max-width:600px){
+    .gallery img{max-width:140px;}
+    .cart-icon{width:55px;height:55px;}
+  }
 </style>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCVeu4VrXiqDnyM5EZjQfc3y94ZVBhSt-Y",
+  authDomain: "gloria-s-cookhouse.firebaseapp.com",
+  databaseURL: "https://gloria-s-cookhouse-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "gloria-s-cookhouse",
+  storageBucket: "gloria-s-cookhouse.firebasestorage.app",
+  messagingSenderId: "242537183123",
+  appId: "1:242537183123:web:4cdbc739f2f62b2b789a66"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let cart = [];
+
+function showPage(id) {
+  document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+  document.getElementById(id).style.display = "block";
+  document.getElementById("cartIcon").style.display = (id === "menuPage") ? "flex" : "none";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const lightbox = document.getElementById("lightbox");
+  const lbImg = document.getElementById("lightboxImg");
+  const lbTitle = document.getElementById("lightboxTitle");
+  const qtyInput = document.getElementById("qty");
+  let selectedItem = null;
+
+  document.querySelectorAll(".gallery div").forEach(div => {
+    div.addEventListener("click", () => {
+      selectedItem = {
+        name: div.querySelector("p").textContent,
+        img: div.querySelector("img").src,
+        price: parseInt(div.querySelector("p").textContent.match(/\d+/)[0])
+      };
+      lbImg.src = selectedItem.img;
+      lbTitle.textContent = selectedItem.name;
+      qtyInput.value = 1;
+      lightbox.style.display = "flex";
+    });
+  });
+
+  document.getElementById("addToCartBtn").addEventListener("click", () => {
+    const qty = parseInt(qtyInput.value);
+    const existing = cart.find(i => i.name === selectedItem.name);
+    if (existing) existing.qty += qty;
+    else cart.push({...selectedItem, qty});
+    updateCartCount();
+    lightbox.style.display = "none";
+  });
+
+  document.getElementById("closeLightbox").addEventListener("click", ()=>lightbox.style.display="none");
+  document.getElementById("cartIcon").addEventListener("click", showCartModal);
+  document.getElementById("checkoutBtn").addEventListener("click", ()=>{document.getElementById("cartModal").style.display="none";showPage("checkoutPage")});
+  document.getElementById("cancelCartBtn").addEventListener("click", ()=>document.getElementById("cartModal").style.display="none");
+
+  document.getElementById("orderForm").addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    const total = calculateTotal(data.method);
+    await push(ref(db, "orders"), {cart, data, total, timestamp: new Date().toISOString()});
+    cart = [];
+    updateCartCount();
+    e.target.reset();
+    showModal();
+  });
+
+  document.getElementById("method").addEventListener("change", e=>{
+    document.getElementById("addressField").style.display = e.target.value==="Delivery" ? "block" : "none";
+  });
+
+  document.getElementById("okModalBtn").addEventListener("click", ()=>{
+    document.getElementById("orderModal").style.display="none";
+    showPage("homePage");
+  });
+});
+
+function showCartModal(){
+  const modal = document.getElementById("cartModal");
+  const list = document.getElementById("cartItems");
+  list.innerHTML = "";
+  cart.forEach((item,i)=>{
+    const li = document.createElement("li");
+    li.innerHTML = `
+      ${item.name} - ${item.qty} x ${item.price} DKK = ${item.qty*item.price} DKK 
+      <button onclick="changeQty(${i},1)">+</button>
+      <button onclick="changeQty(${i},-1)">-</button>
+      <button onclick="removeItem(${i})">Remove</button>`;
+    list.appendChild(li);
+  });
+  document.getElementById("cartTotal").textContent = "Total: "+calculateTotal()+" DKK";
+  modal.style.display = "flex";
+}
+
+window.changeQty=(i,delta)=>{
+  cart[i].qty+=delta;
+  if(cart[i].qty<=0) removeItem(i);
+  updateCartCount();
+  showCartModal();
+};
+
+window.removeItem=(i)=>{
+  cart.splice(i,1);
+  updateCartCount();
+  showCartModal();
+};
+
+function calculateTotal(method){
+  let sum = cart.reduce((a,c)=>a+c.price*c.qty,0);
+  if(method==="Pickup") sum*=0.9;
+  return Math.round(sum);
+}
+function updateCartCount(){
+  document.getElementById("cartCount").textContent = cart.reduce((a,c)=>a+c.qty,0);
+}
+function showModal(){
+  document.getElementById("orderModal").style.display="flex";
+}
+</script>
 </head>
 <body>
-
-<header>
-  <div style="width:1px"></div>
-  <a href="#" class="nav-btn" data-target="contactpage">Contact Us</a>
-</header>
-
-<main>
-  <!-- FRONT PAGE -->
-  <section id="frontpage">
-    <div id="homepage-header">
-      <img id="logo" src="logo.png" alt="Logo">
-      <div style="text-align:center">
-        <img id="header-img" src="mainfood.png" alt="Main" />
-        <h1>Gloria's Cookhouse</h1>
-        <p class="slogan"><strong>Soul Food Fusion</strong><br>Crafted with Love; A Global Village Kitchen, Where Africa Meets the World.</p>
-      </div>
+  <!-- Home -->
+  <div id="homePage" class="page">
+    <header><a href="#" onclick="showPage('checkoutPage')">Contact Us</a></header>
+    <h1>Gloria's Cookhouse</h1>
+    <p style="text-align:center;">Soul Food Fusion<br>Crafted with Love; A Global Village Kitchen, Where Africa Meets the World.</p>
+    <div class="buttons">
+      <a href="#" onclick="showPage('menuPage')">See Menu</a>
     </div>
-
-    <div class="buttons" role="navigation" aria-label="Primary actions">
-      <a href="https://wolt.com" target="_blank" rel="noopener">Order on Wolt</a>
-      <a href="https://just-eat.com" target="_blank" rel="noopener">Order on Just Eat</a>
-      <a href="#" class="nav-btn" data-target="menupage">See Menu</a>
-    </div>
-
-    <div style="text-align:center;margin-top:8px" class="inline-links">
-      <a class="auth-btn nav-btn" data-target="loginpage">Login</a> |
-      <a class="auth-btn nav-btn" data-target="signuppage">Sign Up</a>
-    </div>
-  </section>
-
-  <!-- MENU PAGE -->
-  <section id="menupage" style="display:none">
-    <h1 style="text-align:center">Our Menu (Bestsellers)</h1>
-    <p class="note">
-      Pre-order window: Customers may place orders from 10 a.m. to 6 p.m. the previous day.<br>
-      Collection window: Orders ready for collection between 5 p.m. and 8 p.m., Monday–Sunday.<br>
-      Gloria’s Cookhouse offers halal food, portions from 650g, and catering + bulk orders. Please give one week’s notice for large requests. Minimum order: 299 DKK.
-    </p>
-
-    <div class="gallery" id="gallery">
-      <!-- Each item: image file should be in repo root as foodX.jpg -->
-      <div class="gallery-item" onclick="openItemModal(6)">
-        <img src="food6.jpg" alt="Jollof rice with chicken">
-        <p>Jollof rice with chicken — 179 DKK</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(9)">
-        <img src="food9.jpg" alt="Jollof rice with beef">
-        <p>Jollof rice with beef — 179 DKK</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(22)">
-        <img src="food22.jpg" alt="Fried rice and chicken">
-        <p>Fried rice & chicken breast — 179 DKK</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(12)">
-        <img src="food12.jpg" alt="Rice with veggie sauce & kebabs">
-        <p>Rice with veggie sauce & chicken kebabs — 179 DKK</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(20)">
-        <img src="food20.jpg" alt="Pasta & veggie stir fry sauce">
-        <p>Pasta & veggie stir fry — 179 DKK</p>
-      </div>
-
-      <div class="gallery-item" onclick="openItemModal(13)">
-        <img src="food13.jpg" alt="Pasta Alfredo">
-        <p>Pasta Alfredo — 179 DKK</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(1)">
-        <img src="food1.jpg" alt="Mashed potatoes & salmon">
-        <p>Mashed potatoes & salmon — 179 DKK</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(2)">
-        <img src="food2.jpg" alt="Fried plantains & yam">
-        <p>Fried plantains with yams & egg gravy — 179 DKK</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(15)">
-        <img src="food15.jpg" alt="Stewed beans & plantains">
-        <p>Stewed beans & plantains — 179 DKK</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(17)">
-        <img src="food17.jpg" alt="Fish fillet & plantains">
-        <p>Fried fish fillet & plantains — 199 DKK</p>
-      </div>
-
-      <div class="gallery-item" onclick="openItemModal(5)">
-        <img src="food5.jpg" alt="Avocado salad">
-        <p>Avocado salad (tailored) — 99 DKK</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(7)">
-        <img src="food7.jpg" alt="Efo Riro">
-        <p>Efo Riro soup with fufu — 249 DKK</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(16)">
-        <img src="food16.jpg" alt="Egusi soup">
-        <p>Egusi soup with fufu — 249 DKK</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(10)">
-        <img src="food10.jpg" alt="Grilled potatoes & chicken">
-        <p>Grilled potatoes & grilled chicken — 179 DKK</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(19)">
-        <img src="food19.jpg" alt="Green bell pepper sauce">
-        <p>Green bell pepper sauce — 179 DKK</p>
-      </div>
-
-      <div class="gallery-item" onclick="openItemModal(11)">
-        <img src="food11.jpg" alt="Meatpie">
-        <p>Meatpie / Chicken pie — 279 DKK (min 4)</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(3)">
-        <img src="food3.jpg" alt="Moi Moi">
-        <p>Moi Moi with plantains — 199 DKK</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(21)">
-        <img src="food21.jpg" alt="Banana bread minis">
-        <p>Banana bread minis (8 pack) — 99 DKK</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(24)">
-        <img src="food24.jpg" alt="Big loaves banana bread">
-        <p>Big banana bread loaves — 89 DKK</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(23)">
-        <img src="food23.jpg" alt="Full roasted chicken">
-        <p>Full roasted chicken — 199 DKK</p>
-      </div>
-
-      <div class="gallery-item" onclick="openItemModal(8)">
-        <img src="food8.jpg" alt="Grilled spicy chicken">
-        <p>Grilled spicy chicken — 149 DKK</p>
-      </div>
-      <div class="gallery-item" onclick="openItemModal(4)">
-        <img src="food4.jpg" alt="Beef kebabs">
-        <p>Beef kebabs — 149 DKK</p>
-      </div>
-    </div>
-
-    <div style="text-align:center;margin:18px 0">
-      <button class="back-btn" onclick="showPage('frontpage')">Back</button>
-    </div>
-  </section>
-
-  <!-- Cart icon (only visible on menu) -->
-  <div id="cart-icon" title="Open cart" onclick="openCartModal()">
-    <span>🛒</span>
-    <div id="cart-count">0</div>
   </div>
 
-  <!-- Item Modal (image + qty + add) -->
-  <div id="item-backdrop" class="modal-backdrop" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" id="item-modal">
-      <img id="modal-img" class="big-img" src="" alt="">
-      <h3 id="modal-item-name"></h3>
-      <p id="modal-item-price" style="margin:0 0 8px;color:var(--muted)"></p>
-      <div class="row">
-        <input id="modal-item-qty" class="qty" type="number" min="1" value="1" />
-        <button class="btn" onclick="addToCart()">Add to cart</button>
-        <button class="btn secondary" onclick="closeItemModal()">Cancel</button>
+  <!-- Menu -->
+  <div id="menuPage" class="page" style="display:none;">
+    <h1>Our Menu (Bestsellers)</h1>
+    <p class="note">Pre-order window: Customers may place orders from 10 a.m. to 6 p.m. the previous day.<br>Collection window: Orders ready 5–8 p.m. daily.<br>This allows proper planning and fresh ingredients.<br>Halal food, 650g portions, and catering available (min 1 week notice).<br>The minimum order is 299 DKK.</p>
+    <div class="gallery">
+      <div><img src="food6.jpg"><p>Signature African Jollof Rice - 179 DKK</p></div>
+      <div><img src="food9.jpg"><p>Mixed Veggies Fried Rice - 179 DKK</p></div>
+      <div><img src="food22.jpg"><p>Garden Stir Fry Rice & Chicken - 179 DKK</p></div>
+      <div><img src="food16.jpg"><p>Egusi Soup with Fufu - 249 DKK</p></div>
+      <div><img src="food7.jpg"><p>Efo Riro Soup with Fufu - 249 DKK</p></div>
+      <div><img src="food11.jpg"><p>Meatpie/Chicken Pie (pair) - 139 DKK</p></div>
+      <div><img src="food3.jpg"><p>Moi Moi with Fried Plantains - 199 DKK</p></div>
+      <div><img src="food21.jpg"><p>Banana Bread Minis (Pack) - 99 DKK</p></div>
+      <div><img src="food23.jpg"><p>Grilled Chicken (6 drumsticks) - 149 DKK</p></div>
+      <div><img src="food4.jpg"><p>Beef Kebabs - 149 DKK</p></div>
+    </div>
+    <div id="cartIcon" class="cart-icon">🛒<span id="cartCount" class="cart-count">0</span></div>
+    <button style="display:block;margin:20px auto;" onclick="showPage('homePage')">Back</button>
+  </div>
+
+  <!-- Checkout -->
+  <div id="checkoutPage" class="page checkout-page">
+    <h2>Checkout</h2>
+    <form id="orderForm">
+      <input name="name" placeholder="Full Name" required>
+      <input name="phone" placeholder="Phone Number" required>
+      <select name="method" id="method" required>
+        <option value="">Select Method</option>
+        <option>Pickup</option>
+        <option>Delivery</option>
+      </select>
+      <div id="addressField" style="display:none;"><input name="address" placeholder="Delivery Address"></div>
+      <p style="font-size:0.9em;color:#B95E30;">Note: Delivery is only available for bulk orders from and over 5000 DKK.</p>
+      <input type="date" name="date" required>
+      <input type="time" name="time" required>
+      <textarea name="note" placeholder="Additional notes"></textarea>
+      <button type="submit">Confirm Order</button>
+      <button type="button" onclick="showPage('menuPage')">Cancel</button>
+    </form>
+    <p style="text-align:center;margin-top:10px;">Pay via MobilePay: <strong>+45 91 67 30 68</strong></p>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="modal">
+    <div class="modal-content">
+      <img id="lightboxImg" src="">
+      <h3 id="lightboxTitle"></h3>
+      <p>Quantity:</p>
+      <input type="number" id="qty" min="1" value="1">
+      <div>
+        <button id="addToCartBtn">Add to Cart</button>
+        <button id="closeLightbox">Cancel</button>
       </div>
     </div>
   </div>
 
   <!-- Cart Modal -->
-  <div id="cart-backdrop" class="modal-backdrop" aria-hidden="true">
-    <div class="modal" id="cart-modal">
-      <h3>Your cart</h3>
-      <div id="cart-content" style="max-height:300px;overflow:auto"></div>
-      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
-        <button class="btn secondary" onclick="closeCartModal()">Close</button>
-        <button class="btn" onclick="proceedToCheckout()">Checkout</button>
-      </div>
+  <div id="cartModal" class="modal">
+    <div class="modal-content">
+      <h3>Your Cart</h3>
+      <ul id="cartItems" style="text-align:left;list-style:none;padding:0;"></ul>
+      <p id="cartTotal"></p>
+      <button id="checkoutBtn">Checkout</button>
+      <button id="cancelCartBtn">Cancel</button>
     </div>
   </div>
 
-  <!-- Order confirmation modal (after save) -->
-  <div id="order-confirm-backdrop" class="modal-backdrop" aria-hidden="true">
-    <div class="modal" id="order-confirm-modal">
-      <h3>Order placed</h3>
-      <p>Your order has been placed, kindly call +45 91673068 if you have any questions regarding address or food.</p>
-      <div style="display:flex;justify-content:flex-end;gap:8px">
-        <button class="btn" onclick="closeOrderConfirm()">OK</button>
-      </div>
+  <!-- Order Confirmation -->
+  <div id="orderModal" class="modal">
+    <div class="modal-content">
+      <p>Your order has been placed! Kindly call <strong>+45 91 67 30 68</strong> if you have any questions regarding address or food.</p>
+      <button id="okModalBtn">OK</button>
     </div>
   </div>
-
-  <!-- Checkout page -->
-  <section id="checkout-page" style="display:none">
-    <div class="checkout">
-      <h2>Checkout</h2>
-      <div id="checkout-items" style="margin-bottom:12px"></div>
-      <p><strong>Subtotal: </strong><span id="checkout-subtotal">0 DKK</span></p>
-      <p><strong>Total: </strong><span id="checkout-total">0 DKK</span></p>
-      <p class="note">You can also order via Wolt or Just Eat — ordering directly on our site gives 10% off pickup orders.</p>
-
-      <form id="checkout-form" onsubmit="event.preventDefault(); confirmOrder();">
-        <div class="form-row">
-          <input id="checkout-name" placeholder="Full name" required>
-          <input id="checkout-phone" placeholder="Phone number" required>
-        </div>
-
-        <div class="form-row" style="align-items:center">
-          <label style="margin-right:8px"><input type="radio" name="order-type" value="pickup" required> Pickup (10% off)</label>
-          <label style="margin-left:12px"><input type="radio" name="order-type" value="delivery"> Delivery</label>
-        </div>
-
-        <div id="delivery-warning" style="display:none" class="warning">
-          Delivery available only for bulk orders of 5000 DKK or more. Please switch to Pickup or increase order value.
-        </div>
-
-        <div id="address-label" style="display:none;margin-bottom:8px">
-          <input id="checkout-address" placeholder="Delivery address">
-        </div>
-
-        <div class="form-row">
-          <input id="checkout-date" type="date" required class="small">
-          <input id="checkout-time" type="time" required class="small">
-        </div>
-
-        <div class="form-row">
-          <textarea id="checkout-note" placeholder="Notes / dietary requests" style="min-height:80px"></textarea>
-        </div>
-
-        <div style="display:flex;gap:10px;justify-content:flex-end">
-          <button class="btn secondary" type="button" onclick="showPage('menupage')">Back to menu</button>
-          <button class="btn" id="confirm-btn" type="submit">Confirm & Pay (MobilePay)</button>
-        </div>
-      </form>
-
-      <p style="margin-top:14px"><strong>MobilePay:</strong> +45 91673068</p>
-    </div>
-  </section>
-
-  <!-- Login & Signup -->
-  <section id="loginpage" style="display:none">
-    <div style="max-width:420px;margin:10px auto">
-      <h2>Login</h2>
-      <input id="login-email" placeholder="Email" style="width:100%;padding:10px;margin:6px 0">
-      <input id="login-password" type="password" placeholder="Password" style="width:100%;padding:10px;margin:6px 0">
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-        <button class="btn secondary" onclick="showPage('frontpage')">Back</button>
-        <button class="btn" onclick="loginUser()">Login</button>
-      </div>
-    </div>
-  </section>
-
-  <section id="signuppage" style="display:none">
-    <div style="max-width:420px;margin:10px auto">
-      <h2>Sign up</h2>
-      <input placeholder="Full name" style="width:100%;padding:10px;margin:6px 0">
-      <input id="signup-email" placeholder="Email" style="width:100%;padding:10px;margin:6px 0">
-      <input id="signup-password" type="password" placeholder="Password" style="width:100%;padding:10px;margin:6px 0">
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-        <button class="btn secondary" onclick="showPage('frontpage')">Back</button>
-        <button class="btn" onclick="signupUser()">Sign up</button>
-      </div>
-    </div>
-  </section>
-
-  <section id="contactpage" style="display:none">
-    <div style="max-width:700px;margin:0 auto;text-align:left;padding:12px">
-      <h2>Contact Us</h2>
-      <p><strong>Name:</strong> Gloria Thompson Duruibe</p>
-      <p><strong>Phone:</strong> +45 91 67 30 68</p>
-      <p><strong>Email:</strong> g7thomson@yahoo.com</p>
-      <div style="text-align:center;margin-top:12px"><button class="back-btn" onclick="showPage('frontpage')">Back</button></div>
-    </div>
-  </section>
-</main>
-
-<footer>© Gloria's Cookhouse</footer>
-
-<!-- JS: Firebase + app logic -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
-
-  // YOUR firebase config (you gave this)
-  const firebaseConfig = {
-    apiKey: "AIzaSyCVeu4VrXiqDnyM5EZjQfc3y94ZVBhSt-Y",
-    authDomain: "gloria-s-cookhouse.firebaseapp.com",
-    databaseURL: "https://gloria-s-cookhouse-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "gloria-s-cookhouse",
-    storageBucket: "gloria-s-cookhouse.firebasestorage.app",
-    messagingSenderId: "242537183123",
-    appId: "1:242537183123:web:4cdbc739f2f62b2b789a66"
-  };
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getDatabase(app);
-
-  // delivery minimum (subtotal >= this allows delivery)
-  const MIN_DELIVERY = 5000;
-
-  // product data map (index -> object). prices match what you asked.
-  const PRODUCTS = {
-    1:{id:1,name:"Mashed potatoes & salmon with asparagus",price:179,img:"food1.jpg"},
-    2:{id:2,name:"Fried plantains with yams & egg gravy",price:179,img:"food2.jpg"},
-    3:{id:3,name:"Moi Moi with fried plantains",price:199,img:"food3.jpg"},
-    4:{id:4,name:"Beef kebabs (suya)",price:149,img:"food4.jpg"},
-    5:{id:5,name:"Avocado salad (tailored)",price:99,img:"food5.jpg"},
-    6:{id:6,name:"Jollof rice with chicken",price:179,img:"food6.jpg"},
-    7:{id:7,name:"Efo Riro soup with fufu",price:249,img:"food7.jpg"},
-    8:{id:8,name:"Grilled spicy chicken",price:149,img:"food8.jpg"},
-    9:{id:9,name:"Jollof rice with beef",price:179,img:"food9.jpg"},
-    10:{id:10,name:"Grilled potatoes & grilled chicken",price:179,img:"food10.jpg"},
-    11:{id:11,name:"Meatpie / Chicken pie (min 4)",price:279,img:"food11.jpg"},
-    12:{id:12,name:"Rice with veggie sauce & chicken kebabs",price:179,img:"food12.jpg"},
-    13:{id:13,name:"Pasta Alfredo with chicken",price:179,img:"food13.jpg"},
-    14:{id:14,name:"Spaghetti & meatballs",price:179,img:"food14.jpg"},
-    15:{id:15,name:"Stewed beans & plantains",price:179,img:"food15.jpg"},
-    16:{id:16,name:"Egusi soup with fufu",price:249,img:"food16.jpg"},
-    17:{id:17,name:"Fried fish fillet & plantains",price:199,img:"food17.jpg"},
-    18:{id:18,name:"Scotch eggs (pair, min4)",price:139,img:"food18.jpg"},
-    19:{id:19,name:"Green bell pepper sauce",price:179,img:"food19.jpg"},
-    20:{id:20,name:"Pasta & veggie stir fry sauce",price:179,img:"food20.jpg"},
-    21:{id:21,name:"Banana bread minis (8 pack)",price:99,img:"food21.jpg"},
-    22:{id:22,name:"Fried rice & chicken breast",price:179,img:"food22.jpg"},
-    23:{id:23,name:"Full roasted chicken",price:199,img:"food23.jpg"},
-    24:{id:24,name:"Big banana bread loaves",price:89,img:"food24.jpg"}
-  };
-
-  // app state
-  let cart = [];
-  let currentProduct = null;
-
-  // open item modal by product index
-  window.openItemModal = function(index){
-    const p = PRODUCTS[index];
-    if(!p){ alert('Product missing: '+index); return; }
-    currentProduct = p;
-    document.getElementById('modal-img').src = p.img;
-    document.getElementById('modal-img').alt = p.name;
-    document.getElementById('modal-item-name').textContent = p.name;
-    document.getElementById('modal-item-price').textContent = p.price + ' DKK';
-    document.getElementById('modal-item-qty').value = 1;
-    document.getElementById('item-backdrop').style.display = 'flex';
-  };
-
-  window.closeItemModal = function(){
-    document.getElementById('item-backdrop').style.display = 'none';
-  };
-
-  // add to cart
-  window.addToCart = function(){
-    const qty = Math.max(1, parseInt(document.getElementById('modal-item-qty').value || 1));
-    if(!currentProduct) return;
-    const found = cart.find(i=>i.id===currentProduct.id);
-    if(found){ found.qty += qty; } else { cart.push({ id: currentProduct.id, name: currentProduct.name, price: currentProduct.price, qty }); }
-    updateCartCount();
-    closeItemModal();
-  };
-
-  function updateCartCount(){
-    const cnt = cart.reduce((s,i)=>s+i.qty,0);
-    document.getElementById('cart-count').textContent = cnt;
-  }
-
-  // cart modal
-  window.openCartModal = function(){
-    const backdrop = document.getElementById('cart-backdrop');
-    const content = document.getElementById('cart-content');
-    content.innerHTML = '';
-    if(cart.length === 0){
-      content.innerHTML = '<p>Cart is empty</p>';
-    } else {
-      cart.forEach((it, idx)=>{
-        const row = document.createElement('div');
-        row.style.display = 'flex';
-        row.style.justifyContent = 'space-between';
-        row.style.alignItems = 'center';
-        row.style.gap = '8px';
-        row.innerHTML = `<div style="flex:1">${it.name}</div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <input type="number" min="1" value="${it.qty}" style="width:66px;padding:6px;border-radius:6px;border:1px solid #ddd"
-              onchange="(function(v,ix){ cart[ix].qty = Math.max(1,parseInt(v.value||1)); updateCartCount(); openCartModal(); })(this,${idx})">
-            <div style="width:90px;text-align:right">${it.price * it.qty} DKK</div>
-            <button style="margin-left:8px" onclick="(function(ix){ cart.splice(ix,1); updateCartCount(); openCartModal(); })( ${idx} )">Remove</button>
-          </div>`;
-        content.appendChild(row);
-      });
-      const tot = cart.reduce((s,i)=>s + i.price*i.qty,0);
-      const footer = document.createElement('div');
-      footer.style.marginTop='12px';
-      footer.innerHTML = `<div style="text-align:right;margin-top:8px"><strong>Subtotal: ${tot} DKK</strong></div>`;
-      const actions = document.createElement('div');
-      actions.style.display = 'flex'; actions.style.justifyContent='flex-end'; actions.style.gap='8px'; actions.style.marginTop='10px';
-      const closeBtn = document.createElement('button'); closeBtn.className='btn secondary'; closeBtn.textContent='Close'; closeBtn.onclick = closeCartModal;
-      const checkoutBtn = document.createElement('button'); checkoutBtn.className='btn'; checkoutBtn.textContent='Checkout';
-      checkoutBtn.onclick = function(){ closeCartModal(); proceedToCheckout(); };
-      actions.appendChild(closeBtn); actions.appendChild(checkoutBtn);
-      content.appendChild(footer); content.appendChild(actions);
-    }
-    backdrop.style.display = 'flex';
-  };
-
-  window.closeCartModal = function(){ document.getElementById('cart-backdrop').style.display = 'none'; };
-
-  window.proceedToCheckout = function(){
-    // show checkout page and populate items
-    showPage('checkout-page');
-    const itemsDiv = document.getElementById('checkout-items');
-    itemsDiv.innerHTML = '';
-    cart.forEach(it=>{ itemsDiv.innerHTML += `<p>${it.name} x ${it.qty} = ${it.price*it.qty} DKK</p>`; });
-    calculateTotal();
-    checkDeliveryAllowed();
-  };
-
-  // show/hide pages and cart icon logic
-  window.showPage = function(pageId){
-    const pages = ['frontpage','menupage','contactpage','loginpage','signuppage','checkout-page'];
-    pages.forEach(id=>{
-      const el = document.getElementById(id);
-      if(el) el.style.display = (id === pageId ? 'block' : 'none');
-    });
-    // cart icon only on menu page
-    document.getElementById('cart-icon').style.display = (pageId==='menupage' && cart.length>=0) ? 'flex' : 'none';
-    // ensure address field display state respects radio
-    const orderType = document.querySelector('input[name="order-type"]:checked');
-    if(orderType){
-      document.getElementById('address-label').style.display = orderType.value==='delivery' ? 'block' : 'none';
-    } else {
-      document.getElementById('address-label').style.display = 'none';
-    }
-  };
-
-  // calculate total (pickup discount)
-  window.calculateTotal = function(){
-    let subtotal = cart.reduce((s,i)=>s + i.price*i.qty, 0);
-    // subtotal displayed
-    document.getElementById('checkout-subtotal').textContent = subtotal + ' DKK';
-    const type = document.querySelector('input[name="order-type"]:checked')?.value;
-    let total = subtotal;
-    if(type === 'pickup'){ total = Math.round(total * 0.9); } // 10% off pickup
-    document.getElementById('checkout-total').textContent = total + ' DKK';
-    return {subtotal, total};
-  };
-
-  // check delivery constraints & toggle confirm button
-  function checkDeliveryAllowed(){
-    const {subtotal} = calculateTotal();
-    const deliverySelected = document.querySelector('input[name="order-type"]:checked')?.value === 'delivery';
-    const warn = document.getElementById('delivery-warning');
-    const confirmBtn = document.getElementById('confirm-btn');
-    if(deliverySelected){
-      if(subtotal < MIN_DELIVERY){
-        warn.style.display = 'block';
-        confirmBtn.disabled = true;
-        confirmBtn.style.opacity = '0.6';
-      } else {
-        warn.style.display = 'none';
-        confirmBtn.disabled = false;
-        confirmBtn.style.opacity = '1';
-      }
-    } else {
-      warn.style.display = 'none';
-      confirmBtn.disabled = false;
-      confirmBtn.style.opacity = '1';
-    }
-  }
-  window.checkDeliveryAllowed = checkDeliveryAllowed;
-
-  // confirm and push order to Firebase RTDB
-  window.confirmOrder = function(){
-    const name = document.getElementById('checkout-name').value.trim();
-    const phone = document.getElementById('checkout-phone').value.trim();
-    const type = document.querySelector('input[name="order-type"]:checked')?.value;
-    const date = document.getElementById('checkout-date').value;
-    const time = document.getElementById('checkout-time').value;
-    const address = document.getElementById('checkout-address').value.trim();
-    const note = document.getElementById('checkout-note').value.trim();
-    if(!name || !phone || !type || !date || !time){ alert('Please fill required fields'); return; }
-    if(type==='delivery'){
-      const subtotal = cart.reduce((s,i)=>s + i.price*i.qty, 0);
-      if(subtotal < MIN_DELIVERY){ alert('Delivery requires orders of 5000 DKK or more.'); return; }
-      if(!address){ alert('Please add a delivery address'); return; }
-    }
-    if(cart.length===0){ alert('Your cart is empty'); return; }
-
-    const { total } = calculateTotal();
-    const order = {
-      name, phone, type, date, time, address, note,
-      items: cart.map(i=>({id:i.id,name:i.name,qty:i.qty,unit:i.price,subtotal:i.qty*i.price})),
-      subtotal: cart.reduce((s,i)=>s + i.price*i.qty, 0),
-      total, createdAt: new Date().toISOString()
-    };
-
-    // push to /orders
-    push(ref(db,'orders'), order)
-      .then(()=> {
-        // show confirmation modal instead of simple alert
-        document.getElementById('order-confirm-backdrop').style.display = 'flex';
-      })
-      .catch(err=>{
-        console.error(err); alert('Error saving order to database. Check Firebase rules and console.');
-      });
-  };
-
-  // after user hits OK on confirmation modal
-  window.closeOrderConfirm = function(){
-    // clear cart and go home
-    cart = [];
-    updateCartCount();
-    document.getElementById('order-confirm-backdrop').style.display = 'none';
-    showPage('frontpage');
-  };
-
-  // auth helpers
-  window.loginUser = function(){
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-    if(!email||!password){ alert('Enter email & password'); return; }
-    signInWithEmailAndPassword(auth,email,password)
-      .then(()=>{ alert('Logged in'); showPage('frontpage'); })
-      .catch(e=>{ alert('Login error: '+e.message); });
-  };
-
-  window.signupUser = function(){
-    const email = document.getElementById('signup-email').value;
-    const pass = document.getElementById('signup-password').value;
-    if(!email||!pass){ alert('Enter email & password'); return; }
-    createUserWithEmailAndPassword(auth,email,pass)
-      .then(()=>{ alert('Account created'); showPage('frontpage'); })
-      .catch(e=>{ alert('Signup error: '+e.message); });
-  };
-
-  // attach nav button handlers after DOM ready
-  document.addEventListener('DOMContentLoaded',()=>{
-    document.querySelectorAll('.nav-btn').forEach(el=>{
-      el.addEventListener('click',function(e){
-        e.preventDefault();
-        const target = this.getAttribute('data-target');
-        if(target) showPage(target);
-      });
-    });
-
-    // order-type radio toggles address field + checks delivery validity
-    document.querySelectorAll('input[name="order-type"]').forEach(r=>{
-      r.addEventListener('change',()=>{
-        document.getElementById('address-label').style.display = r.value==='delivery' ? 'block' : 'none';
-        calculateTotal();
-        checkDeliveryAllowed();
-      });
-    });
-
-    // ensure we update subtotal/total whenever cart changes (qty change uses openCartModal which calls updateCartCount/openCartModal)
-    // initial page
-    showPage('frontpage');
-    updateCartCount();
-  });
-
-</script>
-
 </body>
 </html>
