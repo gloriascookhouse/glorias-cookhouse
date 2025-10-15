@@ -61,6 +61,7 @@
   .form-row{display:flex;gap:10px;margin:10px 0;flex-wrap:wrap}
   .form-row input,.form-row textarea{padding:10px;border-radius:8px;border:1px solid #ddd;width:100%}
   .small{width:48%}
+  .warning{color:#b71c1c;font-weight:700;margin-top:8px}
   @media (max-width:520px){ .small{width:100%} }
   footer{padding:18px;text-align:center;color:#777;font-size:13px}
 </style>
@@ -238,11 +239,23 @@
     </div>
   </div>
 
+  <!-- Order confirmation modal (after save) -->
+  <div id="order-confirm-backdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" id="order-confirm-modal">
+      <h3>Order placed</h3>
+      <p>Your order has been placed, kindly call +45 91673068 if you have any questions regarding address or food.</p>
+      <div style="display:flex;justify-content:flex-end;gap:8px">
+        <button class="btn" onclick="closeOrderConfirm()">OK</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Checkout page -->
   <section id="checkout-page" style="display:none">
     <div class="checkout">
       <h2>Checkout</h2>
       <div id="checkout-items" style="margin-bottom:12px"></div>
+      <p><strong>Subtotal: </strong><span id="checkout-subtotal">0 DKK</span></p>
       <p><strong>Total: </strong><span id="checkout-total">0 DKK</span></p>
       <p class="note">You can also order via Wolt or Just Eat — ordering directly on our site gives 10% off pickup orders.</p>
 
@@ -255,6 +268,10 @@
         <div class="form-row" style="align-items:center">
           <label style="margin-right:8px"><input type="radio" name="order-type" value="pickup" required> Pickup (10% off)</label>
           <label style="margin-left:12px"><input type="radio" name="order-type" value="delivery"> Delivery</label>
+        </div>
+
+        <div id="delivery-warning" style="display:none" class="warning">
+          Delivery available only for bulk orders of 5000 DKK or more. Please switch to Pickup or increase order value.
         </div>
 
         <div id="address-label" style="display:none;margin-bottom:8px">
@@ -272,7 +289,7 @@
 
         <div style="display:flex;gap:10px;justify-content:flex-end">
           <button class="btn secondary" type="button" onclick="showPage('menupage')">Back to menu</button>
-          <button class="btn" type="submit">Confirm & Pay (MobilePay)</button>
+          <button class="btn" id="confirm-btn" type="submit">Confirm & Pay (MobilePay)</button>
         </div>
       </form>
 
@@ -338,6 +355,9 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getDatabase(app);
+
+  // delivery minimum (subtotal >= this allows delivery)
+  const MIN_DELIVERY = 5000;
 
   // product data map (index -> object). prices match what you asked.
   const PRODUCTS = {
@@ -450,6 +470,7 @@
     itemsDiv.innerHTML = '';
     cart.forEach(it=>{ itemsDiv.innerHTML += `<p>${it.name} x ${it.qty} = ${it.price*it.qty} DKK</p>`; });
     calculateTotal();
+    checkDeliveryAllowed();
   };
 
   // show/hide pages and cart icon logic
@@ -472,11 +493,39 @@
 
   // calculate total (pickup discount)
   window.calculateTotal = function(){
-    let total = cart.reduce((s,i)=>s + i.price*i.qty, 0);
+    let subtotal = cart.reduce((s,i)=>s + i.price*i.qty, 0);
+    // subtotal displayed
+    document.getElementById('checkout-subtotal').textContent = subtotal + ' DKK';
     const type = document.querySelector('input[name="order-type"]:checked')?.value;
-    if(type === 'pickup'){ total = Math.round(total * 0.9); }
+    let total = subtotal;
+    if(type === 'pickup'){ total = Math.round(total * 0.9); } // 10% off pickup
     document.getElementById('checkout-total').textContent = total + ' DKK';
+    return {subtotal, total};
   };
+
+  // check delivery constraints & toggle confirm button
+  function checkDeliveryAllowed(){
+    const {subtotal} = calculateTotal();
+    const deliverySelected = document.querySelector('input[name="order-type"]:checked')?.value === 'delivery';
+    const warn = document.getElementById('delivery-warning');
+    const confirmBtn = document.getElementById('confirm-btn');
+    if(deliverySelected){
+      if(subtotal < MIN_DELIVERY){
+        warn.style.display = 'block';
+        confirmBtn.disabled = true;
+        confirmBtn.style.opacity = '0.6';
+      } else {
+        warn.style.display = 'none';
+        confirmBtn.disabled = false;
+        confirmBtn.style.opacity = '1';
+      }
+    } else {
+      warn.style.display = 'none';
+      confirmBtn.disabled = false;
+      confirmBtn.style.opacity = '1';
+    }
+  }
+  window.checkDeliveryAllowed = checkDeliveryAllowed;
 
   // confirm and push order to Firebase RTDB
   window.confirmOrder = function(){
@@ -488,25 +537,39 @@
     const address = document.getElementById('checkout-address').value.trim();
     const note = document.getElementById('checkout-note').value.trim();
     if(!name || !phone || !type || !date || !time){ alert('Please fill required fields'); return; }
-    if(type==='delivery' && !address){ alert('Please add a delivery address'); return; }
+    if(type==='delivery'){
+      const subtotal = cart.reduce((s,i)=>s + i.price*i.qty, 0);
+      if(subtotal < MIN_DELIVERY){ alert('Delivery requires orders of 5000 DKK or more.'); return; }
+      if(!address){ alert('Please add a delivery address'); return; }
+    }
     if(cart.length===0){ alert('Your cart is empty'); return; }
 
-    const total = document.getElementById('checkout-total').textContent;
+    const { total } = calculateTotal();
     const order = {
       name, phone, type, date, time, address, note,
       items: cart.map(i=>({id:i.id,name:i.name,qty:i.qty,unit:i.price,subtotal:i.qty*i.price})),
+      subtotal: cart.reduce((s,i)=>s + i.price*i.qty, 0),
       total, createdAt: new Date().toISOString()
     };
 
     // push to /orders
     push(ref(db,'orders'), order)
       .then(()=> {
-        alert('Order confirmed! Please pay MobilePay +45 91673068. Order saved.');
-        cart = []; updateCartCount(); showPage('frontpage');
+        // show confirmation modal instead of simple alert
+        document.getElementById('order-confirm-backdrop').style.display = 'flex';
       })
       .catch(err=>{
         console.error(err); alert('Error saving order to database. Check Firebase rules and console.');
       });
+  };
+
+  // after user hits OK on confirmation modal
+  window.closeOrderConfirm = function(){
+    // clear cart and go home
+    cart = [];
+    updateCartCount();
+    document.getElementById('order-confirm-backdrop').style.display = 'none';
+    showPage('frontpage');
   };
 
   // auth helpers
@@ -538,11 +601,16 @@
       });
     });
 
-    // order-type radio toggles address field
+    // order-type radio toggles address field + checks delivery validity
     document.querySelectorAll('input[name="order-type"]').forEach(r=>{
-      r.addEventListener('change',()=>{ document.getElementById('address-label').style.display = r.value==='delivery' ? 'block' : 'none'; calculateTotal(); });
+      r.addEventListener('change',()=>{
+        document.getElementById('address-label').style.display = r.value==='delivery' ? 'block' : 'none';
+        calculateTotal();
+        checkDeliveryAllowed();
+      });
     });
 
+    // ensure we update subtotal/total whenever cart changes (qty change uses openCartModal which calls updateCartCount/openCartModal)
     // initial page
     showPage('frontpage');
     updateCartCount();
