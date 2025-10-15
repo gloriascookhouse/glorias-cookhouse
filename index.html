@@ -33,7 +33,7 @@
   .note{font-style:italic;color:var(--muted);text-align:center;margin:18px auto;max-width:900px}
   /* gallery */
   .gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;padding:14px}
-  .gallery-item{cursor:pointer;text-align:center}
+  .gallery-item{cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center}
   .gallery-item img{width:100%;height:140px;object-fit:cover;border-radius:8px;display:block}
   .gallery-item p{margin:8px 6px 0;font-size:13px;color:#111}
   /* responsive adjustments */
@@ -42,11 +42,11 @@
   @media (max-width:520px){ .gallery{grid-template-columns:repeat(2,1fr)} #logo{width:90px} h1{font-size:22px} }
   /* modals */
   .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1200}
-  .modal{background:#fff;border-radius:10px;max-width:420px;width:92%;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.12);text-align:left}
+  .modal{background:#fff;border-radius:10px;max-width:520px;width:94%;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.12);text-align:left}
   .modal h3{margin:8px 0 6px;color:var(--brand)}
   .modal .big-img{width:100%;height:260px;object-fit:cover;border-radius:8px}
-  .modal .row{display:flex;gap:8px;align-items:center;margin-top:10px}
-  .qty{width:72px;padding:8px;border-radius:8px;border:1px solid #ddd}
+  .modal .row{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+  .qty{width:90px;padding:8px;border-radius:8px;border:1px solid #ddd}
   .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
   .btn.secondary{background:#eee;color:#222}
   /* cart icon */
@@ -64,6 +64,10 @@
   .warning{color:#b71c1c;font-weight:700;margin-top:8px}
   @media (max-width:520px){ .small{width:100%} }
   footer{padding:18px;text-align:center;color:#777;font-size:13px}
+  /* utility */
+  .center{display:flex;justify-content:center;align-items:center}
+  .text-center{text-align:center}
+  .remove-btn{background:transparent;border:1px solid #ddd;padding:6px;border-radius:6px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -99,11 +103,13 @@
 
   <!-- MENU PAGE -->
   <section id="menupage" style="display:none">
-    <h1 style="text-align:center">Our Menu (Bestsellers)</h1>
+    <h1 class="text-center">Our Menu (Bestsellers)</h1>
     <p class="note">
       Pre-order window: Customers may place orders from 10 a.m. to 6 p.m. the previous day.<br>
       Collection window: Orders ready for collection between 5 p.m. and 8 p.m., Monday–Sunday.<br>
-      Gloria’s Cookhouse offers halal food, portions from 650g, and catering + bulk orders. Please give one week’s notice for large requests. Minimum order: 299 DKK.
+      This structure allows proper planning and fresh ingredients.<br>
+      Gloria’s Cookhouse offers halal food, portions from 650g, and catering + bulk orders (please give one week’s notice).<br>
+      The minimum order is 299 DKK.
     </p>
 
     <div class="gallery" id="gallery">
@@ -202,13 +208,13 @@
       </div>
     </div>
 
-    <div style="text-align:center;margin:18px 0">
-      <button class="back-btn" onclick="showPage('frontpage')">Back</button>
+    <div class="center" style="margin:18px 0">
+      <button class="btn secondary" onclick="showPage('frontpage')">Back</button>
     </div>
   </section>
 
   <!-- Cart icon (only visible on menu) -->
-  <div id="cart-icon" title="Open cart" onclick="openCartModal()">
+  <div id="cart-icon" title="Open cart" onclick="openCartModal()" style="display:none">
     <span>🛒</span>
     <div id="cart-count">0</div>
   </div>
@@ -221,8 +227,8 @@
       <p id="modal-item-price" style="margin:0 0 8px;color:var(--muted)"></p>
       <div class="row">
         <input id="modal-item-qty" class="qty" type="number" min="1" value="1" />
-        <button class="btn" onclick="addToCart()">Add to cart</button>
-        <button class="btn secondary" onclick="closeItemModal()">Cancel</button>
+        <button class="btn" id="add-to-cart-btn">Add to cart</button>
+        <button class="btn secondary" id="cancel-item-btn">Cancel</button>
       </div>
     </div>
   </div>
@@ -231,10 +237,10 @@
   <div id="cart-backdrop" class="modal-backdrop" aria-hidden="true">
     <div class="modal" id="cart-modal">
       <h3>Your cart</h3>
-      <div id="cart-content" style="max-height:300px;overflow:auto"></div>
+      <div id="cart-content" style="max-height:320px;overflow:auto"></div>
       <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
-        <button class="btn secondary" onclick="closeCartModal()">Close</button>
-        <button class="btn" onclick="proceedToCheckout()">Checkout</button>
+        <button class="btn secondary" id="cart-close-btn">Close</button>
+        <button class="btn" id="cart-checkout-btn">Checkout</button>
       </div>
     </div>
   </div>
@@ -245,7 +251,7 @@
       <h3>Order placed</h3>
       <p>Your order has been placed, kindly call +45 91673068 if you have any questions regarding address or food.</p>
       <div style="display:flex;justify-content:flex-end;gap:8px">
-        <button class="btn" onclick="closeOrderConfirm()">OK</button>
+        <button class="btn" id="order-confirm-ok">OK</button>
       </div>
     </div>
   </div>
@@ -305,7 +311,7 @@
       <input id="login-password" type="password" placeholder="Password" style="width:100%;padding:10px;margin:6px 0">
       <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
         <button class="btn secondary" onclick="showPage('frontpage')">Back</button>
-        <button class="btn" onclick="loginUser()">Login</button>
+        <button class="btn" id="login-btn">Login</button>
       </div>
     </div>
   </section>
@@ -318,7 +324,7 @@
       <input id="signup-password" type="password" placeholder="Password" style="width:100%;padding:10px;margin:6px 0">
       <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
         <button class="btn secondary" onclick="showPage('frontpage')">Back</button>
-        <button class="btn" onclick="signupUser()">Sign up</button>
+        <button class="btn" id="signup-btn">Sign up</button>
       </div>
     </div>
   </section>
@@ -329,7 +335,7 @@
       <p><strong>Name:</strong> Gloria Thompson Duruibe</p>
       <p><strong>Phone:</strong> +45 91 67 30 68</p>
       <p><strong>Email:</strong> g7thomson@yahoo.com</p>
-      <div style="text-align:center;margin-top:12px"><button class="back-btn" onclick="showPage('frontpage')">Back</button></div>
+      <div style="text-align:center;margin-top:12px"><button class="btn secondary" onclick="showPage('frontpage')">Back</button></div>
     </div>
   </section>
 </main>
@@ -356,10 +362,9 @@
   const auth = getAuth(app);
   const db = getDatabase(app);
 
-  // delivery minimum (subtotal >= this allows delivery)
-  const MIN_DELIVERY = 5000;
+  const MIN_DELIVERY = 5000; // DKK
 
-  // product data map (index -> object). prices match what you asked.
+  // products
   const PRODUCTS = {
     1:{id:1,name:"Mashed potatoes & salmon with asparagus",price:179,img:"food1.jpg"},
     2:{id:2,name:"Fried plantains with yams & egg gravy",price:179,img:"food2.jpg"},
@@ -387,11 +392,11 @@
     24:{id:24,name:"Big banana bread loaves",price:89,img:"food24.jpg"}
   };
 
-  // app state
+  // state
   let cart = [];
   let currentProduct = null;
 
-  // open item modal by product index
+  // open item modal
   window.openItemModal = function(index){
     const p = PRODUCTS[index];
     if(!p){ alert('Product missing: '+index); return; }
@@ -404,32 +409,35 @@
     document.getElementById('item-backdrop').style.display = 'flex';
   };
 
-  window.closeItemModal = function(){
-    document.getElementById('item-backdrop').style.display = 'none';
-  };
+  window.closeItemModal = function(){ document.getElementById('item-backdrop').style.display = 'none'; };
 
-  // add to cart
-  window.addToCart = function(){
-    const qty = Math.max(1, parseInt(document.getElementById('modal-item-qty').value || 1));
-    if(!currentProduct) return;
-    const found = cart.find(i=>i.id===currentProduct.id);
-    if(found){ found.qty += qty; } else { cart.push({ id: currentProduct.id, name: currentProduct.name, price: currentProduct.price, qty }); }
-    updateCartCount();
-    closeItemModal();
-  };
+  // add to cart from item modal
+  document.addEventListener('DOMContentLoaded',()=>{
+    document.getElementById('add-to-cart-btn').addEventListener('click',()=>{
+      const qty = Math.max(1, parseInt(document.getElementById('modal-item-qty').value || 1));
+      if(!currentProduct) return;
+      const found = cart.find(i=>i.id===currentProduct.id);
+      if(found){ found.qty += qty; }
+      else cart.push({ id: currentProduct.id, name: currentProduct.name, price: currentProduct.price, qty });
+      updateCartCount();
+      closeItemModal();
+    });
+    document.getElementById('cancel-item-btn').addEventListener('click', closeItemModal);
+  });
 
+  // update cart count badge
   function updateCartCount(){
     const cnt = cart.reduce((s,i)=>s+i.qty,0);
     document.getElementById('cart-count').textContent = cnt;
   }
 
-  // cart modal
+  // open cart modal
   window.openCartModal = function(){
     const backdrop = document.getElementById('cart-backdrop');
     const content = document.getElementById('cart-content');
     content.innerHTML = '';
     if(cart.length === 0){
-      content.innerHTML = '<p>Cart is empty</p>';
+      content.innerHTML = '<p>Your cart is empty</p>';
     } else {
       cart.forEach((it, idx)=>{
         const row = document.createElement('div');
@@ -437,24 +445,41 @@
         row.style.justifyContent = 'space-between';
         row.style.alignItems = 'center';
         row.style.gap = '8px';
-        row.innerHTML = `<div style="flex:1">${it.name}</div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <input type="number" min="1" value="${it.qty}" style="width:66px;padding:6px;border-radius:6px;border:1px solid #ddd"
-              onchange="(function(v,ix){ cart[ix].qty = Math.max(1,parseInt(v.value||1)); updateCartCount(); openCartModal(); })(this,${idx})">
-            <div style="width:90px;text-align:right">${it.price * it.qty} DKK</div>
-            <button style="margin-left:8px" onclick="(function(ix){ cart.splice(ix,1); updateCartCount(); openCartModal(); })( ${idx} )">Remove</button>
-          </div>`;
+        // left: name, middle: qty input, price, remove
+        const left = document.createElement('div'); left.style.flex = '1';
+        left.textContent = it.name;
+        const rightWrap = document.createElement('div'); rightWrap.style.display='flex'; rightWrap.style.alignItems='center'; rightWrap.style.gap='8px';
+        const qtyInput = document.createElement('input');
+        qtyInput.type = 'number'; qtyInput.min = 1; qtyInput.value = it.qty; qtyInput.style.width='66px';
+        qtyInput.addEventListener('change', function(){ 
+          const val = Math.max(1, parseInt(this.value || 1));
+          cart[idx].qty = val;
+          updateCartCount();
+          openCartModal(); // refresh UI
+        });
+        const priceDiv = document.createElement('div'); priceDiv.style.width='90px'; priceDiv.style.textAlign='right';
+        priceDiv.textContent = (it.price * it.qty) + ' DKK';
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-btn';
+        removeBtn.textContent = 'Remove';
+        removeBtn.addEventListener('click', function(){
+          cart.splice(idx,1);
+          updateCartCount();
+          openCartModal();
+        });
+        rightWrap.appendChild(qtyInput); rightWrap.appendChild(priceDiv); rightWrap.appendChild(removeBtn);
+        row.appendChild(left); row.appendChild(rightWrap);
         content.appendChild(row);
       });
+
       const tot = cart.reduce((s,i)=>s + i.price*i.qty,0);
-      const footer = document.createElement('div');
-      footer.style.marginTop='12px';
+      const footer = document.createElement('div'); footer.style.marginTop='12px';
       footer.innerHTML = `<div style="text-align:right;margin-top:8px"><strong>Subtotal: ${tot} DKK</strong></div>`;
-      const actions = document.createElement('div');
-      actions.style.display = 'flex'; actions.style.justifyContent='flex-end'; actions.style.gap='8px'; actions.style.marginTop='10px';
-      const closeBtn = document.createElement('button'); closeBtn.className='btn secondary'; closeBtn.textContent='Close'; closeBtn.onclick = closeCartModal;
+      const actions = document.createElement('div'); actions.style.display='flex'; actions.style.justifyContent='flex-end'; actions.style.gap='8px'; actions.style.marginTop='10px';
+      const closeBtn = document.createElement('button'); closeBtn.className='btn secondary'; closeBtn.textContent='Close';
+      closeBtn.addEventListener('click', closeCartModal);
       const checkoutBtn = document.createElement('button'); checkoutBtn.className='btn'; checkoutBtn.textContent='Checkout';
-      checkoutBtn.onclick = function(){ closeCartModal(); proceedToCheckout(); };
+      checkoutBtn.addEventListener('click', function(){ closeCartModal(); proceedToCheckout(); });
       actions.appendChild(closeBtn); actions.appendChild(checkoutBtn);
       content.appendChild(footer); content.appendChild(actions);
     }
@@ -463,15 +488,23 @@
 
   window.closeCartModal = function(){ document.getElementById('cart-backdrop').style.display = 'none'; };
 
+  // proceed to checkout: populate checkout items, totals, then show page
   window.proceedToCheckout = function(){
-    // show checkout page and populate items
     showPage('checkout-page');
-    const itemsDiv = document.getElementById('checkout-items');
-    itemsDiv.innerHTML = '';
-    cart.forEach(it=>{ itemsDiv.innerHTML += `<p>${it.name} x ${it.qty} = ${it.price*it.qty} DKK</p>`; });
+    renderCheckoutItems();
     calculateTotal();
     checkDeliveryAllowed();
   };
+
+  function renderCheckoutItems(){
+    const itemsDiv = document.getElementById('checkout-items');
+    itemsDiv.innerHTML = '';
+    cart.forEach(it=>{
+      const p = document.createElement('p');
+      p.textContent = `${it.name} x ${it.qty} = ${it.price*it.qty} DKK`;
+      itemsDiv.appendChild(p);
+    });
+  }
 
   // show/hide pages and cart icon logic
   window.showPage = function(pageId){
@@ -481,29 +514,25 @@
       if(el) el.style.display = (id === pageId ? 'block' : 'none');
     });
     // cart icon only on menu page
-    document.getElementById('cart-icon').style.display = (pageId==='menupage' && cart.length>=0) ? 'flex' : 'none';
-    // ensure address field display state respects radio
+    document.getElementById('cart-icon').style.display = (pageId==='menupage') ? 'block' : 'none';
+    // address visibility
     const orderType = document.querySelector('input[name="order-type"]:checked');
-    if(orderType){
-      document.getElementById('address-label').style.display = orderType.value==='delivery' ? 'block' : 'none';
-    } else {
-      document.getElementById('address-label').style.display = 'none';
-    }
+    if(orderType) document.getElementById('address-label').style.display = orderType.value==='delivery' ? 'block' : 'none';
+    else document.getElementById('address-label').style.display = 'none';
   };
 
-  // calculate total (pickup discount)
+  // calculate totals and display
   window.calculateTotal = function(){
-    let subtotal = cart.reduce((s,i)=>s + i.price*i.qty, 0);
-    // subtotal displayed
+    const subtotal = cart.reduce((s,i)=>s + i.price*i.qty, 0);
     document.getElementById('checkout-subtotal').textContent = subtotal + ' DKK';
     const type = document.querySelector('input[name="order-type"]:checked')?.value;
     let total = subtotal;
-    if(type === 'pickup'){ total = Math.round(total * 0.9); } // 10% off pickup
+    if(type === 'pickup') total = Math.round(total * 0.9); // 10% off pickup
     document.getElementById('checkout-total').textContent = total + ' DKK';
     return {subtotal, total};
   };
 
-  // check delivery constraints & toggle confirm button
+  // delivery rule & control confirm button
   function checkDeliveryAllowed(){
     const {subtotal} = calculateTotal();
     const deliverySelected = document.querySelector('input[name="order-type"]:checked')?.value === 'delivery';
@@ -527,7 +556,7 @@
   }
   window.checkDeliveryAllowed = checkDeliveryAllowed;
 
-  // confirm and push order to Firebase RTDB
+  // confirm order -> push to firebase
   window.confirmOrder = function(){
     const name = document.getElementById('checkout-name').value.trim();
     const phone = document.getElementById('checkout-phone').value.trim();
@@ -552,10 +581,9 @@
       total, createdAt: new Date().toISOString()
     };
 
-    // push to /orders
     push(ref(db,'orders'), order)
       .then(()=> {
-        // show confirmation modal instead of simple alert
+        // open confirmation modal
         document.getElementById('order-confirm-backdrop').style.display = 'flex';
       })
       .catch(err=>{
@@ -563,35 +591,34 @@
       });
   };
 
-  // after user hits OK on confirmation modal
-  window.closeOrderConfirm = function(){
-    // clear cart and go home
+  // close confirmation: clear cart and go home
+  document.getElementById('order-confirm-ok')?.addEventListener('click', ()=>{ // defensive
     cart = [];
     updateCartCount();
     document.getElementById('order-confirm-backdrop').style.display = 'none';
     showPage('frontpage');
-  };
+  });
 
-  // auth helpers
-  window.loginUser = function(){
+  // simple auth hooks (signup/login) - using firebase auth
+  document.getElementById('login-btn')?.addEventListener('click', ()=>{
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
     if(!email||!password){ alert('Enter email & password'); return; }
     signInWithEmailAndPassword(auth,email,password)
       .then(()=>{ alert('Logged in'); showPage('frontpage'); })
       .catch(e=>{ alert('Login error: '+e.message); });
-  };
+  });
 
-  window.signupUser = function(){
+  document.getElementById('signup-btn')?.addEventListener('click', ()=>{
     const email = document.getElementById('signup-email').value;
     const pass = document.getElementById('signup-password').value;
     if(!email||!pass){ alert('Enter email & password'); return; }
     createUserWithEmailAndPassword(auth,email,pass)
       .then(()=>{ alert('Account created'); showPage('frontpage'); })
       .catch(e=>{ alert('Signup error: '+e.message); });
-  };
+  });
 
-  // attach nav button handlers after DOM ready
+  // nav buttons wiring + initial page setup
   document.addEventListener('DOMContentLoaded',()=>{
     document.querySelectorAll('.nav-btn').forEach(el=>{
       el.addEventListener('click',function(e){
@@ -601,21 +628,40 @@
       });
     });
 
-    // order-type radio toggles address field + checks delivery validity
+    // cart modal buttons
+    document.getElementById('cart-close-btn').addEventListener('click', closeCartModal);
+    document.getElementById('cart-checkout-btn').addEventListener('click', function(){ closeCartModal(); proceedToCheckout(); });
+
+    // item modal quick-close by clicking backdrop
+    document.getElementById('item-backdrop').addEventListener('click', (e)=>{
+      if(e.target === document.getElementById('item-backdrop')) closeItemModal();
+    });
+
+    // cart backdrop quick-close
+    document.getElementById('cart-backdrop').addEventListener('click', (e)=>{
+      if(e.target === document.getElementById('cart-backdrop')) closeCartModal();
+    });
+
+    // confirm modal OK
+    document.getElementById('order-confirm-ok').addEventListener('click', ()=>{
+      cart = []; updateCartCount();
+      document.getElementById('order-confirm-backdrop').style.display = 'none';
+      showPage('frontpage');
+    });
+
+    // order-type toggle (address + delivery check)
     document.querySelectorAll('input[name="order-type"]').forEach(r=>{
-      r.addEventListener('change',()=>{
+      r.addEventListener('change', ()=>{
         document.getElementById('address-label').style.display = r.value==='delivery' ? 'block' : 'none';
         calculateTotal();
         checkDeliveryAllowed();
       });
     });
 
-    // ensure we update subtotal/total whenever cart changes (qty change uses openCartModal which calls updateCartCount/openCartModal)
-    // initial page
+    // initial view
     showPage('frontpage');
     updateCartCount();
   });
-
 </script>
 
 </body>
