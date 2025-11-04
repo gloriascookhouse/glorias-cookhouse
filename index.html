@@ -50,8 +50,9 @@
   .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
   .btn.secondary{background:#eee;color:#222}
   /* cart icon */
-  #cart-icon{position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:50%;background:var(--brand);display:flex;align-items:center;justify-content:centered;color:#fff;font-size:22px;z-index:1300;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.12)}
-  #cart-count{position:absolute;right:8px;top:6px;background:#ff3b30;color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:centered;font-weight:700;font-size:12px}
+  #cart-icon{position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:50%;background:var(--brand);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;z-index:1300;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.12)}
+  #cart-icon span{pointer-events:none}
+  #cart-count{position:absolute;right:8px;top:6px;background:#ff3b30;color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
   /* cart modal content */
   #cart-content div{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f2f2f2}
   #cart-content input[type=number]{width:64px;padding:6px;border-radius:6px;border:1px solid #ddd}
@@ -68,6 +69,11 @@
   .center{display:flex;justify-content:center;align-items:center}
   .text-center{text-align:center}
   .remove-btn{background:transparent;border:1px solid #ddd;padding:6px;border-radius:6px;cursor:pointer}
+  /* reviews */
+  .reviews-list{display:flex;flex-direction:column;gap:12px;padding:12px}
+  .review-card{background:#fff;border:1px solid #f0e6e1;border-left:4px solid var(--brand);padding:12px;border-radius:8px}
+  .review-meta{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .review-form{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:8px;border:1px solid #f2f2f2;background:#fff}
 </style>
 </head>
 <body>
@@ -93,6 +99,7 @@
       <a href="https://wolt.com" target="_blank" rel="noopener">Order on Wolt</a>
       <a href="https://www.just-eat.dk/en/menu/glorias-cookhouse" target="_blank" rel="noopener">Order on Just Eat</a>
       <a href="#" class="nav-btn" data-target="menupage">See Menu</a>
+      <a href="#" class="nav-btn" data-target="reviewspage" style="background:var(--cta)">Reviews</a>
     </div>
 
     <div style="text-align:center;margin-top:8px" class="inline-links">
@@ -166,7 +173,7 @@
       </div>
       <div class="gallery-item" onclick="openItemModal(16)">
         <img src="food16.jpg" alt="Egusi soup">
-        <p>Famous Nigerian Eguisi (Melon Seeds) Soup paired with Fufu (Cassava Flakes) — 249 DKK</p>
+        <p>Famous Nigerian Egusi (Melon Seeds) Soup paired with Fufu (Cassava Flakes) — 249 DKK</p>
       </div>
       <div class="gallery-item" onclick="openItemModal(10)">
         <img src="food10.jpg" alt="Grilled potatoes & chicken">
@@ -303,6 +310,30 @@
     </div>
   </section>
 
+  <!-- Reviews page -->
+  <section id="reviewspage" style="display:none">
+    <h1 class="text-center">Customer Reviews</h1>
+    <p class="note">Read what people say — and leave your own feedback. Reviews are public and shown with the newest first.</p>
+
+    <div style="max-width:900px;margin:0 auto;">
+      <div id="reviews-wrapper">
+        <div id="reviews-list" class="reviews-list">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+      <h3 style="margin-top:18px">Leave a review</h3>
+      <div class="review-form">
+        <input id="review-name" placeholder="Your name" />
+        <textarea id="review-message" placeholder="Write your review" rows="4"></textarea>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn secondary" onclick="showPage('frontpage')">Back</button>
+          <button class="btn" id="submit-review-btn">Submit Review</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Login & Signup -->
   <section id="loginpage" style="display:none">
     <div style="max-width:420px;margin:10px auto">
@@ -346,7 +377,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+  import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
   // YOUR firebase config (you gave this)
   const firebaseConfig = {
@@ -354,7 +385,7 @@
     authDomain: "gloria-s-cookhouse.firebaseapp.com",
     databaseURL: "https://gloria-s-cookhouse-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "gloria-s-cookhouse",
-    storageBucket: "gloria-s-cookhouse.firebasestorage.app",
+    storageBucket: "gloria-s-cookhouse.firebasedestorage.app",
     messagingSenderId: "242537183123",
     appId: "1:242537183123:web:4cdbc739f2f62b2b789a66"
   };
@@ -364,7 +395,7 @@
 
   const MIN_DELIVERY = 5000; // DKK
 
-  // products
+  // products map
   const PRODUCTS = {
     1:{id:1,name:"Mashed potatoes & salmon with asparagus",price:179,img:"food1.jpg"},
     2:{id:2,name:"Fried plantains with yams & egg gravy",price:179,img:"food2.jpg"},
@@ -396,7 +427,7 @@
   let cart = [];
   let currentProduct = null;
 
-  // open item modal
+  /* -------------------- ITEM MODAL & CART -------------------- */
   window.openItemModal = function(index){
     const p = PRODUCTS[index];
     if(!p){ alert('Product missing: '+index); return; }
@@ -411,7 +442,7 @@
 
   window.closeItemModal = function(){ document.getElementById('item-backdrop').style.display = 'none'; };
 
-  // add to cart from item modal
+  // add to cart
   document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('add-to-cart-btn').addEventListener('click',()=>{
       const qty = Math.max(1, parseInt(document.getElementById('modal-item-qty').value || 1));
@@ -425,13 +456,12 @@
     document.getElementById('cancel-item-btn').addEventListener('click', closeItemModal);
   });
 
-  // update cart count badge
   function updateCartCount(){
     const cnt = cart.reduce((s,i)=>s+i.qty,0);
     document.getElementById('cart-count').textContent = cnt;
   }
 
-  // open cart modal
+  // cart modal open
   window.openCartModal = function(){
     const backdrop = document.getElementById('cart-backdrop');
     const content = document.getElementById('cart-content');
@@ -445,7 +475,6 @@
         row.style.justifyContent = 'space-between';
         row.style.alignItems = 'center';
         row.style.gap = '8px';
-        // left: name, middle: qty input, price, remove
         const left = document.createElement('div'); left.style.flex = '1';
         left.textContent = it.name;
         const rightWrap = document.createElement('div'); rightWrap.style.display='flex'; rightWrap.style.alignItems='center'; rightWrap.style.gap='8px';
@@ -455,7 +484,7 @@
           const val = Math.max(1, parseInt(this.value || 1));
           cart[idx].qty = val;
           updateCartCount();
-          openCartModal(); // refresh UI
+          openCartModal();
         });
         const priceDiv = document.createElement('div'); priceDiv.style.width='90px'; priceDiv.style.textAlign='right';
         priceDiv.textContent = (it.price * it.qty) + ' DKK';
@@ -488,7 +517,7 @@
 
   window.closeCartModal = function(){ document.getElementById('cart-backdrop').style.display = 'none'; };
 
-  // proceed to checkout: populate checkout items, totals, then show page
+  // proceed to checkout
   window.proceedToCheckout = function(){
     showPage('checkout-page');
     renderCheckoutItems();
@@ -506,22 +535,24 @@
     });
   }
 
-  // show/hide pages and cart icon logic
+  // simple show/hide pages
   window.showPage = function(pageId){
-    const pages = ['frontpage','menupage','contactpage','loginpage','signuppage','checkout-page'];
+    const pages = ['frontpage','menupage','contactpage','loginpage','signuppage','checkout-page','reviewspage'];
     pages.forEach(id=>{
       const el = document.getElementById(id);
       if(el) el.style.display = (id === pageId ? 'block' : 'none');
     });
     // cart icon only on menu page
-    document.getElementById('cart-icon').style.display = (pageId==='menupage') ? 'block' : 'none';
+    document.getElementById('cart-icon').style.display = (pageId==='menupage' ? 'block' : 'none');
     // address visibility
     const orderType = document.querySelector('input[name="order-type"]:checked');
     if(orderType) document.getElementById('address-label').style.display = orderType.value==='delivery' ? 'block' : 'none';
     else document.getElementById('address-label').style.display = 'none';
+    // when opening reviews page, refresh reviews
+    if(pageId==='reviewspage') loadReviews();
   };
 
-  // calculate totals and display
+  // totals
   window.calculateTotal = function(){
     const subtotal = cart.reduce((s,i)=>s + i.price*i.qty, 0);
     document.getElementById('checkout-subtotal').textContent = subtotal + ' DKK';
@@ -532,7 +563,7 @@
     return {subtotal, total};
   };
 
-  // delivery rule & control confirm button
+  // delivery rule
   function checkDeliveryAllowed(){
     const {subtotal} = calculateTotal();
     const deliverySelected = document.querySelector('input[name="order-type"]:checked')?.value === 'delivery';
@@ -583,7 +614,6 @@
 
     push(ref(db,'orders'), order)
       .then(()=> {
-        // open confirmation modal
         document.getElementById('order-confirm-backdrop').style.display = 'flex';
       })
       .catch(err=>{
@@ -591,35 +621,96 @@
       });
   };
 
-  // close confirmation: clear cart and go home
-  document.getElementById('order-confirm-ok')?.addEventListener('click', ()=>{ // defensive
-    cart = [];
-    updateCartCount();
-    document.getElementById('order-confirm-backdrop').style.display = 'none';
-    showPage('frontpage');
+  // confirmation modal OK
+  document.addEventListener('DOMContentLoaded', ()=>{
+    document.getElementById('order-confirm-ok').addEventListener('click', ()=>{
+      cart = [];
+      updateCartCount();
+      document.getElementById('order-confirm-backdrop').style.display = 'none';
+      showPage('frontpage');
+    });
   });
 
-  // simple auth hooks (signup/login) - using firebase auth
-  document.getElementById('login-btn')?.addEventListener('click', ()=>{
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-    if(!email||!password){ alert('Enter email & password'); return; }
-    signInWithEmailAndPassword(auth,email,password)
-      .then(()=>{ alert('Logged in'); showPage('frontpage'); })
-      .catch(e=>{ alert('Login error: '+e.message); });
-  });
-
-  document.getElementById('signup-btn')?.addEventListener('click', ()=>{
-    const email = document.getElementById('signup-email').value;
-    const pass = document.getElementById('signup-password').value;
-    if(!email||!pass){ alert('Enter email & password'); return; }
-    createUserWithEmailAndPassword(auth,email,pass)
-      .then(()=>{ alert('Account created'); showPage('frontpage'); })
-      .catch(e=>{ alert('Signup error: '+e.message); });
-  });
-
-  // nav buttons wiring + initial page setup
+  /* -------------------- AUTH -------------------- */
   document.addEventListener('DOMContentLoaded',()=>{
+    document.getElementById('login-btn')?.addEventListener('click', ()=>{
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      if(!email||!password){ alert('Enter email & password'); return; }
+      signInWithEmailAndPassword(auth,email,password)
+        .then(()=>{ alert('Logged in'); showPage('frontpage'); })
+        .catch(e=>{ alert('Login error: '+e.message); });
+    });
+
+    document.getElementById('signup-btn')?.addEventListener('click', ()=>{
+      const email = document.getElementById('signup-email').value;
+      const pass = document.getElementById('signup-password').value;
+      if(!email||!pass){ alert('Enter email & password'); return; }
+      createUserWithEmailAndPassword(auth,email,pass)
+        .then(()=>{ alert('Account created'); showPage('frontpage'); })
+        .catch(e=>{ alert('Signup error: '+e.message); });
+    });
+  });
+
+  /* -------------------- REVIEWS (new) -------------------- */
+  // load reviews and show newest-first
+  function loadReviews(){
+    const listEl = document.getElementById('reviews-list');
+    listEl.innerHTML = '<p style="text-align:center;color:var(--muted)">Loading reviews…</p>';
+    const reviewsRef = ref(db,'reviews');
+    onValue(reviewsRef, snapshot => {
+      const val = snapshot.val();
+      const items = [];
+      if(val){
+        Object.keys(val).forEach(k => {
+          const r = val[k];
+          // ensure createdAt exists
+          items.push({ key:k, name: r.name || 'Anon', message: r.message || '', createdAt: r.createdAt || '' });
+        });
+        // sort newest first using ISO timestamp
+        items.sort((a,b)=> (b.createdAt || '').localeCompare(a.createdAt || ''));
+      }
+      // render
+      listEl.innerHTML = '';
+      if(items.length === 0){
+        listEl.innerHTML = `<div class="text-center" style="padding:18px;color:var(--muted)">No Reviews Yet!</div>`;
+      } else {
+        items.forEach(it=>{
+          const card = document.createElement('div'); card.className='review-card';
+          const meta = document.createElement('div'); meta.className='review-meta';
+          const date = it.createdAt ? (new Date(it.createdAt)).toLocaleString() : '';
+          meta.textContent = `${it.name} • ${date}`;
+          const msg = document.createElement('div'); msg.textContent = it.message;
+          card.appendChild(meta); card.appendChild(msg);
+          listEl.appendChild(card);
+        });
+      }
+    }, { onlyOnce: false }); // live updates
+  }
+
+  // submit review
+  function submitReview(){
+    const name = document.getElementById('review-name').value.trim() || 'Anonymous';
+    const message = document.getElementById('review-message').value.trim();
+    if(!message){ alert('Please write a review'); return; }
+    const review = { name, message, createdAt: new Date().toISOString() };
+    push(ref(db,'reviews'), review)
+      .then(()=>{
+        // clear form and reload (onValue will refresh automatically, but clear inputs)
+        document.getElementById('review-name').value = '';
+        document.getElementById('review-message').value = '';
+        // immediate UX feedback: show page refresh of reviews
+        loadReviews();
+        // optionally navigate to reviews (we're already here)
+      })
+      .catch(err=>{
+        console.error(err); alert('Error saving review. Check Firebase rules.');
+      });
+  }
+
+  /* -------------------- BOOTSTRAP UI & EVENTS -------------------- */
+  document.addEventListener('DOMContentLoaded',()=>{
+    // nav
     document.querySelectorAll('.nav-btn').forEach(el=>{
       el.addEventListener('click',function(e){
         e.preventDefault();
@@ -632,7 +723,7 @@
     document.getElementById('cart-close-btn').addEventListener('click', closeCartModal);
     document.getElementById('cart-checkout-btn').addEventListener('click', function(){ closeCartModal(); proceedToCheckout(); });
 
-    // item modal quick-close by clicking backdrop
+    // item modal backdrop close
     document.getElementById('item-backdrop').addEventListener('click', (e)=>{
       if(e.target === document.getElementById('item-backdrop')) closeItemModal();
     });
@@ -642,14 +733,10 @@
       if(e.target === document.getElementById('cart-backdrop')) closeCartModal();
     });
 
-    // confirm modal OK
-    document.getElementById('order-confirm-ok').addEventListener('click', ()=>{
-      cart = []; updateCartCount();
-      document.getElementById('order-confirm-backdrop').style.display = 'none';
-      showPage('frontpage');
-    });
+    // Reviews submit
+    document.getElementById('submit-review-btn').addEventListener('click', submitReview);
 
-    // order-type toggle (address + delivery check)
+    // order-type toggles
     document.querySelectorAll('input[name="order-type"]').forEach(r=>{
       r.addEventListener('change', ()=>{
         document.getElementById('address-label').style.display = r.value==='delivery' ? 'block' : 'none';
@@ -658,19 +745,13 @@
       });
     });
 
-    // initial view
+    // initial
     showPage('frontpage');
     updateCartCount();
+    // Preload reviews list so it's fast when opening reviews page
+    loadReviews();
   });
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
